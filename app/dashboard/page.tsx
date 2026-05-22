@@ -14,6 +14,8 @@ import CardResumo from "@/components/cards/CardResumo";
 import Button from "@/components/button/Button";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
 import ListaTransacoes from "@/components/widgets/ListaTransacoes";
+import ListaContas from "@/components/widgets/ListaContas";
+import GraficoColunas from "@/components/charts/GraficoColunas";
 
 export default function DashBoardPage() {
   const { contas } = useContas();
@@ -36,13 +38,6 @@ export default function DashBoardPage() {
   const transacoesGrafico = transacoes.filter(
     (t) => t.descricao !== "Saldo inicial",
   );
-
-  function formatarDiaMes(dataISO: string) {
-    const data = new Date(dataISO);
-    const dia = data.getDate().toString().padStart(2, "0");
-    const mes = (data.getMonth() + 1).toString().padStart(2, "0");
-    return `${dia}/${mes}`;
-  }
 
   return (
     <div className="p-1 sm:p-3 xl:p-4">
@@ -77,19 +72,7 @@ export default function DashBoardPage() {
           }
           className="lg:col-span-1 lg:row-span-2"
         >
-          <ul className="flex flex-col h-full">
-            {contas.map((c) => (
-              <li
-                key={c.id}
-                className="p-3 border-b border-gray-100 last:border-0 text-sm"
-              >
-                <span className="font-medium">{c.instituicao}</span> <br />
-                <span className="text-gray-500">
-                  R$ {c.saldo} • {c.tipo}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <ListaContas contas={contas}/>
         </WidgetContainer>
 
         <WidgetContainer
@@ -97,10 +80,7 @@ export default function DashBoardPage() {
           subtitulo="Acompanhamento ao longo do tempo"
           className="lg:col-span-2"
         >
-          <GraficoEvolucao
-            transacoes={transacoesGrafico}
-            saldoInicial={saldoTotal}
-          />
+          <GraficoColunas transacoes={transacoes} />
         </WidgetContainer>
 
         <WidgetContainer

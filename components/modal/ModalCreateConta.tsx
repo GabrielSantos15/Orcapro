@@ -4,23 +4,13 @@ import { useModalStore } from "@/store/useModalStore";
 import { useState } from "react";
 import Input from "../forms/Input";
 import Image from "next/image"; // Importante para renderizar as logos
-
-// 1. Lista dos bancos pré-definidos que aparecerão como botões
-const bancosPopulares = [
-  { id: "nubank", nome: "Nubank", logo: "/bancos/nubank.png" },
-  { id: "itau", nome: "Itaú", logo: "/bancos/itau.png" },
-  { id: "bradesco", nome: "Bradesco", logo: "/bancos/bradesco.png" },
-  { id: "santander", nome: "Santander", logo: "/bancos/santander.png" },
-  { id: "inter", nome: "Inter", logo: "/bancos/inter.png" },
-  { id: "bb", nome: "Banco do Brasil", logo: "/bancos/banco-do-brasil.png" },
-  { id: "caixa", nome: "Caixa", logo: "/bancos/caixa.png" },
-];
+import { listaBancosPopulares } from "@/hooks/useContas";
 
 export default function ModalConta() {
   const { closeModal, triggerUpdate } = useModalStore();
   const [submitting, setSubmitting] = useState(false);
   
-  // 2. Estado para controlar se o usuário quer digitar um banco manualmente
+  // controlar se o usuário quer digitar um banco manualmente
   const [isOutro, setIsOutro] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -110,7 +100,7 @@ export default function ModalConta() {
           
           {/* Grid de Bancos */}
           <div className="grid grid-cols-4 gap-2 mb-3">
-            {bancosPopulares.map((banco) => (
+            {listaBancosPopulares.map((banco) => (
               <button
                 key={banco.id}
                 type="button"

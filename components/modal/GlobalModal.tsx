@@ -6,9 +6,9 @@ import { useModalStore } from "@/store/useModalStore";
 // import ModalLogin from "./modals/ModalLogin";
 // import ModalExcluirUser from "./modals/ModalExcluirUser";
 import Modal from "./Modal";
-import ModalTransacao from "./ModalTransacao";
-import ModalConta from "./ModalConta";
-import ModalCategoria from "./modalCategoria";
+import ModalTransacao from "./ModalCreateTransacao";
+import ModalConta from "./ModalCreateConta";
+import ModalCategoria from "./modalCreateCategoria";
 
 export default function GlobalModal() {
   const { isOpen, view, closeModal, data } = useModalStore();

@@ -1,5 +1,6 @@
 // components/widgets/ListaTransacoes.tsx
 import { Transacao } from "@/interfaces/Transacao";
+import { formatarDiaMes } from "@/hooks/useUtils";
 
 interface ListaTransacoesProps {
   transacoes: Transacao[];
@@ -24,7 +25,7 @@ export default function ListaTransacoes({ transacoes }: ListaTransacoesProps) {
             </p>
           </div>
           <span className="text-red-500 font-semibold">
-            {t.dataTransacao}
+            {formatarDiaMes(t.dataTransacao)}
           </span>
         </li>
       ))}
