@@ -47,7 +47,7 @@ export default function DashBoardPage() {
         <div>
           <p className="text-gray-600">filtros</p>
         </div>
-        <Button onClick={() => openModal("transacao")}>
+        <Button onClick={() => openModal("createTransacao")}>
           + Adicionar Transação
         </Button>
       </div>
