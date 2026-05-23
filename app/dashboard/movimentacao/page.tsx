@@ -6,7 +6,7 @@ import WidgetContainer from "@/components/widgets/WidgetContainer";
 import { useTransacoes } from "@/hooks/useTransacoes";
 
 export default function Metas() {
-  const { transacoes, handleDelete, deletandoId } = useTransacoes();
+  const { transacoes, deletarTransacao, deletandoId } = useTransacoes();
 
   function formatarDiaMes(dataISO: string) {
     const data = new Date(dataISO);

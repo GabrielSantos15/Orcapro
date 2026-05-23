@@ -8,17 +8,21 @@ interface ListaTransacoesProps {
 }
 
 export default function ListaTransacoes({ transacoes }: ListaTransacoesProps) {
-    const { openModal } = useModalStore();
+  const { openModal } = useModalStore();
   if (transacoes.length === 0) {
-    return <p className="p-4 text-center text-gray-500">Nenhuma transação encontrada.</p>;
+    return (
+      <p className="p-4 text-center text-gray-500">
+        Nenhuma transação encontrada.
+      </p>
+    );
   }
 
   return (
     <ul className="flex flex-col">
       {transacoes.map((t) => (
-        <li 
-          key={t.id} 
-          onClick={() => openModal("transacao",t)}
+        <li
+          key={t.id}
+          onClick={() => openModal("transacao", t)}
           className="flex justify-between items-center p-4 border-b last:border-0 border-gray-100 text-sm hover:bg-gray-50  transition-colors cursor-pointer"
         >
           <div>

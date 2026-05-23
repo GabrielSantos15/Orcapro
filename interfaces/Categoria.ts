@@ -4,6 +4,6 @@ export interface Categoria{
    "id": number
     "usuario": Usuario
     "nome": string
-    "tipo": string
-    "ativa": string
+    "tipo": "ENTRADA" | "SAIDA"
+    "ativa": number
 }

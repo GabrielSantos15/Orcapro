@@ -6,4 +6,5 @@ export interface Conta {
   "instituicao": string
   "tipo": string
   "saldo": number
+  "ativa": boolean
 }

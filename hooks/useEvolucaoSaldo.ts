@@ -17,28 +17,27 @@ export function useEvolucaoSaldo(transacoes: Transacao[], saldoInicial: number =
   const dadosPorData = transacoesOrdenadas.reduce((acc: DadoEvolucao[], transacao) => {
     const dataFormatada = new Date(transacao.dataTransacao).toLocaleDateString("pt-BR");
     
-    // Determina se é receita ou despesa
-    const isReceita = transacao.categoria?.tipo === "RECEITA";
-    const valor = isReceita ? transacao.valor : -transacao.valor;
+    // Determina se é entrada ou saída
+    const isEntrada = transacao.categoria?.tipo === "ENTRADA";
+    const valor = isEntrada ? transacao.valor : -transacao.valor;
 
     // Encontra se já existe entrada para essa data
     const existente = acc.find((item) => item.data === dataFormatada);
 
     if (existente) {
       // Atualiza a entrada existente
-      if (isReceita) {
+      if (isEntrada) {
         existente.receita += transacao.valor;
       } else {
         existente.despesa += transacao.valor;
       }
       existente.saldo += valor;
     } else {
-      // Cria nova entrada
       const saldoAnterior = acc.length > 0 ? acc[acc.length - 1].saldo : saldoInicial;
       acc.push({
         data: dataFormatada,
-        receita: isReceita ? transacao.valor : 0,
-        despesa: !isReceita ? transacao.valor : 0,
+        receita: isEntrada ? transacao.valor : 0,
+        despesa: !isEntrada ? transacao.valor : 0,
         saldo: saldoAnterior + valor,
       });
     }

@@ -1,6 +1,7 @@
 // components/widgets/ListaTransacoes.tsx
 import { listaBancosPopulares } from "@/hooks/useContas";
 import { Conta } from "@/interfaces/Conta";
+import { useModalStore } from "@/store/useModalStore";
 import Image from "next/image";
 
 interface ListaContaProps {
@@ -8,6 +9,7 @@ interface ListaContaProps {
 }
 
 export default function ListaContas({ contas }: ListaContaProps) {
+  const { openModal } = useModalStore();
   if (contas.length === 0) {
     return (
       <p className="p-4 text-center text-gray-500">Nenhuma conta encontrada.</p>
@@ -26,6 +28,7 @@ export default function ListaContas({ contas }: ListaContaProps) {
       {contas.map((c) => (
         <li
           key={c.id}
+             onClick={() => openModal("conta",c)}
           className="flex justify-between p-3 border-b border-gray-100 last:border-0 text-sm"
         >
           <div className="flex gap-2">

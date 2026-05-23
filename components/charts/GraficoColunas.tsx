@@ -28,11 +28,11 @@ interface GraficoColunasProps {
 
 const chartConfig = {
   receitas: {
-    label: "Receitas",
+    label: "Entradas",
     color: "#22c55e",
   },
   despesas: {
-    label: "Despesas",
+    label: "Saídas",
     color: "#ef4444",
   },
 } satisfies ChartConfig;
@@ -100,9 +100,9 @@ export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
 
       const mesIndex = data.getUTCMonth();
 
-      if (transacao.categoria?.tipo === "RECEITA") {
+      if (transacao.categoria?.tipo === "ENTRADA") {
         dados[mesIndex].receitas += transacao.valor;
-      } else if (transacao.categoria?.tipo === "DESPESA") {
+      } else if (transacao.categoria?.tipo === "SAIDA") {
         dados[mesIndex].despesas += transacao.valor;
       }
     });

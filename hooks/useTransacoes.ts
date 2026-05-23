@@ -4,10 +4,12 @@ import { useModalStore } from "@/store/useModalStore";
 
 export function useTransacoes() {
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(true); 
+  const [erro, setErro] = useState<string | null>(null);
   const [deletandoId, setDeletandoId] = useState<number | null>(null);
-  const { atualizarGatilho } = useModalStore();
+  const [criandoTransacao, setCriandoTransacao] = useState(false);
+  const [atualizandoId, setAtualizandoId] = useState<number | null>(null);
+  const { atualizarGatilho, triggerUpdate } = useModalStore();
 
   const carregarTransacoes = async () => {
     try {
@@ -34,9 +36,9 @@ export function useTransacoes() {
       
       setTransacoes(transacoesOrdenadas);
     } catch (err: any) {
-      setError(err.message);
+      setErro(err.message);
     } finally {
-      setLoading(false);
+      setCarregando(false);
     }
   };
 
@@ -44,7 +46,110 @@ export function useTransacoes() {
     carregarTransacoes();
   }, [atualizarGatilho]);
 
-  const handleDelete = async (transacaoId: number) => {
+  const createTransacao = async (formData: {
+    tipo: string;
+    contaId: string;
+    categoriaId: string;
+    origemDestino: string;
+    descricao: string;
+    valor: string;
+    dataTransacao: string;
+  }) => {
+    setCriandoTransacao(true);
+
+    try {
+      const token = localStorage.getItem("user_token");
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+
+      const transacaoData = {
+        tipo: formData.tipo,
+        conta: { id: formData.contaId },
+        categoria: { id: formData.categoriaId },
+        origemDestino: formData.origemDestino,
+        descricao: formData.descricao,
+        valor: parseFloat(formData.valor),
+        dataTransacao: formData.dataTransacao,
+      };
+
+      const response = await fetch("/api/transacao", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transacaoData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Falha ao criar transação");
+      }
+
+      triggerUpdate();
+      return true;
+    } catch (err: any) {
+      throw new Error(err.message || "Erro ao conectar com o servidor");
+    } finally {
+      setCriandoTransacao(false);
+    }
+  };
+
+  const updateTransacao = async (
+    transacaoId: number,
+    formData: {
+      tipo: string;
+      contaId: string;
+      categoriaId: string;
+      origemDestino: string;
+      descricao: string;
+      valor: string;
+      dataTransacao: string;
+    }
+  ) => {
+    setAtualizandoId(transacaoId);
+
+    try {
+      const token = localStorage.getItem("user_token");
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+
+      const transacaoData = {
+        tipo: formData.tipo,
+        conta: { id: formData.contaId },
+        categoria: { id: formData.categoriaId },
+        origemDestino: formData.origemDestino,
+        descricao: formData.descricao,
+        valor: parseFloat(formData.valor),
+        dataTransacao: formData.dataTransacao,
+      };
+
+      const response = await fetch(`/api/transacao/${transacaoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transacaoData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Falha ao atualizar transação");
+      }
+
+      triggerUpdate();
+      return true;
+    } catch (err: any) {
+      throw new Error(err.message || "Erro ao conectar com o servidor");
+    } finally {
+      setAtualizandoId(null);
+    }
+  };
+
+  const deletarTransacao = async (transacaoId: number) => {
     const confirmar = confirm(
       "Tem certeza que deseja deletar esta transação?"
     );
@@ -86,6 +191,8 @@ export function useTransacoes() {
         prev.filter((t) => t.id !== transacaoId)
       );
 
+      triggerUpdate();
+
     } catch (error) {
       console.error("Erro ao deletar transação:", error);
 
@@ -100,5 +207,5 @@ export function useTransacoes() {
     }
   };
 
-  return { transacoes, loading, error, handleDelete, deletandoId };
+  return { transacoes, carregando, erro, deletarTransacao, deletandoId, createTransacao, criandoTransacao, updateTransacao, atualizandoId };
 }

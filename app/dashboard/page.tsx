@@ -27,16 +27,16 @@ export default function DashBoardPage() {
 
   const totalReceita = transacoes
     .filter(
-      (t) => t.categoria?.tipo === "RECEITA" && t.descricao !== "Saldo inicial",
+      (t) => t.categoria?.tipo === "ENTRADA" && t.origemDestino !== "Saldo inicial",
     )
     .reduce((acc, t) => acc + (t.valor || 0), 0);
 
   const totalDespesa = transacoes
-    .filter((t) => t.categoria?.tipo === "DESPESA")
+    .filter((t) => t.categoria?.tipo === "SAIDA")
     .reduce((acc, t) => acc + (t.valor || 0), 0);
 
   const transacoesGrafico = transacoes.filter(
-    (t) => t.descricao !== "Saldo inicial",
+    (t) => t.origemDestino !== "Saldo inicial",
   );
 
   return (
@@ -55,8 +55,8 @@ export default function DashBoardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
           <CardResumo value={saldoTotal} title="Saldo Total" color="primary" />
-          <CardResumo value={totalReceita} title="Receitas" color="green" />
-          <CardResumo value={totalDespesa} title="Despesas" color="red" />
+          <CardResumo value={totalReceita} title="Entradas" color="green" />
+          <CardResumo value={totalDespesa} title="Saídas" color="red" />
           <CardResumo value={3000} title="Investido" color="blue" />
         </section>
 
@@ -64,7 +64,7 @@ export default function DashBoardPage() {
           titulo="Contas"
           rodape={
             <button
-              onClick={() => openModal("conta")}
+              onClick={() => openModal("createConta")}
               className="text-blue-600 hover:underline"
             >
               + Adicionar
@@ -76,7 +76,7 @@ export default function DashBoardPage() {
         </WidgetContainer>
 
         <WidgetContainer
-          titulo="Receitas vs Despesas"
+          titulo="Entradas vs Saídas"
           subtitulo="Acompanhamento ao longo do tempo"
           className="lg:col-span-2"
         >

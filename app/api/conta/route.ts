@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-            const authHeader = request.headers.get("authorization");
+        const authHeader = request.headers.get("authorization");
         const body = await request.json();
 
         if (!authHeader) {

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Categoria } from "@/interfaces/Categoria";
+import { useModalStore } from "@/store/useModalStore";
 
 export function useCategorias() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(true); 
+  const [erro, setErro] = useState<string | null>(null);
+  const { atualizarGatilho } = useModalStore();
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -26,14 +28,14 @@ export function useCategorias() {
         const data = await res.json();
         setCategorias(data);
       } catch (err: any) {
-        setError(err.message);
+        setErro(err.message);
       } finally {
-        setLoading(false);
+        setCarregando(false);
       }
     };
 
     fetchCategorias();
-  }, []);
+  }, [atualizarGatilho]);
 
-  return { categorias, loading, error };
+  return { categorias, carregando, erro };
 }

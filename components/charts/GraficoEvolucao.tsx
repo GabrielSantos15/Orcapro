@@ -22,11 +22,11 @@ interface GraficoEvolucaoProps {
 
 const chartConfig = {
   receita: {
-    label: "Receitas",
+    label: "Entradas",
     color: "#10b981",
   },
   despesa: {
-    label: "Despesas",
+    label: "Saídas",
     color: "#ef4444",
   },
 } satisfies ChartConfig;

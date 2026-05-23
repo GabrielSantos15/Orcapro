@@ -5,36 +5,114 @@ import { useModalStore } from "@/store/useModalStore";
 
 export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
+  const [deletandoId, setDeletandoId] = useState<number | null>(null);
+  const [atualizandoId, setAtualizandoId] = useState<number | null>(null);
   
   // Subscrever apenas ao gatilho de atualização 
-  const { atualizarGatilho } = useModalStore();
+  const { atualizarGatilho, triggerUpdate } = useModalStore();
+
+  const carregarContas = async () => {
+    try {
+      const token = localStorage.getItem("user_token");
+      if (!token) throw new Error("Usuário não autenticado");
+
+      const res = await fetch("/api/conta", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Falha ao buscar as Contas.");
+
+      const data = await res.json();
+      setContas(data);
+    } catch (err: any) {
+      setErro(err.message);
+    } finally {
+      setCarregando(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchContas = async () => {
-      try {
-        const token = localStorage.getItem("user_token");
-        if (!token) throw new Error("Usuário não autenticado");
+    carregarContas();
+  }, [atualizarGatilho]);
 
-        const res = await fetch("/api/conta", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  const deletarConta = async (contaId: number) => {
+    const confirmar = confirm("Tem certeza que deseja excluir esta conta?");
 
-        if (!res.ok) throw new Error("Falha ao buscar as Contas.");
+    if (!confirmar) {
+      return;
+    }
 
-        const data = await res.json();
-        setContas(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    setDeletandoId(contaId);
+
+    try {
+      const token = localStorage.getItem("user_token");
+
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
       }
-    };
 
-    fetchContas();
-  }, [atualizarGatilho]); // roda novamente quando o gatilho mudar
-  return { contas, loading, error };
+      const response = await fetch(`/api/conta/${contaId}`, {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao deletar conta");
+      }
+
+      // Remove da lista sem recarregar página
+      setContas((prev) => prev.filter((c) => c.id !== contaId));
+
+      triggerUpdate();
+    } catch (error) {
+      console.error("Erro ao deletar conta:", error);
+      throw error instanceof Error ? error : new Error("Erro ao deletar conta");
+    } finally {
+      setDeletandoId(null);
+    }
+  };
+
+  const reativarConta = async (conta: Conta) => {
+    setAtualizandoId(conta.id);
+
+    try {
+      const token = localStorage.getItem("user_token");
+
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
+      }
+
+      const response = await fetch(`/api/conta/${conta.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({...conta,ativa: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao reativar conta");
+      }
+
+      triggerUpdate();
+      return true;
+    } catch (error) {
+      console.error("Erro ao reativar conta:", error);
+      throw error instanceof Error ? error : new Error("Erro ao reativar conta");
+    } finally {
+      setAtualizandoId(null);
+    }
+  };
+
+  return { contas, carregando, erro, deletarConta, reativarConta, deletandoId, atualizandoId };
 }
 
 export const listaBancosPopulares = [

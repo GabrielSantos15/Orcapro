@@ -1,20 +1,19 @@
 "use client";
 
-import { Transacao } from "@/interfaces/Transacao";
 import { FaArrowCircleDown, FaArrowCircleUp } from "react-icons/fa";
+import { useModalStore } from "@/store/useModalStore";
+import { useTransacoes } from "@/hooks/useTransacoes";
+import { Transacao } from "@/interfaces/Transacao";
 
 interface TransacaoModalProps {
   transacao: Transacao;
-  onAtualizar?: () => void;
 }
 
-export default function TransacaoModal({
-  transacao,
-  onAtualizar,
-}: TransacaoModalProps): JSX.Element {
-  
+export default function TransacaoModal({ transacao }: TransacaoModalProps) {
   const { origemDestino, descricao, valor, dataTransacao, conta, categoria } = transacao;
-  const isReceita = categoria.tipo === "RECEITA";
+  const isEntrada = categoria.tipo === "ENTRADA";
+  const { deletarTransacao } = useTransacoes();
+  const { closeModal, openModal } = useModalStore();
 
   const formatarData = (dataISO: string) => {
     const data = new Date(dataISO);
@@ -29,16 +28,25 @@ export default function TransacaoModal({
       currency: "BRL",
     });
 
+  const handleExcluir = () => {
+    deletarTransacao(transacao.id);
+    closeModal();
+  };
+
+  const handleEditar = () => {
+    openModal("updateTransacao", transacao);
+  };
+
   return (
     <div className="w-full">
       {/* Cabeçalho */}
       <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
         <div
           className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${
-            isReceita ? "bg-green-100" : "bg-red-100"
+            isEntrada ? "bg-green-100" : "bg-red-100"
           }`}
         >
-          {isReceita ? (
+          {isEntrada ? (
             <FaArrowCircleUp size={24} className="text-green-600" />
           ) : (
             <FaArrowCircleDown size={24} className="text-red-600" />
@@ -46,7 +54,7 @@ export default function TransacaoModal({
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900">
-            {isReceita ? "Receita" : "Despesa"}
+            {isEntrada ? "Entrada" : "Saída"}
           </h2>
           <p className="text-sm font-medium text-gray-500">{categoria.nome}</p>
         </div>
@@ -62,10 +70,10 @@ export default function TransacaoModal({
           </label>
           <p
             className={`text-3xl font-bold ${
-              isReceita ? "text-green-600" : "text-red-600"
+              isEntrada ? "text-green-600" : "text-red-600"
             }`}
           >
-            {isReceita ? "+ " : "- "}
+            {isEntrada ? "+ " : "- "}
             {formatarValor(valor)}
           </p>
         </div>
@@ -109,25 +117,22 @@ export default function TransacaoModal({
             {descricao || "—"}
           </p>
         </div>
-        <div className="mt-8 flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
-        <button
-          onClick={() => {
-            // Lógica para excluir (ex: abrir alerta de confirmação)
-          }}
-          className="rounded-lg px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
-        >
-          Excluir
-        </button>
 
-        <button
-          onClick={() => {
-            // Lógica para editar
-          }}
-          className="rounded-lg bg-[var(--primary-color)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
-        >
-          Editar Transação
-        </button>
-      </div>
+        {/* Ações */}
+        <div className="col-span-1 sm:col-span-2 mt-6 flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+          <button
+            onClick={handleExcluir}
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+          >
+            Excluir
+          </button>
+          <button
+            onClick={handleEditar}
+            className="rounded-lg bg-[var(--primary-color)] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          >
+            Editar Transação
+          </button>
+        </div>
       </div>
     </div>
   );

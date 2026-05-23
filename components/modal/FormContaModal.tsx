@@ -1,16 +1,22 @@
 "use client";
 
 import { useModalStore } from "@/store/useModalStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "../forms/Input";
 import Image from "next/image"; // Importante para renderizar as logos
 import { listaBancosPopulares } from "@/hooks/useContas";
+import { Conta } from "@/interfaces/Conta";
 
-export default function ModalConta() {
+interface FormContaModalProps {
+  conta?: Conta | null;
+}
+
+export default function FormContaModal({ conta }: FormContaModalProps) {
   const { closeModal, triggerUpdate } = useModalStore();
   const [submitting, setSubmitting] = useState(false);
   
-  // controlar se o usuário quer digitar um banco manualmente
+  const isEditMode = !!conta;
+
   const [isOutro, setIsOutro] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -20,6 +26,20 @@ export default function ModalConta() {
   });
 
   const tiposConta = ["CORRENTE", "POUPANCA", "INVESTIMENTO"];
+
+  useEffect(() => {
+    if (conta) {
+      setFormData({
+        instituicao: conta.instituicao,
+        tipo: conta.tipo,
+        saldo: String(conta.saldo) || "",
+      });
+  
+      const bancoDaLista = listaBancosPopulares.find(b => b.nome === conta.instituicao);
+      setIsOutro(!bancoDaLista);
+    }
+  }, [conta]);
+
 
   // Funções para lidar com o clique nos bancos
   const handleBankSelect = (nomeBanco: string) => {
@@ -50,14 +70,22 @@ export default function ModalConta() {
         return;
       }
 
-      const contaData = {
-        instituicao: formData.instituicao,
-        tipo: formData.tipo,
-        saldo: parseFloat(formData.saldo),
-      };
+      const contaData = isEditMode
+        ? {
+            instituicao: formData.instituicao,
+            tipo: formData.tipo,
+          }
+        : {
+            instituicao: formData.instituicao,
+            tipo: formData.tipo,
+            saldo: parseFloat(formData.saldo),
+          };
 
-      const response = await fetch("/api/conta", {
-        method: "POST",
+      const url = isEditMode ? `/api/conta/${conta?.id}` : "/api/conta";
+      const method = isEditMode ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -66,16 +94,16 @@ export default function ModalConta() {
       });
 
       if (response.ok) {
-        alert("Conta criada com sucesso!");
+        alert(isEditMode ? "Conta atualizada com sucesso!" : "Conta criada com sucesso!");
         triggerUpdate(); // O seu gatilho que avisa o dashboard para atualizar!
         closeModal();
       } else {
         const error = await response.json();
-        console.log(`Erro: ${error.error || "Falha ao criar conta"}`);
-        alert(`Erro: ${error.error || "Falha ao criar conta"}`);
+        console.log(`Erro: ${error.error || "Falha ao " + (isEditMode ? "atualizar" : "criar") + " conta"}`);
+        alert(`Erro: ${error.error || "Falha ao " + (isEditMode ? "atualizar" : "criar") + " conta"}`);
       }
     } catch (error) {
-      console.error("Erro ao criar conta:", error);
+      console.error("Erro ao enviar conta:", error);
       alert("Erro ao conectar com o servidor. Tente novamente.");
     } finally {
       setSubmitting(false);
@@ -84,9 +112,13 @@ export default function ModalConta() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900">Nova Conta</h2>
+      <h2 className="text-xl font-bold text-gray-900">
+        {isEditMode ? "Editar Conta" : "Nova Conta"}
+      </h2>
       <p className="text-sm text-gray-500 mb-4">
-        Preencha os dados para cadastrar sua conta bancária.
+        {isEditMode
+          ? "Altere os dados da sua conta bancária."
+          : "Preencha os dados para cadastrar sua conta bancária."}
       </p>
       <hr />
 
@@ -180,31 +212,33 @@ export default function ModalConta() {
           </select>
         </div>
 
-        {/* SALDO INICIAL */}
-        <div>
-          <label htmlFor="saldo" className="block text-sm font-medium text-gray-700">
-            Saldo Inicial
-          </label>
-          <Input
-            type="number"
-            id="saldo"
-            name="saldo"
-            value={formData.saldo}
-            onChange={(e) => setFormData({ ...formData, saldo: e.target.value })}
-            placeholder="0.00"
-            step="0.01"
-            min={0}
-            required
-          />
-        </div>
+        {/* SALDO INICIAL - Apenas na criação */}
+        {!isEditMode && (
+          <div>
+            <label htmlFor="saldo" className="block text-sm font-medium text-gray-700">
+              Saldo Inicial
+            </label>
+            <Input
+              type="number"
+              id="saldo"
+              name="saldo"
+              value={formData.saldo}
+              onChange={(e) => setFormData({ ...formData, saldo: e.target.value })}
+              placeholder="0.00"
+              step="0.01"
+              min={0}
+              required
+            />
+          </div>
+        )}
 
         {/* BOTÃO SUBMIT */}
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-[var(--color-primary)] text-white py-2 rounded-md hover:opacity-90 disabled:bg-gray-400 font-medium transition-colors mt-6"
+          className="w-full bg-[var(--primary-color)] text-white py-2 rounded-md hover:opacity-90 disabled:bg-gray-400 font-medium transition-colors mt-6"
         >
-          {submitting ? "Criando..." : "Criar Conta"}
+          {submitting ? (isEditMode ? "Atualizando..." : "Criando...") : (isEditMode ? "Atualizar Conta" : "Criar Conta")}
         </button>
       </form>
     </div>
