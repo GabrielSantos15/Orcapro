@@ -6,6 +6,7 @@ import { FaUserCircle } from 'react-icons/fa'
 export default function Header({ showWelcome = false, title = 'Página' }) {
   const { user } = useAuth()
   const firstName = user?.nome?.split(' ')[0] ?? 'Usuário'
+  const imgUrl = "https://api.dicebear.com/9.x/lorelei/svg?seed=a"
 
   return (
     <header className="flex justify-between items-center mb-6 pb-4  border-gray-200">
@@ -24,7 +25,7 @@ export default function Header({ showWelcome = false, title = 'Página' }) {
       </div>
       <div className="flex items-center gap-4 border-1 rounded-full p-1 pr-3">
         <img 
-          src={"https://api.dicebear.com/9.x/lorelei/svg?seed=" + user?.nome} 
+          src={imgUrl + user?.nome} 
           width={70} 
           height={70}
           alt={user?.nome || 'Avatar'} 

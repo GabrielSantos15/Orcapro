@@ -1,5 +1,6 @@
 "use client";
 
+import GraficoColunas from "@/components/charts/GraficoColunas";
 import Header from "@/components/header/Header";
 import ListaTransacoes from "@/components/widgets/ListaTransacoes";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
@@ -18,6 +19,13 @@ export default function Metas() {
     <div>
       <Header title="Minhas Movimentacoes" />
       <h1>Movimentações</h1>
+      <WidgetContainer
+        titulo="Entradas vs Saídas"
+        subtitulo="Acompanhamento ao longo do tempo"
+        className="lg:col-span-2"
+      >
+        <GraficoColunas transacoes={transacoes} />
+      </WidgetContainer>
       <WidgetContainer titulo="Transações">
         <ListaTransacoes transacoes={transacoes.slice(0, 5)} />
       </WidgetContainer>

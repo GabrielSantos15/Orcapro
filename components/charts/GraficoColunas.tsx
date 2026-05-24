@@ -83,12 +83,12 @@ export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
 
     transacoes.forEach((transacao) => {
       // Ignora saldo inicial ou valores de abertura de conta
-      if (
-        transacao.origemDestino === "Saldo inicial" ||
-        transacao.descricao?.includes("Valor inicial da conta")
-      ) {
-        return;
-      }
+      // if (
+      //   transacao.origemDestino === "Saldo inicial" ||
+      //   transacao.descricao?.includes("Valor inicial da conta")
+      // ) {
+      //   return;
+      // }
 
       const data = new Date(transacao.dataTransacao);
       const ano = data.getUTCFullYear();

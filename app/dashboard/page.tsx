@@ -9,6 +9,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { useContas } from "@/hooks/useContas";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { useCategorias } from "@/hooks/useCategorias";
+import { useInvestimentos } from "@/hooks/useInvestimentos";
 import GraficoEvolucao from "@/components/charts/GraficoEvolucao";
 import CardResumo from "@/components/cards/CardResumo";
 import Button from "@/components/button/Button";
@@ -21,23 +22,26 @@ export default function DashBoardPage() {
   const { contas } = useContas();
   const { transacoes } = useTransacoes();
   const { categorias } = useCategorias();
+  const { investimentos } = useInvestimentos();
   const { openModal } = useModalStore();
 
   const saldoTotal = contas.reduce((acc, conta) => acc + (conta.saldo || 0), 0);
 
   const totalReceita = transacoes
-    .filter(
-      (t) => t.categoria?.tipo === "ENTRADA" && t.origemDestino !== "Saldo inicial",
-    )
+    // .filter(
+    //   (t) => t.categoria?.tipo === "ENTRADA" && t.origemDestino !== "Saldo inicial",
+    // )
     .reduce((acc, t) => acc + (t.valor || 0), 0);
 
   const totalDespesa = transacoes
     .filter((t) => t.categoria?.tipo === "SAIDA")
     .reduce((acc, t) => acc + (t.valor || 0), 0);
 
-  const transacoesGrafico = transacoes.filter(
-    (t) => t.origemDestino !== "Saldo inicial",
+  const totalInvestido = investimentos.reduce(
+    (acc, inv) => acc + (inv.valorInvestido || 0),
+    0
   );
+
 
   return (
     <div className="p-1 sm:p-3 xl:p-4">
@@ -57,7 +61,7 @@ export default function DashBoardPage() {
           <CardResumo value={saldoTotal} title="Saldo Total" color="primary" />
           <CardResumo value={totalReceita} title="Entradas" color="green" />
           <CardResumo value={totalDespesa} title="Saídas" color="red" />
-          <CardResumo value={3000} title="Investido" color="blue" />
+          <CardResumo value={totalInvestido} title="Investido" color="blue" />
         </section>
 
         <WidgetContainer

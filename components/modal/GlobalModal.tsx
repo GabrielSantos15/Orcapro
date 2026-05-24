@@ -13,6 +13,10 @@ import TransacaoModal from "./TransacaoModal";
 import FormTransacaoModal from "./FormTransacaoModal";
 import ContaModal from "./ContaModal";
 import FormContaModal from "./FormContaModal";
+import FormInvestimentoModal from "./FormInvestimentoModal";
+import FormAporteInvestimento from "./FormAporteInvestimento";
+import FormResgateInvestimentoModal from "./FormResgateInvestimentoModal";
+import FormAtualizarSaldoInvestidoModal from "./FormAtualizarSaldoInvestidoModal";
 
 export default function GlobalModal() {
   const { isOpen, view, closeModal, data } = useModalStore();
@@ -28,6 +32,11 @@ export default function GlobalModal() {
       {view === "createConta" && <CreateContaModal />}
       {view === "updateConta" && <FormContaModal conta={data} />}
       {view === "categoria" && <ModalCategoria />}
+      {view === "createInvestimento" && <FormInvestimentoModal />}
+      {view === "updateInvestimento" && <FormInvestimentoModal investimento={data} />}
+      {view === "aporteInvestimento" && <FormAporteInvestimento  investimento={data}/>}
+      {view === "resgateInvestimento" && <FormResgateInvestimentoModal  investimento={data}/>}
+      {view === "updateSaldoInvestimento" && <FormAtualizarSaldoInvestidoModal  investimento={data}/>}
     </Modal>
   );
 }
