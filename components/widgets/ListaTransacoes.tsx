@@ -1,6 +1,6 @@
 // components/widgets/ListaTransacoes.tsx
 import { Transacao } from "@/interfaces/Transacao";
-import { formatarDiaMes } from "@/hooks/useUtils";
+import { useUtils } from "@/hooks/useUtils";
 import { useModalStore } from "@/store/useModalStore";
 
 interface ListaTransacoesProps {
@@ -9,6 +9,7 @@ interface ListaTransacoesProps {
 
 export default function ListaTransacoes({ transacoes }: ListaTransacoesProps) {
   const { openModal } = useModalStore();
+  const { formatarDiaMes } = useUtils();
   if (transacoes.length === 0) {
     return (
       <p className="p-4 text-center text-gray-500">

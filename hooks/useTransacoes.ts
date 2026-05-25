@@ -207,5 +207,49 @@ export function useTransacoes() {
     }
   };
 
-  return { transacoes, carregando, erro, deletarTransacao, deletandoId, createTransacao, criandoTransacao, updateTransacao, atualizandoId };
+  // Função para filtrar transações do mês atual por tipo
+  const obterTransacoesMes = (tipo: "ENTRADA" | "SAIDA", data = new Date()) => {
+    const mesAtual = data.getMonth();
+    const anoAtual = data.getFullYear();
+
+    return transacoes.filter((t) => {
+      const dataTransacao = new Date(t.dataTransacao);
+      return (
+        t.categoria?.tipo === tipo &&
+        dataTransacao.getMonth() === mesAtual &&
+        dataTransacao.getFullYear() === anoAtual
+      );
+    });
+  };
+
+  // Função para obter total de despesas do mês
+  const obterTotalDespesasMes = (data = new Date()) => {
+    return obterTransacoesMes("SAIDA", data).reduce(
+      (acc, t) => acc + (t.valor || 0),
+      0
+    );
+  };
+
+  // Função para obter total de receitas do mês
+  const obterTotalReceitasMes = (data = new Date()) => {
+    return obterTransacoesMes("ENTRADA", data).reduce(
+      (acc, t) => acc + (t.valor || 0),
+      0
+    );
+  };
+
+  return { 
+    transacoes, 
+    carregando, 
+    erro, 
+    deletarTransacao, 
+    deletandoId, 
+    createTransacao, 
+    criandoTransacao, 
+    updateTransacao, 
+    atualizandoId,
+    obterTransacoesMes,
+    obterTotalDespesasMes,
+    obterTotalReceitasMes,
+  };
 }

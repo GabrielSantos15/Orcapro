@@ -17,6 +17,9 @@ import FormInvestimentoModal from "./FormInvestimentoModal";
 import FormAporteInvestimento from "./FormAporteInvestimento";
 import FormResgateInvestimentoModal from "./FormResgateInvestimentoModal";
 import FormAtualizarSaldoInvestidoModal from "./FormAtualizarSaldoInvestidoModal";
+import FormMetaModal from "./FormMetaModal";
+import FormProgressoMetaModal from "./FormProgressoMetaModal";
+import FormResgateMetaModal from "./FormResgateMetaModal";
 
 export default function GlobalModal() {
   const { isOpen, view, closeModal, data } = useModalStore();
@@ -37,6 +40,10 @@ export default function GlobalModal() {
       {view === "aporteInvestimento" && <FormAporteInvestimento  investimento={data}/>}
       {view === "resgateInvestimento" && <FormResgateInvestimentoModal  investimento={data}/>}
       {view === "updateSaldoInvestimento" && <FormAtualizarSaldoInvestidoModal  investimento={data}/>}
+      {view === "updateMeta" && <FormMetaModal meta={data}/>}
+      {view === "addProgressoMeta" && <FormProgressoMetaModal meta={data}/>}
+      {view === "resgateMeta" && <FormResgateMetaModal meta={data}/>}
+      {view === "createMeta" && <FormMetaModal />}
     </Modal>
   );
 }

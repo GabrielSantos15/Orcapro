@@ -15,7 +15,7 @@ export default function Investimentos() {
 
   if (carregando) {
     return (
-      <div>
+      <div className="p-1 sm:p-3 xl:p-4">
         <Header title="Meus Investimentos" />
         <p>Carregando investimentos...</p>
       </div>
@@ -24,7 +24,7 @@ export default function Investimentos() {
 
   if (erro) {
     return (
-      <div>
+      <div className="p-1 sm:p-3 xl:p-4">
         <Header title="Meus Investimentos" />
         <p style={{ color: "red" }}>Erro: {erro}</p>
       </div>
@@ -32,13 +32,18 @@ export default function Investimentos() {
   }
 
   return (
-    <div>
+    <div className="p-1 sm:p-3 xl:p-4">
       <Header title="Meus Investimentos" />
 
       <Button onClick={() => openModal("createInvestimento")}>
         + Adicionar Investimento
       </Button>
-      <ListaInvestimentos investimentos={investimentos} onEdit={()=>{}} onAporte={()=>{}} onResgate={()=>{}}></ListaInvestimentos>
+      <ListaInvestimentos
+        investimentos={investimentos}
+        onEdit={() => {}}
+        onAporte={() => {}}
+        onResgate={() => {}}
+      ></ListaInvestimentos>
     </div>
   );
 }

@@ -10,32 +10,32 @@ import { useContas } from "@/hooks/useContas";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { useCategorias } from "@/hooks/useCategorias";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
-import GraficoEvolucao from "@/components/charts/GraficoEvolucao";
+import { useMetas } from "@/hooks/useMetas";
 import CardResumo from "@/components/cards/CardResumo";
 import Button from "@/components/button/Button";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
 import ListaTransacoes from "@/components/widgets/ListaTransacoes";
 import ListaContas from "@/components/widgets/ListaContas";
+import { MetaCard } from "@/components/cards/cardMeta";
 import GraficoColunas from "@/components/charts/GraficoColunas";
 
 export default function DashBoardPage() {
   const { contas } = useContas();
-  const { transacoes } = useTransacoes();
+  const { transacoes, obterTotalReceitasMes, obterTotalDespesasMes } = useTransacoes();
   const { categorias } = useCategorias();
   const { investimentos } = useInvestimentos();
+  const { metas } = useMetas();
   const { openModal } = useModalStore();
+
+  //  5 metas mais próximas
+  const metasProximas = metas
+    .sort((a, b) => new Date(a.dataLimite).getTime() - new Date(b.dataLimite).getTime())
+    .slice(0, 5);
 
   const saldoTotal = contas.reduce((acc, conta) => acc + (conta.saldo || 0), 0);
 
-  const totalReceita = transacoes
-    // .filter(
-    //   (t) => t.categoria?.tipo === "ENTRADA" && t.origemDestino !== "Saldo inicial",
-    // )
-    .reduce((acc, t) => acc + (t.valor || 0), 0);
-
-  const totalDespesa = transacoes
-    .filter((t) => t.categoria?.tipo === "SAIDA")
-    .reduce((acc, t) => acc + (t.valor || 0), 0);
+  const totalReceita = obterTotalReceitasMes();
+  const totalDespesa = obterTotalDespesasMes();
 
   const totalInvestido = investimentos.reduce(
     (acc, inv) => acc + (inv.valorInvestido || 0),
@@ -47,14 +47,9 @@ export default function DashBoardPage() {
     <div className="p-1 sm:p-3 xl:p-4">
       <Header showWelcome={true} />
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 mt-4">
-        <div>
-          <p className="text-gray-600">filtros</p>
-        </div>
         <Button onClick={() => openModal("createTransacao")}>
           + Adicionar Transação
         </Button>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
@@ -100,6 +95,37 @@ export default function DashBoardPage() {
           className="lg:col-span-1"
         >
           <ListaTransacoes transacoes={transacoes.slice(0, 5)} />
+        </WidgetContainer>
+
+        <WidgetContainer
+          titulo="Metas Próximas"
+          rodape={
+            <Link
+              href="/dashboard/metas"
+              className="text-blue-600 hover:underline"
+            >
+              Ver Todas
+            </Link>
+          }
+          className="lg:col-span-4"
+        >
+          {metasProximas.length > 0 ? (
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {metasProximas.map((meta) => (
+                <div key={meta.id} className="flex-shrink-0">
+                  <MetaCard meta={{
+                    id: meta.id,
+                    nome: meta.nome,
+                    descricao: meta.descricao,
+                    valorAlvo: parseFloat(meta.valorAlvo),
+                    valorAtual: meta.valorAtual,
+                  }} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-8">Nenhuma meta próxima</p>
+          )}
         </WidgetContainer>
       </div>
     </div>

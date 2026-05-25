@@ -16,7 +16,7 @@ export default function Metas() {
     return `${dia}/${mes}`;
   }
   return (
-    <div>
+    <div className="p-1 sm:p-3 xl:p-4">
       <Header title="Minhas Movimentacoes" />
       <h1>Movimentações</h1>
       <WidgetContainer

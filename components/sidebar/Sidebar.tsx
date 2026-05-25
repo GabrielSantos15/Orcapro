@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { FaChartPie, FaExchangeAlt, FaBullseye, FaPlus } from "react-icons/fa";
+import {
+  FaChartPie,
+  FaExchangeAlt,
+  FaBullseye,
+  FaPlus,
+  FaWallet,
+} from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 
 export default function Navigation() {
@@ -15,10 +21,22 @@ export default function Navigation() {
   };
 
   const navItems = [
-    { label: "Dashboard", path: "/dashboard", icon: <FaChartPie size={20} /> },
-    { label: "Movimentações", path: "/dashboard/movimentacao", icon: <FaExchangeAlt size={20} /> },
-    { label: "Investimentos", path: "/dashboard/investimentos", icon: <FaBullseye size={20} /> },
-    { label: "Metas", path: "/dashboard/metas", icon: <FaBullseye size={20} /> },
+    { label: "Dashboard", path: "/dashboard", icon: <FaChartPie size={24} /> },
+    {
+      label: "Movimentações",
+      path: "/dashboard/movimentacao",
+      icon: <FaExchangeAlt size={24} />,
+    },
+    {
+      label: "Investimentos",
+      path: "/dashboard/investimentos",
+      icon: <FaWallet size={24} />,
+    },
+    {
+      label: "Metas",
+      path: "/dashboard/metas",
+      icon: <FaBullseye size={24} />,
+    },
   ];
 
   return (
@@ -28,7 +46,7 @@ export default function Navigation() {
           <span className="text-purple-600">Orça</span>
           <span className="text-purple-400">Pro</span>
         </h1>
-        
+
         <nav className="flex-1 flex flex-col gap-3 justify-start">
           {navItems.map((item) => (
             <Link
@@ -57,46 +75,56 @@ export default function Navigation() {
       </aside>
 
       {/* ==========================================
-          MOBILE: BOTTOM NAVIGATION (Oculta no desktop)
+        NAV mobile
           ========================================== */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-50">
-        <div className="flex justify-between items-center px-6 h-20 relative">
-          
-          {/* LADO ESQUERDO: Dashboard e Movimentações */}
-          <Link 
-            href="/dashboard" 
-            className={`flex flex-col items-center gap-1 p-2 ${pathname === "/dashboard" ? "text-purple-600" : "text-gray-400"}`}
-          >
-            <FaChartPie size={22} />
-            <span className="text-[10px] font-medium">Início</span>
-          </Link>
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-50 border-t border-gray-100">
+        <div className="grid grid-cols-5 h-24 relative">
+          {/* Indicador animado que se move */}
+          <div
+            className="absolute top-0 h-1 bg-gradient-to-r from-purple-600 to-purple-500 rounded-b-full transition-all duration-200 ease-out"
+            style={{
+              left: `calc(${navItems.findIndex((item) => item.path === pathname) * 20}%)`,
+              width: "20%",
+            }}
+          />
 
-          <Link 
-            href="/dashboard/movimentacao" 
-            className={`flex flex-col items-center gap-1 p-2 mr-6 ${pathname === "/dashboard/movimentacao" ? "text-purple-600" : "text-gray-400"}`}
-          >
-            <FaExchangeAlt size={22} />
-            <span className="text-[10px] font-medium">Transações</span>
-          </Link>
+          {navItems.map((item) => {
+            const isActive = pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`flex flex-col items-center justify-center gap-1 relative transition-all duration-300 ${
+                  isActive
+                    ? "text-purple-600"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                {/* Ícone com escala animada */}
+                <div
+                  className={`transition-transform duration-300 ${isActive ? "scale-110" : "scale-100"}`}
+                >
+                  {item.icon}
+                </div>
 
+                {/* Label com background sutil quando ativo */}
+                {isActive && (
+                  <span className="text-[11px] font-semibold bg-purple-100 text-purple-700 px-2 py-1 rounded-full transition-all duration-300">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
 
-          {/* LADO DIREITO: Metas e Sair */}
-          <Link 
-            href="/dashboard/metas" 
-            className={`flex flex-col items-center gap-1 p-2 ml-6 ${pathname === "/dashboard/metas" ? "text-purple-600" : "text-gray-400"}`}
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-red-500 transition-colors duration-300"
           >
-            <FaBullseye size={22} />
-            <span className="text-[10px] font-medium">Metas</span>
-          </Link>
-
-          <button 
-            onClick={handleLogout} 
-            className="flex flex-col items-center gap-1 p-2 text-gray-400 hover:text-red-500"
-          >
-            <FiLogOut size={22} />
-            <span className="text-[10px] font-medium">Sair</span>
+            <div className="transition-transform duration-300 hover:scale-110">
+              <FiLogOut size={28} />
+            </div>
           </button>
-
         </div>
       </nav>
     </>
