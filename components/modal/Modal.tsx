@@ -21,17 +21,14 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
-    // Fundo escuro (Overlay)
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-none transition-opacity"
-      onClick={onClose} // Fecha ao clicar fora
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-none transition-opacity"
+      onClick={onClose}
     >
-      {/* Conteúdo do Modal */}
       <div 
         className="relative w-full max-w-xl rounded-xl bg-white p-6 shadow-2xl"
-        onClick={(e) => e.stopPropagation()} // Evita que o clique dentro do modal o feche
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Botão de Fechar */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"

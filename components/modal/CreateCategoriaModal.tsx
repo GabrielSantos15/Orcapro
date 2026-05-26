@@ -3,22 +3,24 @@
 import { useModalStore } from "@/store/useModalStore";
 import { useState } from "react";
 import Input from "../forms/Input";
+import { useCategorias } from "@/hooks/useCategorias";
 
-export default function ModalCategoria() {
-  const { closeModal, triggerUpdate } = useModalStore();
+export default function CreateCategoriaModal() {
+  const { closeModal } = useModalStore();
+  const { criarCategoria } = useCategorias();
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     nome: "",
-    tipo: "RECEITA",
+    tipo: "ENTRADA",
     ativa: true,
   });
 
-  const tiposCategoria = ["RECEITA", "DESPESA"];
+  const tiposCategoria = ["ENTRADA", "SAIDA"];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!formData.nome.trim()) {
       alert("Por favor, digite um nome para a categoria.");
       return;
@@ -27,38 +29,12 @@ export default function ModalCategoria() {
     setSubmitting(true);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        alert("Sessão expirada. Faça login novamente.");
-        return;
-      }
-
-      const categoriaData = {
-        nome: formData.nome,
-        tipo: formData.tipo,
-        ativa: formData.ativa,
-      };
-
-      const response = await fetch("/api/categoria", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(categoriaData),
-      });
-
-      if (response.ok) {
-        alert("Categoria criada com sucesso!");
-        triggerUpdate();
-        closeModal();
-      } else {
-        const error = await response.json();
-        alert(`Erro: ${error.error || "Falha ao criar categoria"}`);
-      }
+      await criarCategoria(formData.nome, formData.tipo as "ENTRADA" | "SAIDA");
+      alert("Categoria criada com sucesso!");
+      closeModal();
     } catch (error) {
       console.error("Erro ao criar categoria:", error);
-      alert("Erro ao conectar com o servidor. Tente novamente.");
+      alert("Erro ao criar categoria. Tente novamente.");
     } finally {
       setSubmitting(false);
     }
@@ -73,10 +49,12 @@ export default function ModalCategoria() {
       <hr />
 
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-        
         {/* NOME DA CATEGORIA */}
         <div>
-          <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="nome"
+            className="block text-sm font-medium text-gray-700"
+          >
             Nome da Categoria
           </label>
           <Input
@@ -92,7 +70,10 @@ export default function ModalCategoria() {
 
         {/* TIPO DE CATEGORIA */}
         <div>
-          <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="tipo"
+            className="block text-sm font-medium text-gray-700"
+          >
             Tipo
           </label>
           <select
@@ -110,26 +91,11 @@ export default function ModalCategoria() {
           </select>
         </div>
 
-        {/* ATIVA */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="ativa"
-            name="ativa"
-            checked={formData.ativa}
-            onChange={(e) => setFormData({ ...formData, ativa: e.target.checked })}
-            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-          />
-          <label htmlFor="ativa" className="ml-2 text-sm font-medium text-gray-700">
-            Categoria Ativa
-          </label>
-        </div>
-
         {/* BOTÃO SUBMIT */}
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-[var(--color-primary)] text-white py-2 rounded-md hover:opacity-90 disabled:bg-gray-400 font-medium transition-colors mt-6"
+          className="w-full bg-[var(--primary-color)] text-white py-2 rounded-md hover:opacity-90 disabled:bg-gray-400 font-medium transition-colors mt-6"
         >
           {submitting ? "Criando..." : "Criar Categoria"}
         </button>

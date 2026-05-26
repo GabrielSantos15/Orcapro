@@ -2,20 +2,31 @@ import { useMetas } from "@/hooks/useMetas";
 import { useUtils } from "@/hooks/useUtils";
 import { Meta } from "@/interfaces/Meta";
 import { useModalStore } from "@/store/useModalStore";
-import { Target, TrendingUp, Trash2, Pencil, Zap, Plus, Minus } from "lucide-react";
+import {
+  Target,
+  TrendingUp,
+  Trash2,
+  Pencil,
+  Zap,
+  Plus,
+  Minus,
+} from "lucide-react";
 
 interface ListaMetasPropos {
   metas: Meta[];
   compacto?: boolean;
 }
 
-export default function ListaMetas({ metas, compacto = false }: ListaMetasPropos) {
+export default function ListaMetas({
+  metas,
+  compacto = false,
+}: ListaMetasPropos) {
   const { openModal } = useModalStore();
   const { calcularProgresso, deletarMeta } = useMetas();
   const { formatarMoeda } = useUtils();
 
-  const gridClassName = compacto 
-    ? "grid grid-cols-1 sm:grid-cols-2 gap-4" 
+  const gridClassName = compacto
+    ? "grid grid-cols-1 sm:grid-cols-2 gap-4"
     : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
 
   const getCorProgresso = (percentual: number) => {
@@ -35,10 +46,7 @@ export default function ListaMetas({ metas, compacto = false }: ListaMetasPropos
   return (
     <div className={gridClassName}>
       {metas.map((meta) => {
-        const progresso = calcularProgresso(
-          meta.valorAtual,
-          parseFloat(meta.valorAlvo),
-        );
+        const progresso = calcularProgresso(meta.valorAtual, meta.valorAlvo);
 
         return (
           <div
@@ -115,7 +123,7 @@ export default function ListaMetas({ metas, compacto = false }: ListaMetasPropos
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <span className="text-sm text-gray-600">Meta</span>
                 <span className="text-lg font-bold text-gray-900">
-                  {formatarMoeda(parseFloat(meta.valorAlvo))}
+                  {formatarMoeda(meta.valorAlvo)}
                 </span>
               </div>
             </div>
@@ -131,10 +139,7 @@ export default function ListaMetas({ metas, compacto = false }: ListaMetasPropos
                 <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg">
                   <TrendingUp className="w-4 h-4" />
                   <span className="text-sm font-semibold">
-                    Faltam{" "}
-                    {formatarMoeda(
-                      parseFloat(meta.valorAlvo) - meta.valorAtual,
-                    )}
+                    Faltam {formatarMoeda(meta.valorAlvo - meta.valorAtual)}
                   </span>
                 </div>
               )}

@@ -2,10 +2,11 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import { useState, useEffect } from "react";
-import Input from "../forms/Input";
-import Image from "next/image"; // Importante para renderizar as logos
+import Image from "next/image"; 
 import { listaBancosPopulares } from "@/hooks/useContas";
 import { Conta } from "@/interfaces/Conta";
+import Input from "../forms/Input";
+import Select from "../forms/Select"; // Certifique-se de que o caminho está correto
 
 interface FormContaModalProps {
   conta?: Conta | null;
@@ -39,7 +40,6 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
       setIsOutro(!bancoDaLista);
     }
   }, [conta]);
-
 
   // Funções para lidar com o clique nos bancos
   const handleBankSelect = (nomeBanco: string) => {
@@ -95,7 +95,7 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
 
       if (response.ok) {
         alert(isEditMode ? "Conta atualizada com sucesso!" : "Conta criada com sucesso!");
-        triggerUpdate(); // O seu gatilho que avisa o dashboard para atualizar!
+        triggerUpdate(); 
         closeModal();
       } else {
         const error = await response.json();
@@ -112,17 +112,16 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900">
+      <h2 className="text-2xl font-bold text-gray-900">
         {isEditMode ? "Editar Conta" : "Nova Conta"}
       </h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-gray-500 mb-6">
         {isEditMode
           ? "Altere os dados da sua conta bancária."
           : "Preencha os dados para cadastrar sua conta bancária."}
       </p>
-      <hr />
 
-      <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         
         {/* SELEÇÃO DE INSTITUIÇÃO VISUAL */}
         <div>
@@ -131,7 +130,7 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
           </label>
           
           {/* Grid de Bancos */}
-          <div className="grid grid-cols-4 gap-2 mb-3">
+          <div className="grid grid-cols-4 gap-2 mb-2">
             {listaBancosPopulares.map((banco) => (
               <button
                 key={banco.id}
@@ -139,8 +138,8 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
                 onClick={() => handleBankSelect(banco.nome)}
                 className={`flex flex-col items-center justify-center p-2 border rounded-xl transition-all ${
                   formData.instituicao === banco.nome && !isOutro
-                    ? "border-[var(--color-primary)] bg-[var(--secondary-background)] ring-1 ring-[var(--color-primary)]"
-                    : "border-gray-200 hover:bg-gray-50"
+                    ? "border-purple-600 bg-purple-50 ring-1 ring-purple-600"
+                    : "border-gray-200 hover:bg-gray-50 hover:border-purple-300"
                 }`}
               >
                 <div className="relative w-8 h-8 mb-1">
@@ -163,8 +162,8 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
               onClick={handleOutroSelect}
               className={`flex flex-col items-center justify-center p-2 border rounded-xl transition-all ${
                 isOutro
-                  ? "border-[var(--color-primary)] bg-[var(--secondary-background)] ring-1 ring-[var(--color-primary)]"
-                  : "border-gray-200 hover:bg-gray-50"
+                  ? "border-purple-600 bg-purple-50 ring-1 ring-purple-600"
+                  : "border-gray-200 hover:bg-gray-50 hover:border-purple-300"
               }`}
             >
               <div className="w-8 h-8 mb-1 flex items-center justify-center bg-gray-100 rounded-full">
@@ -178,67 +177,58 @@ export default function FormContaModal({ conta }: FormContaModalProps) {
 
           {/* Campo de texto que só aparece se clicar em "Outro" */}
           {isOutro && (
-            <div className="mt-2 animate-in fade-in slide-in-from-top-2">
+            <div className="mt-4 animate-in fade-in slide-in-from-top-2">
               <Input
+                label="Qual o nome do banco?"
                 type="text"
                 id="instituicao-custom"
                 name="instituicao"
                 value={formData.instituicao}
                 onChange={(e) => setFormData({ ...formData, instituicao: e.target.value })}
-                placeholder="Digite o nome do banco"
-                required={isOutro} // Só é obrigatório se o botão 'Outro' estiver ativo
+                placeholder="Ex: Banco Inter, XP, Sicredi"
+                required={isOutro}
               />
             </div>
           )}
         </div>
 
         {/* TIPO DE CONTA */}
-        <div>
-          <label htmlFor="tipo" className="block text-sm font-medium text-gray-700">
-            Tipo de Conta
-          </label>
-          <select
-            id="tipo"
-            name="tipo"
-            value={formData.tipo}
-            onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border bg-white"
-          >
-            {tiposConta.map((tipo) => (
-              <option key={tipo} value={tipo}>
-                {tipo.replace("_", " ")}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          label="Tipo de Conta"
+          id="tipo"
+          name="tipo"
+          value={formData.tipo}
+          onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+        >
+          {tiposConta.map((tipo) => (
+            <option key={tipo} value={tipo}>
+              {tipo === "POUPANCA" ? "Poupança" : tipo.charAt(0) + tipo.slice(1).toLowerCase()}
+            </option>
+          ))}
+        </Select>
 
         {/* SALDO INICIAL - Apenas na criação */}
         {!isEditMode && (
-          <div>
-            <label htmlFor="saldo" className="block text-sm font-medium text-gray-700">
-              Saldo Inicial
-            </label>
-            <Input
-              type="number"
-              id="saldo"
-              name="saldo"
-              value={formData.saldo}
-              onChange={(e) => setFormData({ ...formData, saldo: e.target.value })}
-              placeholder="0.00"
-              step="0.01"
-              min={0}
-              required
-            />
-          </div>
+          <Input
+            label="Saldo Inicial (R$)"
+            type="number"
+            id="saldo"
+            name="saldo"
+            value={formData.saldo}
+            onChange={(e) => setFormData({ ...formData, saldo: e.target.value })}
+            placeholder="0.00"
+            step="0.01"
+            required
+          />
         )}
 
         {/* BOTÃO SUBMIT */}
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-[var(--primary-color)] text-white py-2 rounded-md hover:opacity-90 disabled:bg-gray-400 font-medium transition-colors mt-6"
+          className="w-full mt-4 bg-purple-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-purple-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
         >
-          {submitting ? (isEditMode ? "Atualizando..." : "Criando...") : (isEditMode ? "Atualizar Conta" : "Criar Conta")}
+          {submitting ? (isEditMode ? "Atualizando..." : "Criando...") : (isEditMode ? "Salvar Alterações" : "Criar Conta")}
         </button>
       </form>
     </div>

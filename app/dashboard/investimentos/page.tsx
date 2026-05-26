@@ -35,7 +35,10 @@ export default function Investimentos() {
     <div className="p-1 sm:p-3 xl:p-4">
       <Header title="Meus Investimentos" />
 
-      <Button onClick={() => openModal("createInvestimento")}>
+      <Button
+        className="w-full md:w-fit mb-4"
+        onClick={() => openModal("createInvestimento")}
+      >
         + Adicionar Investimento
       </Button>
       <ListaInvestimentos

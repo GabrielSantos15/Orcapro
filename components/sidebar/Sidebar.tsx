@@ -1,23 +1,20 @@
 "use client";
 
+import { TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import {
-  FaChartPie,
-  FaExchangeAlt,
-  FaBullseye,
-  FaPlus,
-  FaWallet,
-} from "react-icons/fa";
+import { FaChartPie, FaExchangeAlt, FaBullseye } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 
-export default function Navigation() {
+export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = () => {
-    localStorage.removeItem("user_token");
-    router.push("/");
+    if (confirm("Tem certeza que deseja sair?")) {
+      localStorage.removeItem("user_token");
+      router.push("/");
+    }
   };
 
   const navItems = [
@@ -30,7 +27,7 @@ export default function Navigation() {
     {
       label: "Investimentos",
       path: "/dashboard/investimentos",
-      icon: <FaWallet size={24} />,
+      icon: <TrendingUp size={24} />,
     },
     {
       label: "Metas",
@@ -41,7 +38,7 @@ export default function Navigation() {
 
   return (
     <>
-      <aside className="hidden md:flex bg-[var(--secondary-background)] p-6 h-full w-64 flex-col mb-3 ">
+      <aside className="hidden md:flex bg-[var(--secondary-background)] p-6 h-full w-64 flex-col mb-3">
         <h1 className="text-4xl font-bold mb-8 text-center">
           <span className="text-purple-600">Orça</span>
           <span className="text-purple-400">Pro</span>
@@ -74,9 +71,7 @@ export default function Navigation() {
         </div>
       </aside>
 
-      {/* ==========================================
-        NAV mobile
-          ========================================== */}
+      {/* Mobile Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-50 border-t border-gray-100">
         <div className="grid grid-cols-5 h-24 relative">
           {/* Indicador animado que se move */}

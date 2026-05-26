@@ -1,24 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { listaBancosPopulares, useContas } from "@/hooks/useContas";
 import { Conta } from "@/interfaces/Conta";
-import Image from "next/image";
 import { useModalStore } from "@/store/useModalStore";
 
 interface ContaModalProps {
-  conta: Conta;
+  conta?: Partial<Conta> | Conta;
+  id?: number;
 }
 
-export default function ContaModal({ conta }: ContaModalProps) {
+const TIPOS_CONTA: Record<string, { label: string; cor: string }> = {
+  corrente: { label: "Conta Corrente", cor: "bg-blue-100 text-blue-800" },
+  poupanca: { label: "Poupança", cor: "bg-green-100 text-green-800" },
+  salario: { label: "Conta Salário", cor: "bg-purple-100 text-purple-800" },
+  investimento: { label: "Investimento", cor: "bg-amber-100 text-amber-800" },
+};
+
+export default function ContaModal({ conta: contaInicial, id }: ContaModalProps) {
+  const [conta, setConta] = useState<Conta | null>(
+    contaInicial && "instituicao" in contaInicial ? (contaInicial as Conta) : null
+  );
+  const [carregando, setCarregando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { closeModal, openModal } = useModalStore();
-  const { deletarConta, reativarConta, deletandoId, atualizandoId } =
-    useContas();
+  const { deletarConta, reativarConta, deletandoId, atualizandoId, buscarContaPorId } = useContas();
+
+  useEffect(() => {
+    const isContaCompleta = contaInicial && "instituicao" in contaInicial && "saldo" in contaInicial;
+
+    if (isContaCompleta) {
+      setConta(contaInicial as Conta);
+      return;
+    }
+
+    const contaId = contaInicial?.id || id;
+    if (!contaId) {
+      setError("ID da conta não fornecido.");
+      return;
+    }
+
+    (async () => {
+      setCarregando(true);
+      setError(null);
+      try {
+        const contaCompleta = await buscarContaPorId(Number(contaId));
+        if (contaCompleta) {
+          setConta(contaCompleta);
+        } else {
+          throw new Error("Detalhes da conta não encontrados.");
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Erro ao carregar detalhes da conta";
+        setError(message);
+      } finally {
+        setCarregando(false);
+      }
+    })();
+  }, [contaInicial, id]);
+
+  const getBancoLogo = (instituicao: string) => {
+    const banco = listaBancosPopulares.find(
+      (b) => b.nome.toLowerCase() === instituicao.toLowerCase()
+    );
+    return banco?.logo || "/bancos/default.png";
+  };
+
+  const formatarSaldo = (saldo: number) =>
+    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(saldo);
+
+  const getTipoConta = (tipo?: string) => {
+    const tipoNorm = tipo?.toLowerCase() || "";
+    return TIPOS_CONTA[tipoNorm] || {
+      label: tipo || "Não definido",
+      cor: "bg-gray-100 text-gray-800",
+    };
+  };
 
   const handleDelete = async () => {
+    if (!conta) return;
     setError(null);
-
     try {
       await deletarConta(conta.id);
       closeModal();
@@ -29,8 +91,8 @@ export default function ContaModal({ conta }: ContaModalProps) {
   };
 
   const handleReactivate = async () => {
+    if (!conta) return;
     setError(null);
-
     try {
       await reativarConta(conta);
       closeModal();
@@ -40,63 +102,33 @@ export default function ContaModal({ conta }: ContaModalProps) {
     }
   };
 
-  const getBancoLogo = (instituicao: string) => {
-    const banco = listaBancosPopulares.find(
-      (b) => b.nome.toLowerCase() === conta.instituicao.toLowerCase(),
-    );
-    return banco?.logo || "/bancos/default.png";
-  };
-
-  const formatarSaldo = (saldo: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(saldo);
-  };
-
-  const getTipoConta = (tipo: string) => {
-    const tipos: Record<string, { label: string; cor: string }> = {
-      corrente: { label: "Conta Corrente", cor: "bg-blue-100 text-blue-800" },
-      poupanca: { label: "Poupança", cor: "bg-green-100 text-green-800" },
-      salario: { label: "Conta Salário", cor: "bg-purple-100 text-purple-800" },
-      investimento: {
-        label: "Investimento",
-        cor: "bg-amber-100 text-amber-800",
-      },
-    };
+  if (carregando) {
     return (
-      tipos[tipo.toLowerCase()] || {
-        label: tipo,
-        cor: "bg-gray-100 text-gray-800",
-      }
+      <div className="flex flex-col items-center justify-center space-y-3 py-10">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent"></div>
+        <p className="text-sm font-medium text-gray-500">Buscando detalhes da conta...</p>
+      </div>
     );
-  };
+  }
+
+  if (!conta) {
+    return (
+      <div className="space-y-6">
+        <p className="text-center font-medium text-red-500">
+          {error || "Conta não encontrada"}
+        </p>
+      </div>
+    );
+  }
 
   const tipoConta = getTipoConta(conta.tipo);
-
-  const getStatusConta = () => {
-    if (conta.ativa) {
-      return {
-        label: "Conta ativa",
-        cor: "border-green-200 bg-green-50",
-        dot: "bg-green-500",
-        text: "text-green-800",
-      };
-    } else {
-      return {
-        label: "Conta desativada",
-        cor: "border-gray-300 bg-gray-50",
-        dot: "bg-gray-400",
-        text: "text-gray-700",
-      };
-    }
-  };
-
-  const status = getStatusConta();
+  const loading = deletandoId === conta.id || atualizandoId === conta.id;
+  const buttonBase =
+    "flex-1 rounded-lg px-4 py-3 font-semibold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
   return (
     <div className="space-y-6">
-      {/* Header com logo */}
+      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="relative h-16 w-16 flex-shrink-0 rounded-lg bg-white p-2 shadow-md">
           <Image
@@ -107,88 +139,65 @@ export default function ContaModal({ conta }: ContaModalProps) {
           />
         </div>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {conta.instituicao}
-          </h2>
-          <span
-            className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium ${tipoConta.cor}`}
-          >
+          <h2 className="text-2xl font-bold text-gray-900">{conta.instituicao}</h2>
+          <span className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium ${tipoConta.cor}`}>
             {tipoConta.label}
           </span>
         </div>
       </div>
 
-      {/* Saldo em destaque */}
+      {/* Saldo */}
       <div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
         <p className="text-sm font-medium text-gray-600">Saldo Atual</p>
-        <p
-          className={`mt-2 text-4xl font-bold ${conta.saldo >= 0 ? "text-green-600" : "text-red-600"}`}
-        >
+        <p className={`mt-2 text-4xl font-bold ${conta.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
           {formatarSaldo(conta.saldo)}
         </p>
       </div>
 
-      {/* Informações adicionais */}
+      {/* Informações */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg bg-gray-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Instituição
-          </p>
-          <p className="mt-2 text-lg font-semibold text-gray-900">
-            {conta.instituicao}
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Instituição</p>
+          <p className="mt-2 truncate text-lg font-semibold text-gray-900">{conta.instituicao}</p>
         </div>
         <div className="rounded-lg bg-gray-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Tipo
-          </p>
-          <p className="mt-2 text-lg font-semibold text-gray-900">
-            {tipoConta.label}
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tipo</p>
+          <p className="mt-2 text-lg font-semibold text-gray-900">{tipoConta.label}</p>
         </div>
       </div>
 
-      {/* Status indicator */}
-      <div
-        className={`flex items-center gap-2 rounded-lg border p-4 ${status.cor}`}
-      >
-        <div className={`h-3 w-3 rounded-full ${status.dot}`}></div>
-        <span className={`text-sm font-medium ${status.text}`}>
-          {status.label}
-        </span>
-      </div>
-
-      {/* Error message */}
+      {/* Erro */}
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <p className="text-sm font-medium text-red-800">{error}</p>
         </div>
       )}
 
-      {/* Action buttons */}
+      {/* Ações */}
       <div className="flex gap-3 pt-4">
         {conta.ativa ? (
           <button
             onClick={handleDelete}
-            disabled={deletandoId === conta.id || atualizandoId === conta.id}
-            className="flex-1 rounded-lg bg-gray-200 px-4 py-3 font-semibold text-gray-400 shadow-md transition-all hover:text-red-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+            className={`${buttonBase} bg-gray-200 text-gray-500 hover:text-red-600 hover:shadow-lg`}
           >
-            {deletandoId === conta.id ? "Processando..." : "Excluir"}
+            {deletandoId === conta.id ? "Excluindo..." : "Excluir"}
           </button>
         ) : (
           <button
             onClick={handleReactivate}
-            disabled={deletandoId === conta.id || atualizandoId === conta.id}
-            className="flex-1 rounded-lg bg-green-600 px-4 py-3 font-semibold text-white shadow-md transition-all hover:bg-green-700 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+            className={`${buttonBase} bg-green-600 text-white hover:bg-green-700 hover:shadow-lg`}
           >
-            {atualizandoId === conta.id ? "Processando..." : "↻ Reativar"}
+            {atualizandoId === conta.id ? "Reativando..." : "↻ Reativar"}
           </button>
         )}
+
         {conta.ativa && (
           <button
             onClick={() => openModal("updateConta", conta)}
-            disabled={deletandoId === conta.id || atualizandoId === conta.id}
-            className="flex-1 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+            className={`${buttonBase} bg-purple-600 text-white hover:bg-purple-700 hover:shadow-lg`}
           >
             Editar
           </button>

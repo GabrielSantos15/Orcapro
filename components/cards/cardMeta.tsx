@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 interface MetaCardProps {
   meta: {
-    id: string;
+    id: number;
     nome: string;
     descricao: string;
     valorAlvo: number;
@@ -42,7 +42,7 @@ export function MetaCard({ meta }: MetaCardProps) {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#f3f4f6" // gray-100
+            stroke="#f3f4f6"
             strokeWidth={strokeWidth}
             fill="none"
           />

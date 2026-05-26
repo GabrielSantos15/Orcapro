@@ -25,26 +25,26 @@ export default function ListaContas({ contas }: ListaContaProps) {
 
   return (
     <ul className="flex flex-col h-full">
-      {contas.map((c) => (
+      {contas.filter(c => c.ativa !== false).map((c) => (
         <li
           key={c.id}
-             onClick={() => openModal("conta",c)}
+          onClick={() => openModal("conta", c)}
           className="flex justify-between p-3 border-b border-gray-100 last:border-0 text-sm"
         >
           <div className="flex gap-2">
-              <figure >
-                <Image
-                  src={getBancoLogo(c.instituicao)}
-                  alt={c.instituicao}
-                  width={40}
-                  height={40}
-                  className="rounded"
-                />
-              </figure>
-              <div className="flex flex-col">
-                <h4 className="font-medium">{c.instituicao}</h4>
-                <p className="text-gray-500">{c.tipo}</p>
-              </div>
+            <figure>
+              <Image
+                src={getBancoLogo(c.instituicao)}
+                alt={c.instituicao}
+                width={40}
+                height={40}
+                className="rounded"
+              />
+            </figure>
+            <div className="flex flex-col">
+              <h4 className="font-medium">{c.instituicao}</h4>
+              <p className="text-gray-500">{c.tipo}</p>
+            </div>
           </div>
           <div>
             <span>R$ {c.saldo}</span>

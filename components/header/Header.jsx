@@ -67,21 +67,17 @@ export default function Header({ showWelcome = false, title = "Página" }) {
           >
             Bem-vindo,
             <br />
-            <span className="text-white-600">{firstName}!</span>
+            <span className="text-white-600 text-3xl">{user?.nome}!</span>
           </h1>
         ) : (
-          <h1 className="text-4xl font-bold mb-8 text-center">
-            <span className="text-purple-600">Orça</span>
-            <span className="text-purple-400">Pro</span>
+       <h1
+            className="text-2xl font-medium
+                text-white w-full"
+          >
+            {title}
           </h1>
         )}
-        {/* {!showWelcome && (
-          <div className="w-full" >{title}</div>
-        )} */}
-        {/* mancha do fundo */}
-        {showWelcome && (
           <div className="absolute top-0 left-0 right-0 h-[250px] bg-gradient-to-r from-purple-600 to-[#a855f7] rounded-b-[2.5rem] -z-10 transition-all duration-200 ease-out -ml-8 -mr-8 -mt-8"></div>
-        )}
       </header>
     </div>
   );

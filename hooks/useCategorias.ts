@@ -4,38 +4,151 @@ import { useModalStore } from "@/store/useModalStore";
 
 export function useCategorias() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [carregando, setCarregando] = useState(true); 
+  const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
-  const { atualizarGatilho } = useModalStore();
+  const { atualizarGatilho, triggerUpdate } = useModalStore();
+
+  const getToken = () => {
+    const token = localStorage.getItem("user_token");
+    if (!token) throw new Error("Usuário não autenticado");
+    return token;
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      setCarregando(true);
+      const token = getToken();
+
+      const res = await fetch("/api/categoria", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Falha ao buscar categorias");
+
+      const data = await res.json();
+      setCategorias(data);
+      setErro(null);
+    } catch (err: any) {
+      setErro(err.message);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const criarCategoria = async (nome: string, tipo: "ENTRADA" | "SAIDA") => {
+    try {
+      const token = getToken();
+
+      const res = await fetch("/api/categoria", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nome, tipo }),
+      });
+
+      if (!res.ok) throw new Error("Falha ao criar categoria");
+
+      const novaCategoria = await res.json();
+      setCategorias([...categorias, novaCategoria]);
+      triggerUpdate();
+      return novaCategoria;
+    } catch (err: any) {
+      setErro(err.message);
+      throw err;
+    }
+  };
+
+  const atualizarCategoria = async (
+    id: number,
+    nome: string,
+    tipo: "ENTRADA" | "SAIDA"
+  ) => {
+    try {
+      const token = getToken();
+
+      const res = await fetch(`/api/categoria/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nome, tipo }),
+      });
+
+      if (!res.ok) throw new Error("Falha ao atualizar categoria");
+
+      const categoriaAtualizada = await res.json();
+      setCategorias(
+        categorias.map((cat) => (cat.id === id ? categoriaAtualizada : cat))
+      );
+      triggerUpdate();
+      return categoriaAtualizada;
+    } catch (err: any) {
+      setErro(err.message);
+      throw err;
+    }
+  };
+
+  const deletarCategoria = async (id: number) => {
+    try {
+      const token = getToken();
+
+      const res = await fetch(`/api/categoria/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Falha ao deletar categoria");
+
+      setCategorias(categorias.filter((cat) => cat.id !== id));
+      triggerUpdate();
+    } catch (err: any) {
+      setErro(err.message);
+      throw err;
+    }
+  };
+
+  const reativarCategoria = async (id: number) => {
+    try {
+      const token = getToken();
+
+      const res = await fetch(`/api/categoria/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ativa: 1 }),
+      });
+
+      if (!res.ok) throw new Error("Falha ao reativar categoria");
+
+      const categoriaAtualizada = await res.json();
+      setCategorias(
+        categorias.map((cat) => (cat.id === id ? categoriaAtualizada : cat))
+      );
+      triggerUpdate();
+      return categoriaAtualizada;
+    } catch (err: any) {
+      setErro(err.message);
+      throw err;
+    }
+  };
 
   useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const token = localStorage.getItem("user_token");
-        
-        if (!token) {
-          throw new Error("Usuário não autenticado");
-        }
-
-        const res = await fetch("/api/categoria", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          throw new Error("Falha ao buscar as categorias do banco de dados.");
-        }
-
-        const data = await res.json();
-        setCategorias(data);
-      } catch (err: any) {
-        setErro(err.message);
-      } finally {
-        setCarregando(false);
-      }
-    };
-
     fetchCategorias();
   }, [atualizarGatilho]);
 
-  return { categorias, carregando, erro };
+  return {
+    categorias,
+    carregando,
+    erro,
+    criarCategoria,
+    atualizarCategoria,
+    deletarCategoria,
+    reativarCategoria,
+    recarregar: fetchCategorias,
+  };
 }

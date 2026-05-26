@@ -1,3 +1,5 @@
+const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL_BACKEND;
+
 export async function POST(request: Request) {
     const body = await request.json()
     const { nome, email, senha } = body
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
         )
     }
     
-    const response = await fetch('http://localhost:8080/api/usuario', {
+    const response = await fetch(`${BACKEND_URL}/api/usuario`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

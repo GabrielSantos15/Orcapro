@@ -2,18 +2,27 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import { useState, useEffect } from "react";
+import Input from "../forms/Input";
+import Select from "../forms/Select";
+import { Investimento } from "@/interfaces/Investimento";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
 import { useContas } from "@/hooks/useContas";
-import Input from "../forms/Input";
-import { Investimento } from "@/interfaces/Investimento";
+import { TrendingUp } from "lucide-react";
 
 interface FormInvestimentoModalProps {
   investimento?: Investimento | null;
 }
 
-export default function FormInvestimentoModal({ investimento }: FormInvestimentoModalProps) {
+export default function FormInvestimentoModal({
+  investimento,
+}: FormInvestimentoModalProps) {
   const { closeModal } = useModalStore();
-  const { createInvestimento, updateInvestimento, criandoInvestimento, atualizandoId } = useInvestimentos();
+  const {
+    createInvestimento,
+    updateInvestimento,
+    criandoInvestimento,
+    atualizandoId,
+  } = useInvestimentos();
   const { contas, carregando: loadingContas } = useContas();
 
   const isEditMode = !!investimento;
@@ -29,10 +38,22 @@ export default function FormInvestimentoModal({ investimento }: FormInvestimento
     dataAplicacao: new Date().toISOString().split("T")[0],
   });
 
-  const tiposInvestimento = ["RENDA_FIXA", "RENDA_VARIAVEL", "CRIPTOMOEDAS", "FUNDOS", "OUTROS"];
-  const indicadores = ["CDI", "IPCA", "SELIC", "PREFIXADO", "IBOVESPA", "OUTRO"];
+  const tiposInvestimento = [
+    "RENDA_FIXA",
+    "RENDA_VARIAVEL",
+    "CRIPTOMOEDAS",
+    "FUNDOS",
+    "OUTROS",
+  ];
+  const indicadores = [
+    "CDI",
+    "IPCA",
+    "SELIC",
+    "PREFIXADO",
+    "IBOVESPA",
+    "OUTRO",
+  ];
 
-  // Preenche dados ao carregar contas ou em modo de edição
   useEffect(() => {
     if (investimento) {
       setFormData({
@@ -42,7 +63,9 @@ export default function FormInvestimentoModal({ investimento }: FormInvestimento
         valorInvestido: String(investimento.valorInvestido || ""),
         percentual: String(investimento.percentual || ""),
         indicador: investimento.indicador || "CDI",
-        dataAplicacao: investimento.dataAplicacao?.split("T")[0] || new Date().toISOString().split("T")[0],
+        dataAplicacao:
+          investimento.dataAplicacao?.split("T")[0] ||
+          new Date().toISOString().split("T")[0],
       });
     } else if (!loadingContas && contas.length > 0) {
       setFormData((prev) => ({ ...prev, idConta: String(contas[0].id) }));
@@ -50,57 +73,39 @@ export default function FormInvestimentoModal({ investimento }: FormInvestimento
   }, [investimento, contas, loadingContas]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErro(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErro(null);
 
-    // Validações
-    if (!formData.idConta) {
-      setErro("Por favor, selecione uma conta vinculada.");
-      return;
-    }
-
-    if (!formData.ativo.trim()) {
-      setErro("Nome do ativo/investimento é obrigatório.");
-      return;
-    }
-
-    // Rentabilidade é obrigatória apenas para não-renda variável
-    if (formData.tipo !== "RENDA_VARIAVEL") {
-      if (!formData.percentual || parseFloat(formData.percentual) < 0) {
-        setErro("Rentabilidade deve ser um número válido.");
-        return;
-      }
-    }
-
-    if (!isEditMode && (!formData.valorInvestido || parseFloat(formData.valorInvestido) <= 0)) {
-      setErro("Valor a investir deve ser maior que zero.");
-      return;
-    }
-
     try {
+      // 1. Encontra o objeto completo da conta selecionada
+      const contaSelecionada = contas.find((c) => String(c.id) === formData.idConta);
+      
+      if (!contaSelecionada) {
+        throw new Error("Conta não encontrada.");
+      }
+
+      // 2. Monta o payload com o objeto 'conta' completo conforme sua interface
       const payload = {
-        contaId: formData.idConta,
+        conta: contaSelecionada, // <-- Aqui passamos o objeto completo, não apenas o ID
+        ativo: formData.ativo,
         tipo: formData.tipo,
-        valorInvestido: formData.valorInvestido,
-        percentual: formData.tipo === "RENDA_VARIAVEL" ? "0" : formData.percentual,
+        valorInvestido: parseFloat(formData.valorInvestido),
+        percentual: formData.tipo === "RENDA_VARIAVEL" ? 0 : parseFloat(formData.percentual),
         indicador: formData.indicador,
         dataAplicacao: formData.dataAplicacao,
+        ativoStatus: investimento ? investimento.ativoStatus : true,
       };
 
       if (isEditMode) {
-        await updateInvestimento(investimento.id, {
-          ...payload,
-          ativo: formData.ativo,
-          status: investimento.status,
-        });
+        await updateInvestimento(investimento!.id, payload);
         alert("Investimento atualizado com sucesso!");
       } else {
         await createInvestimento(payload);
@@ -109,144 +114,100 @@ export default function FormInvestimentoModal({ investimento }: FormInvestimento
 
       closeModal();
     } catch (err: any) {
-      setErro(err.message || "Erro ao processar a operação");
+      setErro(err.message || "Erro ao salvar investimento.");
     }
   };
 
-  const isLoading = criandoInvestimento || (isEditMode && atualizandoId === investimento?.id);
+  const isLoading =
+    criandoInvestimento || (isEditMode && atualizandoId === investimento?.id);
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900">
-        {isEditMode ? "Editar Investimento" : "Novo Investimento"}
-      </h2>
-      <p className="text-sm text-gray-500 mb-4">
-        {isEditMode
-          ? "Altere os dados de rendimento e informações do ativo."
-          : "Preencha os dados da sua aplicação. O valor sairá da conta selecionada."}
-      </p>
-      <hr className="mb-4" />
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+          <TrendingUp className="w-5 h-5" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">
+          {isEditMode ? "Editar Investimento" : "Novo Investimento"}
+        </h2>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5 mt-4">
         {erro && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+          <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-200 font-medium">
             {erro}
           </div>
         )}
 
-        {/* NOME DO ATIVO - PRIMEIRO */}
-        <div>
-          <label htmlFor="ativo" className="block text-sm font-medium text-gray-700 mb-1">
-            Nome do Ativo
-          </label>
-          <Input
-            type="text"
-            id="ativo"
-            name="ativo"
-            value={formData.ativo}
-            onChange={handleChange}
-            placeholder="Ex: CDB Banco Inter, Tesouro Selic..."
-            required
-          />
-        </div>
+        <Input
+          label="Nome do Ativo"
+          name="ativo"
+          value={formData.ativo}
+          onChange={handleChange}
+          placeholder="Ex: CDB Banco Inter"
+          required
+        />
 
-        {/* CONTA VINCULADA */}
-        <div>
-          <label htmlFor="idConta" className="block text-sm font-medium text-gray-700 mb-1">
-            Conta de Origem
-          </label>
-          <select
-            id="idConta"
-            name="idConta"
-            value={formData.idConta}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100"
-            required
-            disabled={loadingContas}
-          >
-            <option value="" disabled>
-              {loadingContas ? "Carregando contas..." : "Selecione uma conta"}
+        <Select
+          label="Conta de Origem"
+          name="idConta"
+          value={formData.idConta}
+          onChange={handleChange}
+          disabled={loadingContas}
+          required
+        >
+          <option value="" disabled>
+            Selecione uma conta
+          </option>
+          {contas.map((conta) => (
+            <option key={conta.id} value={conta.id}>
+              {conta.instituicao}
             </option>
-            {contas.map((conta) => (
-              <option key={conta.id} value={conta.id}>
-                {conta.instituicao} - R$ {conta.saldo?.toFixed(2)}
+          ))}
+        </Select>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label="Tipo"
+            name="tipo"
+            value={formData.tipo}
+            onChange={handleChange}
+          >
+            {tiposInvestimento.map((tipo) => (
+              <option key={tipo} value={tipo}>
+                {tipo.replace("_", " ")}
               </option>
             ))}
-          </select>
+          </Select>
+          <Select
+            label="Indicador"
+            name="indicador"
+            value={formData.indicador}
+            onChange={handleChange}
+          >
+            {indicadores.map((ind) => (
+              <option key={ind} value={ind}>
+                {ind}
+              </option>
+            ))}
+          </Select>
         </div>
 
-        {/* TIPO E INDICADOR */}
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="tipo" className="block text-sm font-medium text-gray-700 mb-1">
-              Tipo
-            </label>
-            <select
-              id="tipo"
-              name="tipo"
-              value={formData.tipo}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              {tiposInvestimento.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo.replace("_", " ")}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="indicador" className="block text-sm font-medium text-gray-700 mb-1">
-              Indicador {formData.tipo === "RENDA_VARIAVEL" && <span className="text-gray-500 font-normal">(opcional)</span>}
-            </label>
-            <select
-              id="indicador"
-              name="indicador"
-              value={formData.indicador}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              {formData.tipo === "RENDA_VARIAVEL" && (
-                <option value="">Nenhum indicador</option>
-              )}
-              {indicadores.map((ind) => (
-                <option key={ind} value={ind}>
-                  {ind}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* PERCENTUAL - Apenas para não renda variável */}
-        {formData.tipo !== "RENDA_VARIAVEL" && (
-          <div>
-            <label htmlFor="percentual" className="block text-sm font-medium text-gray-700 mb-1">
-              Rentabilidade (%)
-            </label>
+          {formData.tipo !== "RENDA_VARIAVEL" && (
             <Input
+              label="Rentabilidade (%)"
               type="number"
-              id="percentual"
               name="percentual"
               value={formData.percentual}
               onChange={handleChange}
-              placeholder="Ex: 100"
               step="0.1"
-              min="0"
               required
             />
-          </div>
-        )}
-
-        {/* DATA DA APLICAÇÃO */}
-        <div>
-          <label htmlFor="dataAplicacao" className="block text-sm font-medium text-gray-700 mb-1">
-            Data da Aplicação
-          </label>
+          )}
           <Input
+            label="Data da Aplicação"
             type="date"
-            id="dataAplicacao"
             name="dataAplicacao"
             value={formData.dataAplicacao}
             onChange={handleChange}
@@ -254,50 +215,29 @@ export default function FormInvestimentoModal({ investimento }: FormInvestimento
           />
         </div>
 
-        {/* VALOR INVESTIDO - Apenas na criação */}
         {!isEditMode && (
-          <div>
-            <label htmlFor="valorInvestido" className="block text-sm font-medium text-gray-700 mb-1">
-              Valor a Investir (R$)
-            </label>
-            <Input
-              type="number"
-              id="valorInvestido"
-              name="valorInvestido"
-              value={formData.valorInvestido}
-              onChange={handleChange}
-              placeholder="0.00"
-              step="0.01"
-              min="0.01"
-              required
-            />
-          </div>
+          <Input
+            label="Valor a Investir (R$)"
+            type="number"
+            name="valorInvestido"
+            value={formData.valorInvestido}
+            onChange={handleChange}
+            step="0.01"
+            required
+          />
         )}
 
-        {/* BOTÕES */}
-        <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={() => closeModal()}
-            disabled={isLoading}
-            className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading || loadingContas}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading
-              ? isEditMode
-                ? "Atualizando..."
-                : "Aplicando..."
-              : isEditMode
-              ? "Atualizar"
-              : "Aplicar"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-md hover:shadow-lg disabled:opacity-50"
+        >
+          {isLoading
+            ? "Salvando..."
+            : isEditMode
+              ? "Atualizar Investimento"
+              : "Aplicar Investimento"}
+        </button>
       </form>
     </div>
   );

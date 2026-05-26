@@ -50,11 +50,12 @@ export default function Metas() {
   return (
     <div className="p-1 sm:p-3 xl:p-4">
       <Header title="Minhas Metas" />
-      <div className="mb-6">
-        <Button onClick={() => openModal("createMeta")}>
-          + Adicionar Meta
-        </Button>
-      </div>
+      <Button
+        className="w-full md:w-fit mb-4"
+        onClick={() => openModal("createMeta")}
+      >
+        + Adicionar Meta
+      </Button>
       {metas.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-gray-300">
           <Target className="w-12 h-12 text-gray-300 mb-4" />

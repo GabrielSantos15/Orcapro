@@ -1,7 +1,13 @@
 
 import { useState, useEffect } from "react";
 import { Conta } from "@/interfaces/Conta";
-import { useModalStore } from "@/store/useModalStore"; 
+import { useModalStore } from "@/store/useModalStore";
+
+const getToken = () => {
+  const token = localStorage.getItem("user_token");
+  if (!token) throw new Error("Usuário não autenticado");
+  return token;
+};
 
 export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
@@ -9,15 +15,12 @@ export function useContas() {
   const [erro, setErro] = useState<string | null>(null);
   const [deletandoId, setDeletandoId] = useState<number | null>(null);
   const [atualizandoId, setAtualizandoId] = useState<number | null>(null);
-  
-  // Subscrever apenas ao gatilho de atualização 
   const { atualizarGatilho, triggerUpdate } = useModalStore();
 
   const carregarContas = async () => {
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) throw new Error("Usuário não autenticado");
-
+      setCarregando(true);
+      const token = getToken();
       const res = await fetch("/api/conta", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -26,6 +29,7 @@ export function useContas() {
 
       const data = await res.json();
       setContas(data);
+      setErro(null);
     } catch (err: any) {
       setErro(err.message);
     } finally {
@@ -33,31 +37,15 @@ export function useContas() {
     }
   };
 
-  useEffect(() => {
-    carregarContas();
-  }, [atualizarGatilho]);
-
   const deletarConta = async (contaId: number) => {
-    const confirmar = confirm("Tem certeza que deseja excluir esta conta?");
-
-    if (!confirmar) {
-      return;
-    }
+    if (!confirm("Tem certeza que deseja excluir esta conta?")) return;
 
     setDeletandoId(contaId);
-
     try {
-      const token = localStorage.getItem("user_token");
-
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
+      const token = getToken();
       const response = await fetch(`/api/conta/${contaId}`, {
         method: "DELETE",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
+        headers: { authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -65,9 +53,7 @@ export function useContas() {
         throw new Error(data.error || "Erro ao deletar conta");
       }
 
-      // Remove da lista sem recarregar página
       setContas((prev) => prev.filter((c) => c.id !== contaId));
-
       triggerUpdate();
     } catch (error) {
       console.error("Erro ao deletar conta:", error);
@@ -79,22 +65,12 @@ export function useContas() {
 
   const reativarConta = async (conta: Conta) => {
     setAtualizandoId(conta.id);
-
     try {
-      const token = localStorage.getItem("user_token");
-
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
+      const token = getToken();
       const response = await fetch(`/api/conta/${conta.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({...conta,ativa: true,
-        }),
+        headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ...conta, ativa: true }),
       });
 
       if (!response.ok) {
@@ -112,7 +88,34 @@ export function useContas() {
     }
   };
 
-  return { contas, carregando, erro, deletarConta, reativarConta, deletandoId, atualizandoId };
+  const buscarContaPorId = async (contaId: number): Promise<Conta> => {
+    try {
+      const token = getToken();
+      const res = await fetch(`/api/conta/${contaId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Falha ao buscar a conta");
+      return await res.json();
+    } catch (err: any) {
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    carregarContas();
+  }, [atualizarGatilho]);
+
+  return {
+    contas,
+    carregando,
+    erro,
+    deletarConta,
+    reativarConta,
+    buscarContaPorId,
+    deletandoId,
+    atualizandoId,
+  };
 }
 
 export const listaBancosPopulares = [

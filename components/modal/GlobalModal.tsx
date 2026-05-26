@@ -6,9 +6,8 @@ import { useModalStore } from "@/store/useModalStore";
 // import ModalLogin from "./modals/ModalLogin";
 // import ModalExcluirUser from "./modals/ModalExcluirUser";
 import Modal from "./Modal";
-import ModalTransacao from "./FormTransacaoModal";
 import CreateContaModal from "./FormContaModal";
-import ModalCategoria from "./CreateCategoriaModal";
+import CreateCategoriaModal from "./CreateCategoriaModal";
 import TransacaoModal from "./TransacaoModal";
 import FormTransacaoModal from "./FormTransacaoModal";
 import ContaModal from "./ContaModal";
@@ -34,7 +33,7 @@ export default function GlobalModal() {
       {view === "conta" && <ContaModal conta={data} />}
       {view === "createConta" && <CreateContaModal />}
       {view === "updateConta" && <FormContaModal conta={data} />}
-      {view === "categoria" && <ModalCategoria />}
+      {view === "createCategoria" && <CreateCategoriaModal />}
       {view === "createInvestimento" && <FormInvestimentoModal />}
       {view === "updateInvestimento" && <FormInvestimentoModal investimento={data} />}
       {view === "aporteInvestimento" && <FormAporteInvestimento  investimento={data}/>}

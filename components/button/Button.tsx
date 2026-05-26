@@ -1,7 +1,7 @@
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   color?: "green" | "blue" | "red" | "primary";
-  onClick: () => void;
+  className?: string
 }
 
 const colorClasses = {
@@ -11,11 +11,12 @@ const colorClasses = {
   primary: "bg-[var(--primary-color)] hover:opacity-90",
 };
 
-export default function Button({ children, color = "primary", onClick }: ButtonProps) {
+export default function Button({ children, color = "primary", onClick,className, ...props }: ButtonProps) {
   return (
     <button
-      className={`${colorClasses[color]} text-white p-3 font-bold rounded-lg transition-opacity`}
+      className={`${colorClasses[color]} text-white p-3 font-bold rounded-lg transition-opacity ${className}`}
       onClick={onClick}
+      {...props}
     >
       {children}
     </button>

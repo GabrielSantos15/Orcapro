@@ -5,5 +5,5 @@ export interface Categoria{
     "usuario": Usuario
     "nome": string
     "tipo": "ENTRADA" | "SAIDA"
-    "ativa": number
+    "ativa": boolean
 }
