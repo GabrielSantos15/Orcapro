@@ -156,7 +156,7 @@ export default function ListaInvestimentos({
               <div className="flex items-center gap-2 mt-3">
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-md">
                   <TrendingUp className="w-3 h-3" />
-                  {inv.percentual}% {inv.indicador}
+                  {inv.percentual > 0 && <span>{inv.percentual}%</span>} {inv.indicador}
                 </span>
               </div>
             </div>

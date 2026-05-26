@@ -27,6 +27,7 @@ export default function FormInvestimentoModal({
 
   const isEditMode = !!investimento;
   const [erro, setErro] = useState<string | null>(null);
+  const [saldoContaSelecionada, setSaldoContaSelecionada] = useState<number>(0);
 
   const [formData, setFormData] = useState({
     idConta: "",
@@ -56,6 +57,8 @@ export default function FormInvestimentoModal({
 
   useEffect(() => {
     if (investimento) {
+      const contaSelecionada = contas.find((c) => c.id === investimento.conta?.id);
+      setSaldoContaSelecionada(contaSelecionada?.saldo || 0);
       setFormData({
         idConta: String(investimento.conta?.id || ""),
         ativo: investimento.ativo || "",
@@ -68,6 +71,7 @@ export default function FormInvestimentoModal({
           new Date().toISOString().split("T")[0],
       });
     } else if (!loadingContas && contas.length > 0) {
+      setSaldoContaSelecionada(contas[0].saldo || 0);
       setFormData((prev) => ({ ...prev, idConta: String(contas[0].id) }));
     }
   }, [investimento, contas, loadingContas]);
@@ -77,27 +81,49 @@ export default function FormInvestimentoModal({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErro(null);
+    
+    // Atualiza saldo quando muda a conta
+    if (name === "idConta") {
+      const contaSelecionada = contas.find((c) => String(c.id) === value);
+      setSaldoContaSelecionada(contaSelecionada?.saldo || 0);
+    }
+
+    // Valida saldo insuficiente
+    if (name === "valorInvestido") {
+      const valor = parseFloat(value);
+      if (valor > saldoContaSelecionada) {
+        setErro(`Saldo insuficiente. Saldo disponível: R$ ${saldoContaSelecionada.toFixed(2)}`);
+      } else {
+        setErro(null);
+      }
+    } else {
+      setErro(null);
+    }
   };
 
  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErro(null);
 
     try {
-      // 1. Encontra o objeto completo da conta selecionada
       const contaSelecionada = contas.find((c) => String(c.id) === formData.idConta);
       
       if (!contaSelecionada) {
         throw new Error("Conta não encontrada.");
       }
 
-      // 2. Monta o payload com o objeto 'conta' completo conforme sua interface
+      const valorInvestido = parseFloat(formData.valorInvestido);
+
+      // Validação de saldo insuficiente (apenas em modo criação)
+      if (!isEditMode && valorInvestido > contaSelecionada.saldo) {
+        setErro(`Saldo insuficiente. Saldo disponível: R$ ${contaSelecionada.saldo.toFixed(2)}`);
+        return;
+      }
+
       const payload = {
-        conta: contaSelecionada, // <-- Aqui passamos o objeto completo, não apenas o ID
+        conta: contaSelecionada,
         ativo: formData.ativo,
         tipo: formData.tipo,
-        valorInvestido: parseFloat(formData.valorInvestido),
+        valorInvestido: valorInvestido,
         percentual: formData.tipo === "RENDA_VARIAVEL" ? 0 : parseFloat(formData.percentual),
         indicador: formData.indicador,
         dataAplicacao: formData.dataAplicacao,
@@ -161,7 +187,7 @@ export default function FormInvestimentoModal({
           </option>
           {contas.map((conta) => (
             <option key={conta.id} value={conta.id}>
-              {conta.instituicao}
+              {conta.instituicao} - R$ {conta.saldo.toFixed(2)}
             </option>
           ))}
         </Select>
@@ -229,8 +255,8 @@ export default function FormInvestimentoModal({
 
         <button
           type="submit"
-          disabled={isLoading}
-          className="w-full py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-md hover:shadow-lg disabled:opacity-50"
+          disabled={isLoading || !!erro}
+          className="w-full py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading
             ? "Salvando..."
