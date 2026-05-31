@@ -4,9 +4,7 @@ import { useCallback } from "react";
 
 export function useUtils() {
   const formatarDiaMes = useCallback((dataISO: string) => {
-    const data = new Date(dataISO);
-    const dia = data.getDate().toString().padStart(2, "0");
-    const mes = (data.getMonth() + 1).toString().padStart(2, "0");
+    const [ano, mes, dia] = dataISO.split("T")[0].split("-");
     return `${dia}/${mes}`;
   }, []);
 

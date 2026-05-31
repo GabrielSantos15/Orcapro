@@ -1,0 +1,88 @@
+package br.com.fiap.orcapro.controller;
+
+import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
+import br.com.fiap.orcapro.model.Transacao;
+import br.com.fiap.orcapro.service.TransacaoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/transacao")
+public class TransacaoController {
+
+    private final TransacaoService transacaoService;
+
+    public TransacaoController(
+            TransacaoService transacaoService
+    ) {
+
+        this.transacaoService = transacaoService;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransacaoResponseDTO salvar(
+            @RequestBody Transacao transacao,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return transacaoService.salvar(
+                transacao,
+                token.substring(7)
+        );
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public TransacaoResponseDTO buscarPorId(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return transacaoService.buscarPorId(
+                id,
+                token.substring(7)
+        );
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransacaoResponseDTO> buscarTodos(
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return transacaoService.buscarTodos(
+                token.substring(7)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        transacaoService.excluir(
+                id,
+                token.substring(7)
+        );
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public TransacaoResponseDTO atualizar(
+            @PathVariable Long id,
+            @RequestBody Transacao transacao,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return transacaoService.atualizar(
+                id,
+                transacao,
+                token.substring(7)
+        );
+    }
+}
