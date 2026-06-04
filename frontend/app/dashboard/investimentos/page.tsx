@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/button/Button";
-import Header from "@/components/header/Header";
+import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import ListaInvestimentos from "@/components/widgets/ListaInvestimentos";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
@@ -16,7 +16,7 @@ export default function Investimentos() {
   if (carregando) {
     return (
       <div className="p-1 sm:p-3 xl:p-4">
-        <Header title="Meus Investimentos" />
+        <HeaderDashboard title="Meus Investimentos" />
         <p>Carregando investimentos...</p>
       </div>
     );
@@ -25,7 +25,7 @@ export default function Investimentos() {
   if (erro) {
     return (
       <div className="p-1 sm:p-3 xl:p-4">
-        <Header title="Meus Investimentos" />
+        <HeaderDashboard title="Meus Investimentos" />
         <p style={{ color: "red" }}>Erro: {erro}</p>
       </div>
     );
@@ -33,7 +33,7 @@ export default function Investimentos() {
 
   return (
     <div className="p-1 sm:p-3 xl:p-4">
-      <Header title="Meus Investimentos" />
+      <HeaderDashboard title="Meus Investimentos" />
 
       <Button
         className="w-full md:w-fit mb-4"

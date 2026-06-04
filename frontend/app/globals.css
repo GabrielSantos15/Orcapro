@@ -2,13 +2,54 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --primary-color: #6b21a8;
-  --primary-hover: #4f1494;
-  --secondary-background: #F6F4FF;
-  --radius: 0.625rem;
+  /* =========================================
+     TEMA CLARO (Light Mode)
+     ========================================= */
+  --primary-color: #10B981;
+  --primary-hover: #059669;
+  --primary-light: #D1FAE5;
+
+  --bg-primary: #F6F5FA;
+  --bg-secondary: #F8FAFC;
+  --bg-surface: #FFFFFF;
+
+  --text-primary: #0F172A;
+  --text-secondary: #37465a;
+  --text-muted: #94A3B8;
+
+  --success-color: #10B981;
+  --danger-color: #EF4444;
+  --border-color: #E2E8F0;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+}
+
+.dark {
+  /* =========================================
+     TEMA ESCURO (Dark Mode)
+     ========================================= */
+  --bg-primary: #000000;
+  --bg-secondary: #1f1f1f;
+  --bg-surface: #1D1D1D;
+
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #475569;
+
+  --border-color: #1E293B;
+
 }
 
 body {
   font-family: var(--font-poppins), sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

@@ -53,8 +53,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
+    <main className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold">
@@ -142,6 +142,6 @@ export default function Login() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

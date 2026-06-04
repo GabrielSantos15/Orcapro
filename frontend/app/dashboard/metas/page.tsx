@@ -2,7 +2,7 @@
 
 import Button from "@/components/button/Button";
 import { MetaCard } from "@/components/cards/cardMeta";
-import Header from "@/components/header/Header";
+import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import ListaMetas from "@/components/widgets/ListaMetas";
 import { useMetas } from "@/hooks/useMetas";
 import { useModalStore } from "@/store/useModalStore";
@@ -30,7 +30,7 @@ export default function Metas() {
   if (carregando) {
     return (
       <div>
-        <Header title="Minhas Metas" />
+        <HeaderDashboard title="Minhas Metas" />
         <p className="text-center text-gray-500 mt-8">Carregando metas...</p>
       </div>
     );
@@ -39,7 +39,7 @@ export default function Metas() {
   if (erro) {
     return (
       <div>
-        <Header title="Minhas Metas" />
+        <HeaderDashboard title="Minhas Metas" />
         <p className="text-center text-[var(--primary-color)] mt-8">
           Erro ao carregar metas: {erro}
         </p>
@@ -49,7 +49,7 @@ export default function Metas() {
 
   return (
     <div className="p-1 sm:p-3 xl:p-4">
-      <Header title="Minhas Metas" />
+      <HeaderDashboard title="Minhas Metas" />
       <Button
         className="w-full md:w-fit mb-4"
         onClick={() => openModal("createMeta")}

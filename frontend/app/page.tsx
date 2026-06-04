@@ -1,147 +1,104 @@
+"use client";
+
 import Link from "next/link";
-import { 
-  BarChart3, 
-  Wallet, 
-  Target, 
-  Smartphone, 
-  ShieldCheck, 
-  Zap 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import {
+  BarChart3,
+  Wallet,
+  Target,
+  Smartphone,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 
-export default function Home() {
+ function AvatarGroup() {
+  // Criamos um array simples com 5 números para fazer o map
+  const users = [1, 2, 3, 4, 5];
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="hidden lg:flex items-center gap-4 my-4 ">
       
-      {/* Navbar Minimalista */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold tracking-tight">
-            <span className="text-slate-900">Orça</span>
-            <span className="text-purple-600">Pro</span>
-          </div>
-          <div className="flex gap-4 sm:gap-6 items-center">
-            <Link
-              href="/login"
-              className="px-2 py-2 text-base font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              Entrar
-            </Link>
+      <div className="flex -space-x-3">
+        {users.map((i) => (
+          <img
+            key={i}
+            // Injetamos o 'i' no final da URL para gerar avatares diferentes
+            src={`https://api.dicebear.com/9.x/thumbs/svg?backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&seed=OrçaProUser${i}`}
+            alt={`Usuário ${i}`}
+            className="w-12 h-12 rounded-full border-2 border-slate-50 dark:border-slate-950 object-cover z-10 hover:z-20 hover:scale-110 transition-transform duration-200"
+          />
+        ))}
+      </div>
+
+      {/* Textos da Direita */}
+      <div className="flex flex-col">
+        <span className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">
+         Junte-se
+        </span>
+        <span className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-tight">
+          aos primeiros membros
+        </span>
+      </div>
+
+    </div>
+  );
+}
+
+export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('user_token');
+    if (token) {
+      router.push('/dashboard');
+    }
+  }, [router]);
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+  if (token) {
+    return null;
+  }
+
+  return (
+    <main>
+      {/* Hero Simples e Direto */}
+      <section className="bg-gradient-to-br from-gray-300 dark:from-gray-950 via-green-50 dark:via-gray-950 to-green-200 dark:to-gray-950 rounded-2xl p-2 lg:p-5 lg:px-10 m-5 flex flex-col lg:flex-row items-center justify-center gap-12 ">
+        <article className="text-[var(--text-primary)] w-full max-w-3xl flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
+          <h1 className="text-5xl md:text-6xl font-medium tracking-tight  leading-tight">
+            Liberdade financeira começa com organização
+          </h1>
+
+          <p className="text-xl  max-w-xl leading-relaxed">
+            Abandone as planilhas complexas. O OrçaPro transforma a gestão do
+            seu dinheiro em uma experiência visual, inteligente e sem estresse
+          </p>
+
+          <AvatarGroup/>
+
+          <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/cadastro"
-              className="px-6 py-2.5 text-base font-medium bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors"
+              className="px-8 py-3.5 bg-slate-900 text-white text-lg font-medium rounded-[5px] hover:bg-slate-800 transition-colors"
             >
-              Criar conta
+              Começar gratuitamente
             </Link>
           </div>
-        </div>
-      </nav>
+        </article>
 
-      {/* Hero Simples e Direto */}
-      <section className="max-w-4xl mx-auto px-6 pt-32 pb-24 text-center">
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-          O seu dinheiro, <br className="hidden sm:block" />
-          <span className="text-purple-600">sob controle.</span>
-        </h1>
-        <p className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Gerencie suas contas, acompanhe transações e defina metas em uma interface limpa e intuitiva. Chega de planilhas confusas.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/cadastro"
-            className="px-8 py-3.5 bg-slate-900 text-white text-lg font-medium rounded-full hover:bg-slate-800 transition-colors"
-          >
-            Começar gratuitamente
-          </Link>
-          <Link
-            href="/login"
-            className="px-8 py-3.5 bg-white text-slate-700 text-lg font-medium rounded-full border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-colors"
-          >
-            Já tenho conta
-          </Link>
-        </div>
+        {/* IMAGEM: Ocupa 100% no mobile, 50% no PC */}
+        <figure className="flex items-center justify-center w-full max-w-5xl relative">
+          <Image
+            src="/heroImage.png"
+            alt="Dashboard OrçaPro"
+            width={800}
+            height={400}
+            className="rounded-lg w-full h-auto object-contain"
+          />
+        </figure>
       </section>
 
-      {/* Features Minimalistas */}
-      <section className="max-w-5xl mx-auto px-6 py-24 border-t border-slate-200">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
-              <BarChart3 size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Visualização clara</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Gráficos em tempo real para entender exatamente para onde vai o seu dinheiro.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
-              <Wallet size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Gestão de contas</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Registre múltiplas contas bancárias e acompanhe todos os seus saldos em um só lugar.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
-              <Target size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Metas financeiras</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Defina objetivos e acompanhe o seu progresso de forma visual e motivadora.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center">
-              <Smartphone size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Acesso total</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Interface 100% responsiva. Funciona perfeitamente no seu celular, tablet ou computador.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center">
-              <ShieldCheck size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Segurança garantida</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Seus dados são protegidos e armazenados de forma segura, garantindo sua privacidade.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="w-12 h-12 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center">
-              <Zap size={24} />
-            </div>
-            <h3 className="font-bold text-xl text-slate-900 mt-2">Velocidade</h3>
-            <p className="text-slate-600 text-base leading-relaxed">
-              Sistema leve e otimizado para que você registre suas transações em segundos.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Footer Simples */}
-      <footer className="border-t border-slate-200 bg-white py-12">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="text-xl font-bold tracking-tight">
-            <span className="text-slate-900">Orça</span>
-            <span className="text-purple-600">Pro</span>
-          </div>
-          <p className="text-base text-slate-500">
-            © {new Date().getFullYear()} OrçaPro. Todos os direitos reservados.
-          </p>
-        </div>
-      </footer>
-      
-    </div>
+    </main>
   );
 }

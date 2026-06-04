@@ -4,7 +4,7 @@ import Button from "@/components/button/Button";
 import CardResumo from "@/components/cards/CardResumo";
 import GraficoColunas from "@/components/charts/GraficoColunas";
 import GraficoTopCategorias from "@/components/charts/GraficoTopCategorias";
-import Header from "@/components/header/Header";
+import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import ListaCategorias from "@/components/widgets/ListaCategorias";
 import ListaTransacoes from "@/components/widgets/ListaTransacoes";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
@@ -30,7 +30,7 @@ export default function Movimentacao() {
   return (
     <div className="p-1 sm:p-3 xl:p-4">
       <div>
-        <Header title="Minhas Movimentações" />
+        <HeaderDashboard title="Minhas Movimentações" />
         <Button
           className="w-full md:w-fit mb-4"
           onClick={() => openModal("createTransacao")}

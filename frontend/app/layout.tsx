@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/header/Header";
+import { Providers } from "./providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,9 +21,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" className={`h-full antialiased ${poppins.variable}`}>
-      <body className="bg-gray-50">
+    <html lang="pt-br" suppressHydrationWarning className={`h-full antialiased ${poppins.variable}`}>
+      <body>
+        <Providers>
+          <Header></Header>
           {children}
+        </Providers>
       </body>
     </html>
   );

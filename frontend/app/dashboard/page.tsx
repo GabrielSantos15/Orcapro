@@ -3,7 +3,7 @@
 import { Usuario } from "@/interfaces/Usuario";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/header/Header";
+import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import Modal from "@/components/modal/Modal";
 import { useModalStore } from "@/store/useModalStore";
 import { useContas } from "@/hooks/useContas";
@@ -48,7 +48,7 @@ export default function DashBoardPage() {
 
   return (
     <div className="p-1 sm:p-3 xl:p-4">
-      <Header showWelcome={true} />
+      <HeaderDashboard showWelcome={true} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
