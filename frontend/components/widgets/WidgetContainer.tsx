@@ -20,11 +20,11 @@ export default function WidgetContainer({
 }: WidgetContainerProps) {
   return (
     <article
-      className={`flex flex-col h-full bg-white rounded-lg shadow-sm border border-gray-100 transition-colors ${className}`}
+      className={`flex flex-col h-full bg-[var(--bg-surface)]  rounded-lg shadow-sm border border-[var(--border-color)] transition-colors ${className}`}
     >
-      <div className="p-4 border-b border-gray-100 flex justify-between items-center gap-4">
+      <div className="p-4 border-b border-[var(--border-color)] flex justify-between items-center gap-4">
         <div>
-          <h2 className="text-lg font-medium text-gray-900">{titulo}</h2>
+          <h2 className="text-lg font-medium text-[var(--text-primary)]">{titulo}</h2>
           {subtitulo && (
             <p className="text-xs text-gray-500 mt-0.5">{subtitulo}</p>
           )}
@@ -36,7 +36,7 @@ export default function WidgetContainer({
       <div className="p-0 flex-1">{children}</div>
 
       {rodape && (
-        <div className="mt-auto border-t border-gray-100">{rodape}</div>
+        <div className="mt-auto border-t border-[var(--border-color)]">{rodape}</div>
       )}
     </article>
   );

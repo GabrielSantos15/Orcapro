@@ -58,24 +58,24 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold">
-            <span className="text-purple-600">Orça</span>
-            <span className="text-purple-400">Pro</span>
+            <span className="text-[var(--primary-color)]">Orça</span>
+            <span className="text-[var(--primary-color)] opacity-75">Pro</span>
           </h1>
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Login</h2>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-[var(--danger-color)]/10 border border-[var(--danger-color)] text-[var(--danger-color)] rounded">
             {error}
           </div>
         )}
 
         {/* Success Message */}
         {success && (
-          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+          <div className="mb-4 p-3 bg-[var(--success-color)]/10 border border-[var(--success-color)] text-[var(--success-color)] rounded">
             {success}
           </div>
         )}
@@ -112,7 +112,7 @@ export default function Login() {
           <div className="text-right">
             <Link
               href="/recuperar"
-              className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+              className="text-sm text-[var(--primary-color)] hover:text-[var(--primary-hover)] font-medium transition-colors"
             >
               Esqueceu a senha? <span className="font-semibold">Recuperar</span>
             </Link>
@@ -122,21 +122,21 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition duration-200 ease-in-out"
+            className="w-full py-3 px-4 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-bold rounded-lg transition duration-200 ease-in-out"
           >
             {loading ? "Carregando..." : "Entrar"}
           </button>
         </form>
 
         {/* Divider */}
-        <div className="my-6 border-t border-gray-200"></div>
+        <div className="my-6 border-t border-[var(--border-color)]"></div>
 
         {/* Sign Up Link */}
         <div className="text-center">
-          <span className="text-gray-600">Não possui conta? </span>
+          <span className="text-[var(--text-secondary)]">Não possui conta? </span>
           <Link
             href="/cadastro"
-            className="text-blue-500 hover:text-blue-600 font-semibold"
+            className="text-[var(--primary-color)] hover:text-[var(--primary-hover)] font-semibold transition-colors"
           >
             Criar conta
           </Link>

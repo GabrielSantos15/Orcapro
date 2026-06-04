@@ -13,7 +13,7 @@ const colorClasses = {
 
 export default function CardResumo({ value, title, color = "green" }: CardResumoProps) {
   return (
-    <article className="flex flex-col bg-white  rounded-lg shadow-sm border border-gray-100 transition-colors w-full h-full p-5">
+    <article className="flex flex-col bg-[var(--bg-surface)]  rounded-lg shadow-sm transition-colors w-full h-full p-5">
       <h3 className="text-gray-700">{title}</h3>
       <p className={`text-2xl font-bold ${colorClasses[color]}`}>
         R${" "}
