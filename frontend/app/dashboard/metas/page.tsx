@@ -57,12 +57,12 @@ export default function Metas() {
         + Adicionar Meta
       </Button>
       {metas.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-gray-300">
+        <div className="flex flex-col items-center justify-center p-12 bg-[var(--bg-secondary)] rounded-2xl border border-dashed border-[var(--border-color)]">
           <Target className="w-12 h-12 text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900">
+          <h3 className="text-lg font-medium">
             Nenhuma meta encontrada
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Comece a definir suas metas financeiras!
           </p>
         </div>

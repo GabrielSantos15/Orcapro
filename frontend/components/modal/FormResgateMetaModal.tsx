@@ -8,6 +8,7 @@ import { Meta } from "@/interfaces/Meta";
 import { Conta } from "@/interfaces/Conta";
 import { useMetas } from "@/hooks/useMetas";
 import { ArrowDownToLine } from "lucide-react";
+import { toast } from "sonner";
 
 interface FormResgateMetaModalProps {
   meta: Meta;
@@ -52,24 +53,24 @@ export default function FormResgateMetaModal({ meta }: FormResgateMetaModalProps
     const valorResgate = parseFloat(formData.valor);
 
     if (!valorResgate || valorResgate <= 0) {
-      alert("O valor deve ser maior que zero.");
+      toast.error("Transação atualizada com sucesso!");("O valor deve ser maior que zero.");
       return;
     }
     if (!formData.contaId) {
-      alert("Selecione uma conta de destino.");
+      toast.error("Selecione uma conta de destino.");
       return;
     }
     if (valorResgate > meta.valorAtual) {
-      alert(`Você não pode resgatar mais do que possui guardado (Disponível: R$ ${meta.valorAtual.toFixed(2)}).`);
+      toast.error(`Você não pode resgatar mais do que possui guardado (Disponível: R$ ${meta.valorAtual.toFixed(2)}).`);
       return;
     }
 
     try {
       await resgatarProgresso(meta.id, valorResgate, parseInt(formData.contaId));
-      alert("Resgate realizado com sucesso!");
+      toast.success("Resgate realizado com sucesso!");
       closeModal();
     } catch (error: any) {
-      alert(error.message || "Erro ao resgatar dinheiro.");
+      toast.error(error.message || "Erro ao resgatar dinheiro.");
     }
   };
 

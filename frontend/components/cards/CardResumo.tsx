@@ -14,8 +14,8 @@ const colorClasses = {
 export default function CardResumo({ value, title, color = "green" }: CardResumoProps) {
   return (
     <article className="flex flex-col bg-[var(--bg-surface)]  rounded-lg shadow-sm transition-colors w-full h-full p-5">
-      <h3 className="text-gray-700">{title}</h3>
-      <p className={`text-2xl font-bold ${colorClasses[color]}`}>
+      <h3 className="text-[var(--text-secondary)]">{title}</h3>
+      <p className={`text-2xl font-semibold ${colorClasses[color]}`}>
         R${" "}
         {value.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
       </p>

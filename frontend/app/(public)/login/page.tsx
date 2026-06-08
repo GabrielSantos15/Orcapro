@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Input from "@/components/forms/Input";
 import Link from "next/link";
 
@@ -10,13 +11,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setLoading(true);
 
     try {
@@ -31,11 +28,12 @@ export default function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Erro ao fazer login");
+        toast.error(data.error || "Erro ao fazer login");
+        setLoading(false);
         return;
       }
 
-      setSuccess("Login realizado com sucesso!");
+      toast.success("Login realizado com sucesso!");
 
       // Guardar dados do usuário
       localStorage.setItem("user_token", data.token);
@@ -46,7 +44,7 @@ export default function Login() {
       }, 1000);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
-      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -65,20 +63,6 @@ export default function Login() {
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Login</h2>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-3 bg-[var(--danger-color)]/10 border border-[var(--danger-color)] text-[var(--danger-color)] rounded">
-            {error}
-          </div>
-        )}
-
-        {/* Success Message */}
-        {success && (
-          <div className="mb-4 p-3 bg-[var(--success-color)]/10 border border-[var(--success-color)] text-[var(--success-color)] rounded">
-            {success}
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { FaChartPie, FaExchangeAlt, FaBullseye } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
+import ThemeToggle from "../themeToggle/ThemeToggle";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -38,10 +39,10 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex bg-[var(--secondary-background)] p-6 h-full w-64 flex-col mb-3">
+      <aside className="hidden md:flex bg-[var(--bg-secondary)] p-6 h-full w-64 flex-col mb-3">
         <h1 className="text-4xl font-bold mb-8 text-center">
-          <span className="text-purple-600">Orça</span>
-          <span className="text-purple-400">Pro</span>
+          <span className="text-green-600">Orça</span>
+          <span className="text-green-400">Pro</span>
         </h1>
 
         <nav className="flex-1 flex flex-col gap-3 justify-start">
@@ -51,8 +52,8 @@ export default function Sidebar() {
               href={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 pathname === item.path
-                  ? "bg-purple-600 text-white font-semibold shadow-md shadow-purple-500/30"
-                  : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
+                  ? "bg-[var(--primary-color)] text-white font-semibold shadow-md "
+                  : "text-gray-600 hover:bg-[var(--primary-color)]/10 hover:text-bg-[var(--primary-hover)] dark:hover:text-white"
               }`}
             >
               {item.icon}
@@ -61,6 +62,7 @@ export default function Sidebar() {
           ))}
         </nav>
 
+        <ThemeToggle />
         <div className="border-t border-gray-100 pt-6 mt-6">
           <button
             onClick={handleLogout}

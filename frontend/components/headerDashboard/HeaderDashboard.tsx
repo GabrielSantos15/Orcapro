@@ -14,14 +14,13 @@ export default function HeaderDashboard({ showWelcome = false, title = "Página"
         <div>
           {showWelcome ? (
             <h1
-              className="text-2xl font-medium
-              text-gray-900"
+              className="text-2xl font-medium"
             >
               Bem-vindo de volta,{" "}
-              <span className="text-purple-600">{firstName}!</span>
+              <span className="text-[var(--primary-color)]">{firstName}!</span>
             </h1>
           ) : (
-            <h1 className="text-2xl font-medium text-gray-900">{title}</h1>
+            <h1 className="text-2xl font-medium">{title}</h1>
           )}
           <p className="text-gray-500 text-sm mt-1">
             {new Date().toLocaleDateString("pt-BR", {
@@ -41,7 +40,7 @@ export default function HeaderDashboard({ showWelcome = false, title = "Página"
             className="rounded-full object-cover border-1"
           />
           <div>
-            <h2 className="text-lg font-medium leading-tight text-gray-900">
+            <h2 className="text-lg font-medium leading-tight">
               {user?.nome ?? "Usuário"}
             </h2>
             <p className="text-sm text-gray-500">
@@ -77,7 +76,7 @@ export default function HeaderDashboard({ showWelcome = false, title = "Página"
             {title}
           </h1>
         )}
-          <div className="absolute top-0 left-0 right-0 h-[250px] bg-gradient-to-r from-purple-600 to-[#a855f7] rounded-b-[2.5rem] -z-10 transition-all duration-200 ease-out -ml-8 -mr-8 -mt-8"></div>
+          <div className="absolute top-0 left-0 right-0 h-[250px] bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-b-[2.5rem] -z-10 transition-all duration-200 ease-out -ml-8 -mr-8 -mt-8"></div>
       </header>
     </div>
   );

@@ -9,6 +9,7 @@ import { useTransacoes } from "@/hooks/useTransacoes";
 import Input from "../forms/Input";
 import Select from "../forms/Select"; // Certifique-se do caminho correto
 import Textarea from "../forms/Textarea"; // Certifique-se do caminho correto
+import { toast } from "sonner";
 
 interface FormTransacaoModalProps {
   transacao?: Transacao | null;
@@ -79,10 +80,10 @@ export default function FormTransacaoModal({
     try {
       if (isEditMode) {
         await updateTransacao(transacao.id, payload);
-        alert("Transação atualizada com sucesso!");
+        toast.success("Transação atualizada com sucesso!");
       } else {
         await createTransacao(payload);
-        alert("Transação criada com sucesso!");
+        toast.success("Transação criada com sucesso!");
       }
       closeModal();
     } catch (error) {
