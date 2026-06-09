@@ -3,12 +3,6 @@ import { useState, useEffect } from "react";
 import { Conta } from "@/interfaces/Conta";
 import { useModalStore } from "@/store/useModalStore";
 
-const getToken = () => {
-  const token = localStorage.getItem("user_token");
-  if (!token) throw new Error("Usuário não autenticado");
-  return token;
-};
-
 export function useContas() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -20,10 +14,7 @@ export function useContas() {
   const carregarContas = async () => {
     try {
       setCarregando(true);
-      const token = getToken();
-      const res = await fetch("/api/conta", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/conta");
 
       if (!res.ok) throw new Error("Falha ao buscar as Contas.");
 
@@ -42,10 +33,8 @@ export function useContas() {
 
     setDeletandoId(contaId);
     try {
-      const token = getToken();
       const response = await fetch(`/api/conta/${contaId}`, {
         method: "DELETE",
-        headers: { authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -66,10 +55,9 @@ export function useContas() {
   const reativarConta = async (conta: Conta) => {
     setAtualizandoId(conta.id);
     try {
-      const token = getToken();
       const response = await fetch(`/api/conta/${conta.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...conta, ativa: true }),
       });
 
@@ -90,10 +78,7 @@ export function useContas() {
 
   const buscarContaPorId = async (contaId: number): Promise<Conta> => {
     try {
-      const token = getToken();
-      const res = await fetch(`/api/conta/${contaId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`/api/conta/${contaId}`);
 
       if (!res.ok) throw new Error("Falha ao buscar a conta");
       return await res.json();

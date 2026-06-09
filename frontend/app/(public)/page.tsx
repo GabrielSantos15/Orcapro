@@ -32,11 +32,8 @@ export default function Home() {
 
   return (
     <main className="space-y-20">
-      {/* ========== HERO SECTION ========== */}
       <Hero></Hero>
       <Features></Features>
-      {/* ========== FEATURES SECTION ========== */}
-
     </main>
   );
 }

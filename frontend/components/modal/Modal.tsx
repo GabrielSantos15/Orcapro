@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-xl rounded-xl bg-white p-6 shadow-2xl"
+        className="relative w-full h-full md:h-min md:max-w-xl md:rounded-xl bg-[var(--bg-surface)] p-6 md:shadow-2xl  overflow-y-auto overflow-x-hidden"
         onClick={(e) => e.stopPropagation()} 
       >
         <button

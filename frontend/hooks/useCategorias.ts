@@ -8,20 +8,11 @@ export function useCategorias() {
   const [erro, setErro] = useState<string | null>(null);
   const { atualizarGatilho, triggerUpdate } = useModalStore();
 
-  const getToken = () => {
-    const token = localStorage.getItem("user_token");
-    if (!token) throw new Error("Usuário não autenticado");
-    return token;
-  };
 
   const fetchCategorias = async () => {
     try {
       setCarregando(true);
-      const token = getToken();
-
-      const res = await fetch("/api/categoria", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/categoria");
 
       if (!res.ok) throw new Error("Falha ao buscar categorias");
 
@@ -37,13 +28,10 @@ export function useCategorias() {
 
   const criarCategoria = async (nome: string, tipo: "ENTRADA" | "SAIDA") => {
     try {
-      const token = getToken();
-
       const res = await fetch("/api/categoria", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nome, tipo }),
       });
@@ -66,13 +54,10 @@ export function useCategorias() {
     tipo: "ENTRADA" | "SAIDA"
   ) => {
     try {
-      const token = getToken();
-
       const res = await fetch(`/api/categoria/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ nome, tipo }),
       });
@@ -93,11 +78,8 @@ export function useCategorias() {
 
   const deletarCategoria = async (id: number) => {
     try {
-      const token = getToken();
-
       const res = await fetch(`/api/categoria/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error("Falha ao deletar categoria");
@@ -112,13 +94,10 @@ export function useCategorias() {
 
   const reativarCategoria = async (id: number) => {
     try {
-      const token = getToken();
-
       const res = await fetch(`/api/categoria/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ ativa: 1 }),
       });

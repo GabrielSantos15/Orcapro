@@ -17,15 +17,7 @@ export function useMetas() {
 
   const carregarMetas = async () => {
     try {
-      const token = localStorage.getItem("user_token");
-
-      if (!token) {
-        throw new Error("Usuário não autenticado");
-      }
-
-      const res = await fetch("/api/meta", {
-        headers: { authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/meta");
 
       if (!res.ok) {
         throw new Error("Falha ao buscar as metas do banco de dados.");
@@ -54,11 +46,6 @@ export function useMetas() {
     setCriandoMeta(true);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const metaData = {
         nome: formData.nome,
         descricao: formData.descricao,
@@ -71,7 +58,6 @@ export function useMetas() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(metaData),
       });
@@ -103,11 +89,6 @@ export function useMetas() {
     setAtualizandoId(metaId);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const metaData = {
         nome: formData.nome,
         descricao: formData.descricao,
@@ -120,7 +101,6 @@ export function useMetas() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(metaData),
       });
@@ -146,16 +126,10 @@ export function useMetas() {
     setAdicionandoProgressoId(metaId);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const response = await fetch(`/api/meta/${metaId}/progresso`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ valor, contaId }),
       });
@@ -181,16 +155,10 @@ export function useMetas() {
     setResgatandoProgressoId(metaId);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const response = await fetch(`/api/meta/${metaId}/resgate`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ valor, contaId }),
       });
@@ -221,18 +189,8 @@ export function useMetas() {
     setDeletandoId(metaId);
 
     try {
-      const token = localStorage.getItem("user_token");
-
-      if (!token) {
-        alert("Sessão expirada. Faça login novamente.");
-        return;
-      }
-
       const response = await fetch(`/api/meta/${metaId}`, {
         method: "DELETE",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) {

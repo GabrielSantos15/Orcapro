@@ -6,7 +6,7 @@ import { FaUserCircle } from "react-icons/fa";
 export default function HeaderDashboard({ showWelcome = false, title = "Página" }) {
   const { user } = useAuth();
   const firstName = user?.nome?.split(" ")[0] ?? "Usuário";
-  const imgUrl = "https://api.dicebear.com/9.x/thumbs/svg?backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&seed=";
+  const imgUrl = "https://api.dicebear.com/9.x/thumbs/svg?seed=";
 
   return (
     <div>

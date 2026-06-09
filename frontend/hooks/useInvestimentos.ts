@@ -18,12 +18,7 @@ export function useInvestimentos() {
 
   const carregarInvestimentos = useCallback(async () => {
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) throw new Error("Usuário não autenticado");
-
-      const res = await fetch("/api/investimento", {
-        headers: { authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/investimento");
 
       if (!res.ok) throw new Error("Falha ao buscar investimentos.");
 
@@ -51,12 +46,10 @@ export function useInvestimentos() {
   const createInvestimento = async (payload: any) => {
     setCriandoInvestimento(true);
     try {
-      const token = localStorage.getItem("user_token");
       const response = await fetch("/api/investimento", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           conta: payload.conta,
@@ -82,12 +75,10 @@ export function useInvestimentos() {
   const updateInvestimento = async (id: number, payload: any) => {
     setAtualizandoId(id);
     try {
-      const token = localStorage.getItem("user_token");
       const response = await fetch(`/api/investimento/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           conta: payload.conta,
@@ -114,10 +105,8 @@ export function useInvestimentos() {
     if (!confirm("Tem certeza que deseja excluir este investimento?")) return;
     setDeletandoId(id);
     try {
-      const token = localStorage.getItem("user_token");
       await fetch(`/api/investimento/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
       setInvestimentos((prev) => prev.filter((inv) => inv.id !== id));
       triggerUpdate();
@@ -129,12 +118,10 @@ export function useInvestimentos() {
   const aportar = async (id: number, valor: number) => {
     setAporteEmProgresso(true);
     try {
-      const token = localStorage.getItem("user_token");
       const res = await fetch(`/api/investimento/${id}/aportar`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ valorAporte: valor }),
       });
@@ -152,12 +139,10 @@ export function useInvestimentos() {
   ) => {
     setResgateEmProgresso(true);
     try {
-      const token = localStorage.getItem("user_token");
       const res = await fetch(`/api/investimento/${id}/resgatar`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ valorResgatado, saldoRemanescente }),
       });

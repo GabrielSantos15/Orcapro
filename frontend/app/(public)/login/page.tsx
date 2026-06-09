@@ -29,16 +29,11 @@ export default function Login() {
 
       if (!response.ok) {
         toast.error(data.error || "Erro ao fazer login");
-        setLoading(false);
         return;
       }
 
       toast.success("Login realizado com sucesso!");
 
-      // Guardar dados do usuário
-      localStorage.setItem("user_token", data.token);
-
-      // Redirecionar
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
@@ -62,7 +57,9 @@ export default function Login() {
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
+          Login
+        </h2>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -117,7 +114,9 @@ export default function Login() {
 
         {/* Sign Up Link */}
         <div className="text-center">
-          <span className="text-[var(--text-secondary)]">Não possui conta? </span>
+          <span className="text-[var(--text-secondary)]">
+            Não possui conta?{" "}
+          </span>
           <Link
             href="/cadastro"
             className="text-[var(--primary-color)] hover:text-[var(--primary-hover)] font-semibold transition-colors"

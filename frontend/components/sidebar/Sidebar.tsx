@@ -41,8 +41,8 @@ export default function Sidebar() {
     <>
       <aside className="hidden md:flex bg-[var(--bg-secondary)] p-6 h-full w-64 flex-col mb-3">
         <h1 className="text-4xl font-bold mb-8 text-center">
-          <span className="text-green-600">Orça</span>
-          <span className="text-green-400">Pro</span>
+          <span className="">Orça</span>
+          <span className="text-[var(--primary-color)]">Pro</span>
         </h1>
 
         <nav className="flex-1 flex flex-col gap-3 justify-start">
@@ -52,7 +52,7 @@ export default function Sidebar() {
               href={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 pathname === item.path
-                  ? "bg-[var(--primary-color)] text-white font-semibold shadow-md "
+                  ? "bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white font-semibold shadow-md "
                   : "text-gray-600 hover:bg-[var(--primary-color)]/10 hover:text-bg-[var(--primary-hover)] dark:hover:text-white"
               }`}
             >

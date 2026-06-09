@@ -1,79 +1,31 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL_BACKEND;
+import { forwardToBackend } from "@/lib/server/api";
 
 export async function GET(request: Request) {
-    try {
-        const authHeader = request.headers.get("authorization");
+    const { data, status, ok } = await forwardToBackend("/api/conta");
 
-        if (!authHeader) {
-            return Response.json(
-                { error: "Token não informado" },
-                { status: 401 }
-            );
-        }
-
-        const response = await fetch(`${BACKEND_URL}/api/conta`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": authHeader
-            }
-        });
-
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
-
-        if (!response.ok) {
-            return Response.json(
-                { error: data.message || "Erro ao buscar conta" },
-                { status: response.status }
-            );
-        }
-
-        return Response.json(data, { status: 200 });
-
-    } catch (err) {
-        const message = err instanceof Error ? err.message : "Erro desconhecido";
-        console.error(">>> Erro no BFF:", message);
-        return Response.json({ error: message }, { status: 500 });
+    if (!ok) {
+        return Response.json(
+            { error: data.error || data.message || "Erro ao buscar contas" },
+            { status }
+        );
     }
+
+    return Response.json(data, { status });
 }
 
 export async function POST(request: Request) {
-    try {
-        const authHeader = request.headers.get("authorization");
-        const body = await request.json();
+    const body = await request.json();
+    const { data, status, ok } = await forwardToBackend("/api/conta", {
+        method: "POST",
+        body,
+    });
 
-        if (!authHeader) {
-            return Response.json(
-                { error: "Token não informado" },
-                { status: 401 }
-            );
-        }
-
-        const response = await fetch(`${BACKEND_URL}/api/conta`, {
-       method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": authHeader
-            },
-            body: JSON.stringify(body)
-        });
-
-        const text = await response.text();
-        const data = text ? JSON.parse(text) : {};
-
-        if (!response.ok) {
-            return Response.json(
-                { error: data.message || "Erro ao criar conta" },
-                { status: response.status }
-            );
-        }
-
-        return Response.json(data, { status: 200 });
-
-    } catch (err) {
-        const message = err instanceof Error ? err.message : "Erro desconhecido";
-        console.error(">>> Erro no BFF:", message);
-        return Response.json({ error: message }, { status: 500 });
+    if (!ok) {
+        return Response.json(
+            { error: data.error || data.message || "Erro ao criar conta" },
+            { status }
+        );
     }
+
+    return Response.json(data, { status });
 }

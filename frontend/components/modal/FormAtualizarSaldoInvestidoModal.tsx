@@ -5,6 +5,7 @@ import { useModalStore } from "@/store/useModalStore";
 import Input from "../forms/Input";
 import { Investimento } from "@/interfaces/Investimento";
 import { RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface FormAtualizarSaldoProps {
   investimento: Investimento;
@@ -25,9 +26,6 @@ export default function FormAtualizarSaldoInvestidoModal({
     setErro(null);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) throw new Error("Sessão expirada. Faça login novamente.");
-
       const valorFormatado = parseFloat(novoSaldo);
       if (isNaN(valorFormatado) || valorFormatado < 0) {
         throw new Error("Informe um saldo válido. Não pode ser negativo.");
@@ -37,10 +35,6 @@ export default function FormAtualizarSaldoInvestidoModal({
         `/api/investimento/${investimento.id}/saldo`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
           body: JSON.stringify({ novoSaldo: valorFormatado }),
         },
       );
@@ -50,7 +44,7 @@ export default function FormAtualizarSaldoInvestidoModal({
         throw new Error(errorData.error || "Falha ao atualizar o saldo.");
       }
 
-      alert("Saldo sincronizado com sucesso!");
+       toast.success("Saldo sincronizado com sucesso!");
       triggerUpdate();
       closeModal();
     } catch (err: any) {

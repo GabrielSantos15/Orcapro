@@ -78,7 +78,7 @@ export default function DashBoardPage() {
           headerAction={
             <button
               onClick={() => openModal("createConta")}
-              className="flex items-center gap-1 text-sm bg-purple-50 text-purple-600 hover:bg-purple-100 px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-sm text-[var(--primary-color)] hover:text-white bg-[var(--primary-color)]/10 hover:bg-[var(--primary-color)] px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer"
             >
               + Adicionar
             </button>
@@ -91,7 +91,7 @@ export default function DashBoardPage() {
         <WidgetContainer
           titulo="Entradas vs Saídas"
           subtitulo="Acompanhamento ao longo do tempo"
-          className="lg:col-span-2"
+          className="lg:col-span-2 dark:bg-gradient-to-br from-[var(--primary-color)]/30 from-20% to-[var(--bg-primary)] to-90% "
         >
           <GraficoColunas transacoes={transacoes} />
         </WidgetContainer>
@@ -101,7 +101,7 @@ export default function DashBoardPage() {
           headerAction={
             <button
               onClick={() => openModal("createTransacao")}
-              className="flex items-center gap-1 text-sm bg-purple-50 text-purple-600 hover:bg-purple-100 px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-sm text-[var(--primary-color)] hover:text-white bg-[var(--primary-color)]/10 hover:bg-[var(--primary-color)] px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer"
             >
               <svg
                 width="16"

@@ -7,12 +7,15 @@ import Select from "../forms/Select"; // Componente customizado
 import { Meta } from "@/interfaces/Meta";
 import { Conta } from "@/interfaces/Conta";
 import { PlusCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface FormProgressoMetaModalProps {
   meta: Meta;
 }
 
-export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalProps) {
+export default function FormProgressoMetaModal({
+  meta,
+}: FormProgressoMetaModalProps) {
   const { closeModal, triggerUpdate } = useModalStore();
   const [submitting, setSubmitting] = useState(false);
   const [contas, setContas] = useState<Conta[]>([]);
@@ -26,10 +29,7 @@ export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalP
   useEffect(() => {
     const fetchContas = async () => {
       try {
-        const token = localStorage.getItem("user_token");
-        const res = await fetch("/api/conta", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch("/api/conta");
         if (res.ok) {
           const data = await res.json();
           setContas(data);
@@ -78,7 +78,7 @@ export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalP
       });
 
       if (response.ok) {
-        alert("Dinheiro guardado com sucesso! 🎉");
+        toast.success("Dinheiro guardado com sucesso!");
         triggerUpdate();
         closeModal();
       } else {
@@ -86,14 +86,17 @@ export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalP
         alert(`Erro: ${error.error || "Falha ao guardar dinheiro"}`);
       }
     } catch (error) {
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setSubmitting(false);
     }
   };
 
   const formatarMoeda = (valor: number) =>
-    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
+    new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valor);
 
   const falta = meta.valorAlvo - meta.valorAtual;
 
@@ -105,15 +108,20 @@ export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalP
         </div>
         <h2 className="text-2xl font-bold text-gray-900">Guardar Dinheiro</h2>
       </div>
-      
+
       <p className="text-sm text-gray-500 mb-6">
-        Destine um valor para a meta <span className="font-semibold text-purple-600">{meta.nome}</span>.
+        Destine um valor para a meta{" "}
+        <span className="font-semibold text-purple-600">{meta.nome}</span>.
       </p>
 
       {/* Resumo visual do objetivo */}
       <div className="bg-purple-50 border border-purple-100 rounded-xl p-5 mb-6">
-        <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-1">Falta para atingir</p>
-        <p className="text-3xl font-bold text-purple-900">{formatarMoeda(falta)}</p>
+        <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-1">
+          Falta para atingir
+        </p>
+        <p className="text-3xl font-bold text-purple-900">
+          {formatarMoeda(falta)}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -134,7 +142,9 @@ export default function FormProgressoMetaModal({ meta }: FormProgressoMetaModalP
           label="De qual conta o dinheiro vai sair?"
           name="contaId"
           value={formData.contaId}
-          onChange={(e) => setFormData({ ...formData, contaId: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, contaId: e.target.value })
+          }
           disabled={carregandoContas || contas.length === 0}
           required
         >

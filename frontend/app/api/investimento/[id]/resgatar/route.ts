@@ -1,52 +1,25 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_BASE_URL_BACKEND;
-
-async function parseResponse(response: Response) {
-  const text = await response.text();
-  try {
-    return text ? JSON.parse(text) : {};
-  } catch {
-    return {};
-  }
-}
+import { forwardToBackend } from "@/lib/server/api";
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const authHeader = request.headers.get("authorization");
-
-    if (!authHeader) {
-      return Response.json({ error: "Token não informado" }, { status: 401 });
-    }
-
-    const { id } = await params;
-    
-    // O body vai receber exatamente o { valorResgatado, saldoRemanescente } do frontend
-    const body = await request.json(); 
-
-    const response = await fetch(`${BACKEND_URL}/api/investimento/${id}/resgatar`, {
+  const { id } = await params;
+  const body = await request.json();
+  const { data, status, ok } = await forwardToBackend(
+    `/api/investimento/${id}/resgatar`,
+    {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: authHeader,
-      },
-      body: JSON.stringify(body),
-    });
+      body,
+    },
+  );
 
-    if (!response.ok) {
-      const data = await parseResponse(response);
-      return Response.json(
-        { error: data.message || "Erro ao realizar resgate" },
-        { status: response.status }
-      );
-    }
-
-    const updatedInvestimento = await parseResponse(response);
-    return Response.json(updatedInvestimento, { status: 200 });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Erro desconhecido";
-    console.error(">>> Erro PUT resgate:", message);
-    return Response.json({ error: message }, { status: 500 });
+  if (!ok) {
+    return Response.json(
+      { error: data.error || data.message || "Erro ao realizar resgate" },
+      { status },
+    );
   }
+
+  return Response.json(data, { status });
 }

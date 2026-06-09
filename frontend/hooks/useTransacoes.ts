@@ -13,15 +13,7 @@ export function useTransacoes() {
 
   const carregarTransacoes = async () => {
     try {
-      const token = localStorage.getItem("user_token");
-      
-      if (!token) {
-        throw new Error("Usuário não autenticado");
-      }
-
-      const res = await fetch("/api/transacao", {
-        headers: { authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/transacao");
 
       if (!res.ok) {
         throw new Error("Falha ao buscar as trasações do banco de dados.");
@@ -58,11 +50,6 @@ export function useTransacoes() {
     setCriandoTransacao(true);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const transacaoData = {
         tipo: formData.tipo,
         conta: { id: formData.contaId },
@@ -77,7 +64,6 @@ export function useTransacoes() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(transacaoData),
       });
@@ -111,11 +97,6 @@ export function useTransacoes() {
     setAtualizandoId(transacaoId);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) {
-        throw new Error("Sessão expirada. Faça login novamente.");
-      }
-
       const transacaoData = {
         tipo: formData.tipo,
         conta: { id: formData.contaId },
@@ -130,7 +111,6 @@ export function useTransacoes() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(transacaoData),
       });
@@ -161,20 +141,10 @@ export function useTransacoes() {
     setDeletandoId(transacaoId);
 
     try {
-      const token = localStorage.getItem("user_token");
-
-      if (!token) {
-        alert("Sessão expirada. Faça login novamente.");
-        return;
-      }
-
       const response = await fetch(
         `/api/transacao/${transacaoId}`,
         {
           method: "DELETE",
-          headers: {
-            authorization: `Bearer ${token}`
-          }
         }
       );
 

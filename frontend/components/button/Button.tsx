@@ -14,7 +14,7 @@ const colorClasses = {
 export default function Button({ children, color = "primary", onClick,className, ...props }: ButtonProps) {
   return (
     <button
-      className={`${colorClasses[color]} text-white p-3 font-bold rounded-lg transition-opacity ${className}`}
+      className={`${colorClasses[color]} text-white p-3 border font-bold rounded-lg transition-opacity ${className}`}
       onClick={onClick}
       {...props}
     >

@@ -25,10 +25,10 @@ export default function ListaTransacoes({ transacoes }: ListaTransacoesProps) {
         <li
           key={t.id}
           onClick={() => openModal("transacao", t)}
-          className="flex justify-between items-center p-4 border-b last:border-0 border-gray-100 text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+          className="flex justify-between items-center p-4 border-b last:border-0 border-[var(--border-color)] text-sm hover:bg-[var(--bg-secondary)]/40 transition-colors cursor-pointer"
         >
           <div className="flex-1 min-w-0 pr-4">
-            <span className="block truncate font-medium text-gray-800">
+            <span className="block truncate font-medium">
               {t.origemDestino}
             </span>
             <p className="block truncate text-gray-500 text-xs mt-0.5">

@@ -8,7 +8,6 @@ import ThemeToggle from "../themeToggle/ThemeToggle";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Função para fechar o menu ao clicar em um link no mobile
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
