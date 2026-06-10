@@ -4,15 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {
-  ShieldCheck,
-  Sparkles,
-  LineChart,
-  Heart,
-} from "lucide-react";
+import { ShieldCheck, Sparkles, LineChart, Heart } from "lucide-react";
 import Hero from "@/components/home/hero/Hero";
 import Features from "@/components/home/features/Features";
-
+import Impact from "@/components/home/impact/Impact";
+import Beneficits from "@/components/home/benefits/Benefits";
+import Budget from "@/components/home/Budget/Budget";
+import CtaStrip from "@/components/home/ctaStrip/CtaStrip";
 
 export default function Home() {
   const router = useRouter();
@@ -33,7 +31,11 @@ export default function Home() {
   return (
     <main className="space-y-20">
       <Hero></Hero>
+      <Beneficits></Beneficits>
       <Features></Features>
+      <Budget></Budget>
+      <Impact></Impact>
+      <CtaStrip></CtaStrip>
     </main>
   );
 }

@@ -13,7 +13,7 @@ export default function ListaTransacoes({ transacoes }: ListaTransacoesProps) {
   const { formatarDiaMes } = useUtils();
   if (transacoes.length === 0) {
     return (
-      <p className="p-4 text-center text-gray-500">
+      <p className="p-4 text-center text-[var(--text-muted)]">
         Nenhuma transação encontrada.
       </p>
     );

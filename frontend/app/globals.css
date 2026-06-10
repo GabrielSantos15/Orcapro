@@ -16,15 +16,15 @@
   --bg-primary: #f5f5f5;
   --bg-secondary: #e6e6e6;
   --bg-surface: #FFFFFF;
-
+  
   --text-primary: #0F172A;
   --text-secondary: #37465a;
   --text-muted: #94A3B8;
-
+  
   --success-color: #10B981;
   --danger-color: #EF4444;
   --border-color: #E2E8F0;
-
+  
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
@@ -33,10 +33,11 @@
 
 .dark {
   /* =========================================
-     TEMA ESCURO (Dark Mode)
-     ========================================= */
-  --primary-color: #1ead8e;
-  --primary-hover: #23b8a4;
+  TEMA ESCURO (Dark Mode)
+  ========================================= */
+  --primary-color: #5bf016;
+  --primary-hover: #158026;
+  --secondary-color: #3f6e00;
 
   --bg-primary: #111214;
   --bg-secondary: #1f1f1f;

@@ -121,7 +121,7 @@ export default function DashBoardPage() {
           rodape={
             <Link
               href="/dashboard/movimentacao"
-              className="w-full py-2 font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-900 transition-colors rounded-b-lg flex justify-center items-center"
+              className="w-full py-2 font-mediu bg-[var(--bg-secondary)]/50 hover:bg-[var(--bg-secondary)] transition-colors rounded-b-lg flex justify-center items-center"
             >
               Ver Todas
             </Link>
@@ -136,7 +136,7 @@ export default function DashBoardPage() {
           rodape={
             <Link
               href="/dashboard/metas"
-              className="w-full py-2 font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-900 transition-colors rounded-b-lg flex justify-center items-center"
+              className="w-full py-2 font-medium bg-[var(--bg-secondary)]/50 hover:bg-[var(--bg-secondary)] transition-colors rounded-b-lg flex justify-center items-center"
             >
               Ver Todas
             </Link>
