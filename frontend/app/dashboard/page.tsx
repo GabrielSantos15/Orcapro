@@ -3,7 +3,6 @@
 import { Usuario } from "@/interfaces/Usuario";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import Modal from "@/components/modal/Modal";
 import { useModalStore } from "@/store/useModalStore";
 import { useContas } from "@/hooks/useContas";
@@ -18,6 +17,7 @@ import ListaTransacoes from "@/components/widgets/ListaTransacoes";
 import ListaContas from "@/components/widgets/ListaContas";
 import { MetaCard } from "@/components/cards/cardMeta";
 import GraficoColunas from "@/components/charts/GraficoColunas";
+import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 
 export default function DashBoardPage() {
   const { contas } = useContas();
@@ -47,7 +47,7 @@ export default function DashBoardPage() {
   );
 
   return (
-    <div className="p-1 sm:p-3 xl:p-4">
+    <div className="p-1 sm:p-3 xl:p-4" >
       <HeaderDashboard showWelcome={true} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

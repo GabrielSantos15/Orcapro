@@ -14,18 +14,27 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  try {
     const body = await request.json();
+
     const { data, status, ok } = await forwardToBackend("/api/categoria", {
-        method: "POST",
-        body,
+      method: "POST",
+      body,
     });
 
     if (!ok) {
-        return Response.json(
-            { error: data.error || data.message || "Erro ao criar categoria" },
-            { status }
-        );
+      return Response.json(
+        { error: data?.error || data?.message || "Erro ao criar categoria" },
+        { status }
+      );
     }
 
-    return Response.json(data, { status: 201 });
+    return Response.json(data, { status });
+
+  } catch (error) {
+    return Response.json(
+      { error: "Corpo da requisição inválido ou ausente." },
+      { status: 400 }
+    );
+  }
 }

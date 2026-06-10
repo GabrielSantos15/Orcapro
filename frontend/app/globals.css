@@ -32,12 +32,9 @@
 }
 
 .dark {
-  /* =========================================
-  TEMA ESCURO (Dark Mode)
-  ========================================= */
-  --primary-color: #5bf016;
+  --primary-color: rgb(236, 92, 9);
   --primary-hover: #158026;
-  --secondary-color: #3f6e00;
+  --secondary-color: #6e1600;
 
   --bg-primary: #111214;
   --bg-secondary: #1f1f1f;
@@ -57,4 +54,46 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-emerald {
+  --primary-color: #10B981;
+  --primary-hover: #059669;
+  --primary-light: #D1FAE5;
+  --secondary-color: #0886a5;
+}
+
+.theme-indigo {
+  --primary-color: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-light: #E0E7FF;
+  --secondary-color: #4338CA;
+}
+
+.theme-purple {
+  --primary-color: #8b5cf6;
+  --primary-hover: #7d2adb;
+  --primary-light: #FFE4E6;
+  --secondary-color: #471de1;
+}
+
+.theme-amber {
+  --primary-color: #F59E0B;
+  --primary-hover: #D97706;
+  --primary-light: #FEF3C7;
+  --secondary-color: #B45309;
+}
+
+.theme-sky {
+  --primary-color: #0EA5E9;
+  --primary-hover: #0284C7;
+  --primary-light: #E0F2FE;
+  --secondary-color: #0369A1;
+}
+
+.theme-pink {
+  --primary-color: #ec4899;
+  --primary-hover: #b9256f;
+  --primary-light: #E0F2FE;
+  --secondary-color: #8b0184;
 }
