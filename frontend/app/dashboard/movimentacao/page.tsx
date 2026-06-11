@@ -28,7 +28,7 @@ export default function Movimentacao() {
   const totalDespesa = obterTotalDespesasMes();
 
   return (
-    <div className="p-1 sm:p-3 xl:p-4">
+    <>
       <div>
         <HeaderDashboard title="Minhas Movimentações" />
         <Button
@@ -91,6 +91,6 @@ export default function Movimentacao() {
           </WidgetContainer>
         </div>
       </section>
-    </div>
+    </>
   );
 }

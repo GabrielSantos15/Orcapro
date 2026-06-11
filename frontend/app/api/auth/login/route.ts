@@ -1,4 +1,4 @@
-import { forwardToBackend } from "@/lib/server/api";
+import { publicRequest } from "@/lib/server/api";
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, status, ok } = await forwardToBackend("/api/usuario/login", {
+    const { data, status, ok } = await publicRequest("/api/usuario/login", {
       method: "POST",
       body,
     });

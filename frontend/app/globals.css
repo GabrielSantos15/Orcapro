@@ -32,10 +32,6 @@
 }
 
 .dark {
-  --primary-color: rgb(236, 92, 9);
-  --primary-hover: #158026;
-  --secondary-color: #6e1600;
-
   --bg-primary: #111214;
   --bg-secondary: #1f1f1f;
   --bg-surface: #282F35;

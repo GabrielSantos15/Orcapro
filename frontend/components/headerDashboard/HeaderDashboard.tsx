@@ -12,7 +12,7 @@ import { subtle } from "crypto";
 interface HeaderDashboardProps {
   showWelcome?: boolean;
   title?: string;
-  subTitle: string;
+  subTitle?: string;
 }
 
 export default function HeaderDashboard({
@@ -245,11 +245,11 @@ export default function HeaderDashboard({
         </div>
 
         <button onClick={() => setIsMobileDrawerOpen(true)}>
-          <Image
+          <img
             src={imgUrl}
             alt={user?.nome || "Avatar"}
-            width={52}
-            height={52}
+            width={70}
+            height={70}
             className="rounded-full border-2 border-white/20"
           />
         </button>
@@ -260,7 +260,7 @@ export default function HeaderDashboard({
             h-[220px]
             bg-gradient-to-r
             from-[var(--primary-color)]
-            to-cyan-600
+              to-[var(--secondary-color)]
             rounded-b-[2.5rem]
             -z-10
             -mx-8
@@ -300,7 +300,7 @@ export default function HeaderDashboard({
           </div>
 
           <div className="mt-6 flex items-center gap-3">
-            <Image
+            <img
               src={imgUrl}
               alt={user?.nome || "Avatar"}
               width={60}

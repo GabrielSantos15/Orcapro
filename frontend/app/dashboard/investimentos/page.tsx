@@ -15,24 +15,24 @@ export default function Investimentos() {
 
   if (carregando) {
     return (
-      <div className="p-1 sm:p-3 xl:p-4">
+      <>
         <HeaderDashboard title="Meus Investimentos" />
         <p>Carregando investimentos...</p>
-      </div>
+      </>
     );
   }
 
   if (erro) {
     return (
-      <div className="p-1 sm:p-3 xl:p-4">
+      <>
         <HeaderDashboard title="Meus Investimentos" />
         <p style={{ color: "red" }}>Erro: {erro}</p>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="p-1 sm:p-3 xl:p-4">
+    <>
       <HeaderDashboard title="Meus Investimentos" />
 
       <Button
@@ -47,6 +47,6 @@ export default function Investimentos() {
         onAporte={() => {}}
         onResgate={() => {}}
       ></ListaInvestimentos>
-    </div>
+    </>
   );
 }

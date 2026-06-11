@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Input from "@/components/forms/Input";
+import { toast } from "sonner";
 
 export default function Cadastro() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Cadastro() {
     setError("");
     setSuccess("");
 
-    // Validar se as senhas 
+    // Validar se as senhas
     if (senha !== confirmaSenha) {
       setError("As senhas não conferem!");
       return;
@@ -43,15 +44,12 @@ export default function Cadastro() {
         setError(data.error || "Erro ao fazer cadastro");
         return;
       }
-
-      setSuccess("Cadastro realizado com sucesso!");
-
-      // Guardar token do usuário
-      localStorage.setItem("user_token", data.token || "true");
+      toast.success("Cadastro realizado com sucesso!");
+      // localStorage.setItem("user_token", data.token || "true");
 
       // Redirecionar
       setTimeout(() => {
-        router.push("/login");
+        router.push("/dashboard");
       }, 1000);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
@@ -62,18 +60,17 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
+    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold">
-            <span className="text-purple-600">Orça</span>
-            <span className="text-purple-400">Pro</span>
+          <h1 className="text-4xl font-bold mb-8 text-center">
+            <span className="">Orça</span>
+            <span className="text-[var(--primary-color)]">Pro</span>
           </h1>
         </div>
 
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Cadastro</h2>
+        <h2 className="text-2xl font-bold mb-6">Cadastro</h2>
 
         {/* Error Message */}
         {error && (

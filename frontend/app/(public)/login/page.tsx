@@ -11,6 +11,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +30,7 @@ export default function Login() {
 
       if (!response.ok) {
         toast.error(data.error || "Erro ao fazer login");
+        setError(data.error || "Erro ao fazer cadastro");
         return;
       }
 
@@ -40,6 +42,7 @@ export default function Login() {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(message);
+      setErroMessage(message)
     } finally {
       setLoading(false);
     }
@@ -61,6 +64,11 @@ export default function Login() {
           Login
         </h2>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email Input */}

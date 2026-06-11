@@ -48,7 +48,7 @@ export default function Metas() {
   }
 
   return (
-    <div className="p-1 sm:p-3 xl:p-4">
+    <>
       <HeaderDashboard title="Minhas Metas" />
       <Button
         className="w-full md:w-fit mb-4"
@@ -69,6 +69,6 @@ export default function Metas() {
       ) : (
         <ListaMetas metas={metas}></ListaMetas>
       )}
-    </div>
+    </>
   );
 }

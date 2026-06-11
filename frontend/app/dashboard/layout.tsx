@@ -34,8 +34,11 @@ export default async function DashboardLayout({
             <Sidebar />
           </aside>
 
-          <main className="overflow-y-auto overflow-x-hidden p-6 pb-30 md:pb-6">
+          <main className="overflow-y-auto overflow-x-hidden p-6">
+            <div className="pb-30 md:pb-6 p-1 sm:p-3 xl:p-4">
+
             {children}
+            </div>
             <GlobalModal />
           </main>
         </div>

@@ -11,6 +11,37 @@ export async function parseResponse(response: Response) {
   }
 }
 
+// consome apis sem token
+export async function publicRequest(
+  endpoint: string,
+  options: {
+    method?: string;
+    body?: Record<string, unknown>;
+  } = {}
+) {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}${endpoint}`,
+    {
+      method: options.method || "GET",
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  return {
+    data,
+    status: response.status,
+    ok: response.ok,
+  };
+}
+
+// usa o token
 export async function forwardToBackend(
   endpoint: string,
   options: {

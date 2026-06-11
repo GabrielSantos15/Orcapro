@@ -11,9 +11,12 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm("Tem certeza que deseja sair?")) {
-      localStorage.removeItem("user_token");
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
       router.push("/");
     }
   };

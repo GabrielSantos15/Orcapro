@@ -47,7 +47,7 @@ export default function DashBoardPage() {
   );
 
   return (
-    <div className="p-1 sm:p-3 xl:p-4" >
+    < >
       <HeaderDashboard showWelcome={true} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -166,6 +166,6 @@ export default function DashBoardPage() {
           )}
         </WidgetContainer>
       </div>
-    </div>
+    </>
   );
 }

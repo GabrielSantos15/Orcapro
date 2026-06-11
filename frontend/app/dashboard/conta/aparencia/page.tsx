@@ -89,8 +89,7 @@ export default function AppearancePage() {
               key={color.id}
               onClick={() =>
                 setColorTheme(color.id)
-              }
-              className="group flex flex-col items-center"
+              }             className="group flex flex-col items-center"
             >
               <div
                 className={`size-14 rounded-full border-4 border-white shadow-md transition-all ${
