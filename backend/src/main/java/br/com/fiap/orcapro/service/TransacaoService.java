@@ -2,6 +2,7 @@ package br.com.fiap.orcapro.service;
 
 import br.com.fiap.orcapro.dto.CategoriaResumoDTO;
 import br.com.fiap.orcapro.dto.ContaResumoDTO;
+import br.com.fiap.orcapro.dto.TransacaoFiltroDTO;
 import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
 import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.model.Categoria;
@@ -10,6 +11,7 @@ import br.com.fiap.orcapro.model.Transacao;
 import br.com.fiap.orcapro.repository.CategoriaRepository;
 import br.com.fiap.orcapro.repository.ContaRepository;
 import br.com.fiap.orcapro.repository.TransacaoRepository;
+import br.com.fiap.orcapro.specification.TransacaoSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -166,6 +168,28 @@ public class TransacaoService {
 
         // ordena por DataTransacao E desempata por Id
         return transacaoRepository.findByContaUsuarioIdOrderByDataTransacaoDescIdDesc(idUsuario).stream().map(this::toDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransacaoResponseDTO> buscarComFiltro(
+            TransacaoFiltroDTO filtro,
+            String token
+    ) {
+
+        Long idUsuario = jwtService.extrairId(token);
+
+        return transacaoRepository.findAll(
+                        TransacaoSpecification.filtrar(
+                                idUsuario,
+                                filtro.getCategoriaId(),
+                                filtro.getTipo(),
+                                filtro.getDataInicio(),
+                                filtro.getDataFim()
+                        )
+                )
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @Transactional

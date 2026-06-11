@@ -1,9 +1,11 @@
 package br.com.fiap.orcapro.controller;
 
+import br.com.fiap.orcapro.dto.TransacaoFiltroDTO;
 import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
 import br.com.fiap.orcapro.model.Transacao;
 import br.com.fiap.orcapro.service.TransacaoService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,16 +49,30 @@ public class TransacaoController {
         );
     }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<TransacaoResponseDTO> buscarTodos(
+    @GetMapping("")
+    public ResponseEntity<List<TransacaoResponseDTO>> filtrar(
+            TransacaoFiltroDTO filtro,
             @RequestHeader("Authorization") String token
     ) {
 
-        return transacaoService.buscarTodos(
-                token.substring(7)
+        return ResponseEntity.ok(
+                transacaoService.buscarComFiltro(
+                        filtro,
+                        token.substring(7)
+                )
         );
     }
+
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<TransacaoResponseDTO> buscarTodos(
+//            @RequestHeader("Authorization") String token
+//    ) {
+//
+//        return transacaoService.buscarTodos(
+//                token.substring(7)
+//        );
+//    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -85,4 +101,5 @@ public class TransacaoController {
                 token.substring(7)
         );
     }
+
 }

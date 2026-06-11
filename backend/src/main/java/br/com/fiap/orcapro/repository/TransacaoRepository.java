@@ -2,10 +2,14 @@ package br.com.fiap.orcapro.repository;
 
 import br.com.fiap.orcapro.model.Transacao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
-public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
+public interface TransacaoRepository extends
+        JpaRepository<Transacao, Long>,
+        JpaSpecificationExecutor<Transacao> {
+
     List<Transacao> findByContaUsuarioId(Long idUsuario);
     List<Transacao> findByContaId(Long idConta);
     List<Transacao> findByCategoriaId(Long idCategoria);
