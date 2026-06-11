@@ -1,9 +1,6 @@
 package br.com.fiap.orcapro.service;
 
-import br.com.fiap.orcapro.dto.CategoriaResumoDTO;
-import br.com.fiap.orcapro.dto.ContaResumoDTO;
-import br.com.fiap.orcapro.dto.TransacaoFiltroDTO;
-import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
+import br.com.fiap.orcapro.dto.*;
 import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.model.Categoria;
 import br.com.fiap.orcapro.model.Conta;
@@ -257,5 +254,46 @@ public class TransacaoService {
         aplicarSaldo(novaConta, transacao.getValor(), categoria.getTipo());
 
         return toDTO(transacaoAtualizada);
+    }
+
+    @Transactional(readOnly = true)
+    public ResumoTransacaoDTO buscarResumo(
+            TransacaoFiltroDTO filtro,
+            String token
+    ) {
+
+        Long idUsuario = jwtService.extrairId(token);
+
+        List<Transacao> transacoes = transacaoRepository.findAll(
+                TransacaoSpecification.filtrar(
+                        idUsuario,
+                        filtro.getCategoriaId(),
+                        filtro.getTipo(),
+                        filtro.getDataInicio(),
+                        filtro.getDataFim()
+                )
+        );
+
+        BigDecimal receitas = BigDecimal.ZERO;
+        BigDecimal despesas = BigDecimal.ZERO;
+
+        for (Transacao transacao : transacoes) {
+
+            if (transacao.getCategoria().getTipo() == TipoCategoria.ENTRADA) {
+
+                receitas = receitas.add(transacao.getValor());
+
+            } else {
+
+                despesas = despesas.add(transacao.getValor());
+            }
+        }
+
+        return new ResumoTransacaoDTO(
+                receitas,
+                despesas,
+                receitas.subtract(despesas),
+                (long) transacoes.size()
+        );
     }
 }

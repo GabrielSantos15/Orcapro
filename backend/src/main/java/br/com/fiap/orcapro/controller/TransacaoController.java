@@ -1,5 +1,6 @@
 package br.com.fiap.orcapro.controller;
 
+import br.com.fiap.orcapro.dto.ResumoTransacaoDTO;
 import br.com.fiap.orcapro.dto.TransacaoFiltroDTO;
 import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
 import br.com.fiap.orcapro.model.Transacao;
@@ -102,4 +103,16 @@ public class TransacaoController {
         );
     }
 
+    @GetMapping("/resumo")
+    @ResponseStatus(HttpStatus.OK)
+    public ResumoTransacaoDTO resumo(
+            TransacaoFiltroDTO filtro,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return transacaoService.buscarResumo(
+                filtro,
+                token.substring(7)
+        );
+    }
 }
