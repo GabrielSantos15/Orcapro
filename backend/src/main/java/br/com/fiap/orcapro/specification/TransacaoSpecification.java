@@ -15,6 +15,7 @@ public class TransacaoSpecification {
             Long usuarioId,
             Long categoriaId,
             TipoCategoria tipo,
+            Long contaId,
             LocalDate dataInicio,
             LocalDate dataFim
     ) {
@@ -48,6 +49,14 @@ public class TransacaoSpecification {
                                 root.get("categoria")
                                         .get("tipo"),
                                 tipo
+                        )
+                );
+            }
+
+            if(contaId != null){
+                predicates.add(
+                        cb.equal(
+                                root.get("conta").get("id"), contaId
                         )
                 );
             }

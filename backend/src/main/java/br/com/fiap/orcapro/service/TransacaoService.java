@@ -180,6 +180,7 @@ public class TransacaoService {
                                 idUsuario,
                                 filtro.getCategoriaId(),
                                 filtro.getTipo(),
+                                filtro.getContaId(),
                                 filtro.getDataInicio(),
                                 filtro.getDataFim()
                         )
@@ -269,6 +270,7 @@ public class TransacaoService {
                         idUsuario,
                         filtro.getCategoriaId(),
                         filtro.getTipo(),
+                        filtro.getContaId(),
                         filtro.getDataInicio(),
                         filtro.getDataFim()
                 )

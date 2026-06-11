@@ -10,6 +10,16 @@ public class TransacaoFiltroDTO {
     private TipoCategoria tipo;
     private LocalDate dataInicio;
     private LocalDate dataFim;
+    private Long contaId;
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
+    }
+
     public Long getCategoriaId() {
         return categoriaId;
     }
