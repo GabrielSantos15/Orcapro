@@ -18,11 +18,12 @@ import ListaContas from "@/components/widgets/ListaContas";
 import { MetaCard } from "@/components/cards/cardMeta";
 import GraficoColunas from "@/components/charts/GraficoColunas";
 import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
+import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 
 export default function DashBoardPage() {
   const { contas } = useContas();
-  const { transacoes, obterTotalReceitasMes, obterTotalDespesasMes } =
-    useTransacoes();
+  const { transacoes } = useTransacoes();
+  const { resumo } = useResumoTransacoes();
   const { categorias } = useCategorias();
   const { investimentos } = useInvestimentos();
   const { metas } = useMetas();
@@ -36,30 +37,33 @@ export default function DashBoardPage() {
     )
     .slice(0, 5);
 
-  const saldoTotal = contas.reduce((acc, conta) => acc + (conta.saldo || 0), 0);
-
-  const totalReceita = obterTotalReceitasMes();
-  const totalDespesa = obterTotalDespesasMes();
-
   const totalInvestido = investimentos.reduce(
     (acc, inv) => acc + (inv.valorInvestido || 0),
     0,
   );
 
   return (
-    < >
+    <>
       <HeaderDashboard showWelcome={true} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
-          <CardResumo value={saldoTotal} title="Saldo Total" color="primary" />
-          <CardResumo value={totalReceita} title="Entradas" color="green" />
-          <CardResumo value={totalDespesa} title="Saídas" color="red" />
+          <CardResumo
+            value={resumo.saldo}
+            title="Saldo Total"
+            color="primary"
+          />
+          <CardResumo value={resumo.receitas} title="Entradas" color="green" />
+          <CardResumo value={resumo.despesas} title="Saídas" color="red" />
           <CardResumo value={totalInvestido} title="Investido" color="blue" />
         </section>
 
         <section className="md:hidden flex flex-col gap-4">
-          <CardResumo value={saldoTotal} title="Saldo Total" color="primary" />
+          <CardResumo
+            value={resumo.saldo}
+            title="Saldo Total"
+            color="primary"
+          />
           <Button
             className="md:hidden"
             onClick={() => openModal("createTransacao")}
@@ -67,8 +71,12 @@ export default function DashBoardPage() {
             + Adicionar Transação
           </Button>
           <div className="flex justify-between gap-4">
-            <CardResumo value={totalReceita} title="Entradas" color="green" />
-            <CardResumo value={totalDespesa} title="Saídas" color="red" />
+            <CardResumo
+              value={resumo.receitas}
+              title="Entradas"
+              color="green"
+            />
+            <CardResumo value={resumo.despesas} title="Saídas" color="red" />
           </div>
           <CardResumo value={totalInvestido} title="Investido" color="blue" />
         </section>

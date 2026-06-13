@@ -1,12 +1,20 @@
 import { forwardToBackend } from "@/lib/server/api";
 
-export async function GET() {
-  const { data, status, ok } = await forwardToBackend("/api/transacao");
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  const queryString = searchParams.toString();
+
+  const endpoint = queryString
+    ? `/api/transacao?${queryString}`
+    : "/api/transacao";
+
+  const { data, status, ok } = await forwardToBackend(endpoint);
 
   if (!ok) {
     return Response.json(
       { error: data.error || data.message || "Erro ao buscar transações" },
-      { status },
+      { status }
     );
   }
 

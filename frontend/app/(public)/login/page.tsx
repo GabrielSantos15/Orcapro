@@ -42,7 +42,7 @@ export default function Login() {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       toast.error(message);
-      setErroMessage(message)
+      // setErroMessage(message);
     } finally {
       setLoading(false);
     }
