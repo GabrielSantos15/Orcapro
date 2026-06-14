@@ -18,6 +18,7 @@ type User = {
     id: number
     nome: string
     email: string
+    avatarSeed: string 
 }
 
 type AuthContextType = {
@@ -46,10 +47,17 @@ export function AuthProvider({
                 return res.json()
             })
             .then(data => {
+                const nomeFormatado = capitalizeString(data.nome);
+                
+                //  Busca a seed salva no navegador
+                const savedSeed = localStorage.getItem('avatar_seed');
+                
                 setUser({
                     id: data.id,
-                    nome: capitalizeString(data.nome),
+                    nome: nomeFormatado,
                     email: data.email,
+                    // Define o avatar: usa o salvo, senão usa o nome, senão "usuario"
+                    avatarSeed: savedSeed || nomeFormatado || 'usuario',
                 })
             })
             .catch(() => {

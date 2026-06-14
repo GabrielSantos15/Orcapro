@@ -8,6 +8,7 @@ import { useAuth } from "@/app/context/AuthContext";
 
 import { User, Shield, Palette, Tags, Bell, LogOut, X } from "lucide-react";
 import { subtle } from "crypto";
+import { useUsuario } from "@/hooks/useUsuario";
 
 interface HeaderDashboardProps {
   showWelcome?: boolean;
@@ -21,6 +22,7 @@ export default function HeaderDashboard({
   subTitle,
 }: HeaderDashboardProps) {
   const { user } = useAuth();
+  const { avatarUrl } = useUsuario();
 
   const pathname = usePathname();
 
@@ -28,23 +30,13 @@ export default function HeaderDashboard({
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
-
   const firstName = user?.nome?.split(" ")[0] ?? "Usuário";
-
-  const imgUrl = `https://api.dicebear.com/9.x/thumbs/svg?seed=${
-    user?.nome || "usuario"
-  }`;
 
   const accountMenu = [
     {
       label: "Meu Perfil",
       href: "/dashboard/conta",
       icon: User,
-    },
-    {
-      label: "Segurança",
-      href: "dashboard/conta/seguranca",
-      icon: Shield,
     },
     {
       label: "Aparência",
@@ -56,11 +48,7 @@ export default function HeaderDashboard({
       href: "/dashboard/conta/categorias",
       icon: Tags,
     },
-    {
-      label: "Notificações",
-      href: "/dashboard/conta/notificacoes",
-      icon: Bell,
-    },
+
   ];
 
   useEffect(() => {
@@ -94,10 +82,9 @@ export default function HeaderDashboard({
               href={item.href}
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-2xl transition-all
-                ${
-                  isActive
-                    ? "bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
-                    : "hover:bg-[var(--bg-secondary)]"
+                ${isActive
+                  ? "bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
+                  : "hover:bg-[var(--bg-secondary)]"
                 }
               `}
             >
@@ -158,7 +145,7 @@ export default function HeaderDashboard({
             "
           >
             <img
-              src={imgUrl}
+              src={avatarUrl}
               alt={user?.nome || "Avatar"}
               width={56}
               height={56}
@@ -184,10 +171,9 @@ export default function HeaderDashboard({
               overflow-hidden
               z-50
               transition-all duration-200
-              ${
-                isMenuOpen
-                  ? "opacity-100 visible translate-y-0"
-                  : "opacity-0 invisible translate-y-2"
+              ${isMenuOpen
+                ? "opacity-100 visible translate-y-0"
+                : "opacity-0 invisible translate-y-2"
               }
             `}
           >
@@ -246,7 +232,7 @@ export default function HeaderDashboard({
 
         <button onClick={() => setIsMobileDrawerOpen(true)}>
           <img
-            src={imgUrl}
+            src={avatarUrl}
             alt={user?.nome || "Avatar"}
             width={70}
             height={70}
@@ -301,7 +287,7 @@ export default function HeaderDashboard({
 
           <div className="mt-6 flex items-center gap-3">
             <img
-              src={imgUrl}
+              src={avatarUrl}
               alt={user?.nome || "Avatar"}
               width={60}
               height={60}

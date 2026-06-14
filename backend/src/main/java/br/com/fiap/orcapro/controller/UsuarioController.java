@@ -1,8 +1,11 @@
 package br.com.fiap.orcapro.controller;
 
+import br.com.fiap.orcapro.dto.AlterarSenhaRequestDTO;
+import br.com.fiap.orcapro.dto.CadastroUsuarioDTO;
 import br.com.fiap.orcapro.dto.UsuarioResponseDTO;
 import br.com.fiap.orcapro.model.Usuario;
 import br.com.fiap.orcapro.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +27,9 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioResponseDTO salvar(
-            @RequestBody Usuario usuario
-    ) {
-
-        return usuarioService.salvar(usuario);
+    public UsuarioResponseDTO salvar(@Valid @RequestBody CadastroUsuarioDTO dto) {
+        Usuario novoUsuario = dto.toEntity();
+        return usuarioService.salvar(novoUsuario);
     }
 
     @PostMapping("/login")
@@ -67,6 +68,19 @@ public class UsuarioController {
 
         return usuarioService.atualizarPerfil(
                 usuario,
+                token.substring(7)
+        );
+    }
+
+    @PutMapping("/senha")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void alterarSenha(
+            @RequestBody AlterarSenhaRequestDTO payload,
+            @RequestHeader("Authorization") String token
+    ) {
+        usuarioService.alterarSenha(
+                payload.senhaAtual(),
+                payload.novaSenha(),
                 token.substring(7)
         );
     }

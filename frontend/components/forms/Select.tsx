@@ -17,7 +17,7 @@ export default function Select({ label, children, ...props }: SelectProps) {
       <div className="relative">
         <select
           {...props}
-          className="w-full appearance-none rounded-lg border-2 border-purple-300 bg-white px-4 py-3 pr-10 text-gray-900 
+          className="w-full appearance-none rounded-lg border-2 border-purple-300 bg-[var(--bg-secondary)] px-4 py-3 pr-10
                      shadow-sm focus:border-purple-500 focus:ring-2 
                      focus:ring-purple-300 focus:outline-none transition duration-200 cursor-pointer"
         >

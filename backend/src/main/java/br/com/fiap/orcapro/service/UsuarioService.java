@@ -124,21 +124,19 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO atualizarPerfil(Usuario usuario, String token) {
-
         Long idUsuario = jwtService.extrairId(token);
+        Usuario usuarioAtual = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Usuario usuarioAtual = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        if (usuario.getNome() != null && !usuario.getNome().isBlank()) {
+            usuarioAtual.setNome(usuario.getNome());
+        }
 
-        usuarioAtual.setNome(usuario.getNome());
-        usuarioAtual.setEmail(usuario.getEmail());
-
-        if (usuario.getSenha() != null && !usuario.getSenha().isBlank()) {
-
-            usuarioAtual.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        if (usuario.getEmail() != null && !usuario.getEmail().isBlank()) {
+            usuarioAtual.setEmail(usuario.getEmail());
         }
 
         Usuario usuarioAtualizado = usuarioRepository.save(usuarioAtual);
-
         return toDTO(usuarioAtualizado);
     }
 
@@ -150,6 +148,28 @@ public class UsuarioService {
         usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         usuarioRepository.deleteById(idUsuario);
+    }
+
+    // ======================================================
+    // SEGURANÇA
+    // ======================================================
+
+    @Transactional
+    public void alterarSenha(String senhaAtual, String novaSenha, String token) {
+        Long idUsuario = jwtService.extrairId(token);
+        Usuario usuarioAtual = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (!passwordEncoder.matches(senhaAtual, usuarioAtual.getSenha())) {
+            throw new RuntimeException("A senha atual informada está incorreta.");
+        }
+
+        if (novaSenha == null || novaSenha.isBlank()) {
+            throw new RuntimeException("A nova senha não pode ser vazia.");
+        }
+
+        usuarioAtual.setSenha(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuarioAtual);
     }
 
     // ======================================================
