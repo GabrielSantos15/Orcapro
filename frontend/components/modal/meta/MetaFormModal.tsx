@@ -2,15 +2,17 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import { useState, useEffect } from "react";
-import Input from "../forms/Input";
-import Textarea from "../forms/Textarea"; // Usando o componente Textarea que criamos
+import Input from "../../forms/Input";
+import Textarea from "../../forms/Textarea";
 import { Meta } from "@/interfaces/Meta";
+import { Target } from "lucide-react";
+import { toast } from "sonner";
 
 interface FormMetaModalProps {
   meta?: Meta | null;
 }
 
-export default function FormMetaModal({ meta }: FormMetaModalProps) {
+export default function MetaFormModal({ meta }: FormMetaModalProps) {
   const { closeModal, triggerUpdate } = useModalStore();
   const [submitting, setSubmitting] = useState(false);
 
@@ -20,7 +22,7 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
     nome: "",
     descricao: "",
     valorAlvo: "",
-    valorAtual: "0", // Incluído para permitir ajustes manuais
+    valorAtual: "",
     dataLimite: "",
   });
 
@@ -29,8 +31,8 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
       setFormData({
         nome: meta.nome || "",
         descricao: meta.descricao || "",
-        valorAlvo: String(meta.valorAlvo) || "",
-        valorAtual: String(meta.valorAtual || "0"),
+        valorAlvo: meta.valorAlvo ? meta.valorAlvo.toFixed(2) : "",
+        valorAtual: meta.valorAtual ? meta.valorAtual.toFixed(2) : "0.00",
         dataLimite: meta.dataLimite ? meta.dataLimite.split("T")[0] : "",
       });
     }
@@ -41,14 +43,19 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
     setSubmitting(true);
 
     try {
-      const token = localStorage.getItem("user_token");
-      if (!token) throw new Error("Sessão expirada.");
+      // Limpeza da máscara de moeda (ex: "1.500,00" -> 1500.00)
+      const getValorNumerico = (valorStr: string) => {
+        if (!valorStr) return 0;
+        const valorSemPonto = valorStr.replace(/\./g, "");
+        const valorComPontoDec = valorSemPonto.replace(",", ".");
+        return parseFloat(valorComPontoDec) || 0;
+      };
 
       const payload = {
         nome: formData.nome,
         descricao: formData.descricao,
-        valorAlvo: parseFloat(formData.valorAlvo),
-        valorAtual: parseFloat(formData.valorAtual),
+        valorAlvo: getValorNumerico(formData.valorAlvo),
+        valorAtual: getValorNumerico(formData.valorAtual),
         dataLimite: formData.dataLimite || null,
       };
 
@@ -59,14 +66,13 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error("Falha ao salvar meta.");
 
-      alert(
+      toast.success(
         isEditMode
           ? "Meta atualizada com sucesso!"
           : "Meta criada com sucesso!",
@@ -74,7 +80,7 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
       triggerUpdate();
       closeModal();
     } catch (error: any) {
-      alert(error.message || "Erro ao conectar com o servidor.");
+      toast.error(error.message || "Erro ao conectar com o servidor.");
     } finally {
       setSubmitting(false);
     }
@@ -82,14 +88,23 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900">
-        {isEditMode ? "Editar Meta" : "Nova Meta"}
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
-        {isEditMode
-          ? "Ajuste os detalhes e prazos do seu objetivo financeiro."
-          : "Defina um novo objetivo para começar a guardar dinheiro."}
-      </p>
+      {/* HEADER */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-[var(--primary-light)] border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]">
+          <Target className="w-8 h-8" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-medium text-[var(--text-primary)]">
+            {isEditMode ? "Editar Meta" : "Nova Meta"}
+          </h2>
+          <p className="text-sm text-[var(--text-muted)]">
+            {isEditMode
+              ? "Ajuste os detalhes e prazos do seu objetivo financeiro."
+              : "Defina um novo objetivo para começar a guardar dinheiro."}
+          </p>
+        </div>
+      </div>
+
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input
@@ -97,7 +112,7 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
           type="text"
           value={formData.nome}
           onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-          placeholder="Ex: Viagem para a Europa, Carro Novo..."
+          placeholder="Ex: Viagem para a Europa, Reserva de Emergência..."
           required
           autoFocus
         />
@@ -114,15 +129,15 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Valor Alvo (R$)"
+            label="Valor Alvo"
             type="number"
+            isCurrency={true}
             value={formData.valorAlvo}
             onChange={(e) =>
               setFormData({ ...formData, valorAlvo: e.target.value })
             }
             placeholder="0.00"
             step="0.01"
-            min={1}
             required
           />
 
@@ -138,29 +153,41 @@ export default function FormMetaModal({ meta }: FormMetaModalProps) {
 
         {isEditMode && (
           <Input
-            label="Progresso Atual (R$)"
+            label="Progresso Atual (Registro Manual)"
             type="number"
+            isCurrency={true}
             value={formData.valorAtual}
             onChange={(e) =>
               setFormData({ ...formData, valorAtual: e.target.value })
             }
             placeholder="0.00"
             step="0.01"
-            min={0}
           />
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full mt-4 bg-purple-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
-        >
-          {submitting
-            ? "Salvando..."
-            : isEditMode
-              ? "Salvar Alterações"
-              : "Criar Meta"}
-        </button>
+        {/* BOTÕES DE AÇÃO */}
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => closeModal()}
+            disabled={submitting}
+            className="cursor-pointer flex-1 px-4 py-3 text-[var(--text-secondary)] border border-[var(--border-color)] rounded-[var(--radius-md)] hover:bg-[var(--bg-primary)] font-semibold transition disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="cursor-pointer flex-1 bg-[var(--primary-color)] text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md hover:bg-[var(--primary-hover)] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting
+              ? "Salvando..."
+              : isEditMode
+                ? "Salvar Alterações"
+                : "Criar Meta"}
+          </button>
+        </div>
       </form>
     </div>
   );

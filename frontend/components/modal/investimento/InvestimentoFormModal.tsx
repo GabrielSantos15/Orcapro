@@ -2,18 +2,19 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import { useState, useEffect } from "react";
-import Input from "../forms/Input";
-import Select from "../forms/Select";
+import Input from "../../forms/Input";
+import Select from "../../forms/Select";
 import { Investimento } from "@/interfaces/Investimento";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
 import { useContas } from "@/hooks/useContas";
 import { TrendingUp } from "lucide-react";
+import { toast } from "sonner"; // Usando toast ao invés de alert
 
 interface FormInvestimentoModalProps {
   investimento?: Investimento | null;
 }
 
-export default function FormInvestimentoModal({
+export default function InvestimentoFormModal({
   investimento,
 }: FormInvestimentoModalProps) {
   const { closeModal } = useModalStore();
@@ -63,7 +64,7 @@ export default function FormInvestimentoModal({
         idConta: String(investimento.conta?.id || ""),
         ativo: investimento.ativo || "",
         tipo: investimento.tipo || "RENDA_FIXA",
-        valorInvestido: String(investimento.valorInvestido || ""),
+        valorInvestido: investimento.valorInvestido ? investimento.valorInvestido.toFixed(2) : "",
         percentual: String(investimento.percentual || ""),
         indicador: investimento.indicador || "CDI",
         dataAplicacao:
@@ -81,18 +82,16 @@ export default function FormInvestimentoModal({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Atualiza saldo quando muda a conta
+
     if (name === "idConta") {
       const contaSelecionada = contas.find((c) => String(c.id) === value);
       setSaldoContaSelecionada(contaSelecionada?.saldo || 0);
     }
 
-    // Valida saldo insuficiente
     if (name === "valorInvestido") {
-      const valor = parseFloat(value);
-      if (valor > saldoContaSelecionada) {
-        setErro(`Saldo insuficiente. Saldo disponível: R$ ${saldoContaSelecionada.toFixed(2)}`);
+      const valorSemMascara = parseFloat(value.replace(/\./g, "").replace(",", ".")) || 0;
+      if (valorSemMascara > saldoContaSelecionada) {
+        setErro(`Saldo insuficiente. Saldo disponível: R$ ${saldoContaSelecionada.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
       } else {
         setErro(null);
       }
@@ -101,21 +100,25 @@ export default function FormInvestimentoModal({
     }
   };
 
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const contaSelecionada = contas.find((c) => String(c.id) === formData.idConta);
-      
+
       if (!contaSelecionada) {
         throw new Error("Conta não encontrada.");
       }
 
-      const valorInvestido = parseFloat(formData.valorInvestido);
+      let valorInvestidoLimpo = 0;
+      if (formData.valorInvestido) {
+        const valorSemPonto = formData.valorInvestido.replace(/\./g, "");
+        const valorComPontoDec = valorSemPonto.replace(",", ".");
+        valorInvestidoLimpo = parseFloat(valorComPontoDec);
+      }
 
-      // Validação de saldo insuficiente (apenas em modo criação)
-      if (!isEditMode && valorInvestido > contaSelecionada.saldo) {
-        setErro(`Saldo insuficiente. Saldo disponível: R$ ${contaSelecionada.saldo.toFixed(2)}`);
+      if (!isEditMode && valorInvestidoLimpo > contaSelecionada.saldo) {
+        setErro(`Saldo insuficiente. Saldo disponível: R$ ${contaSelecionada.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
         return;
       }
 
@@ -123,7 +126,7 @@ export default function FormInvestimentoModal({
         conta: contaSelecionada,
         ativo: formData.ativo,
         tipo: formData.tipo,
-        valorInvestido: valorInvestido,
+        valorInvestido: valorInvestidoLimpo,
         percentual: formData.tipo === "RENDA_VARIAVEL" ? 0 : parseFloat(formData.percentual),
         indicador: formData.indicador,
         dataAplicacao: formData.dataAplicacao,
@@ -132,10 +135,10 @@ export default function FormInvestimentoModal({
 
       if (isEditMode) {
         await updateInvestimento(investimento!.id, payload);
-        alert("Investimento atualizado com sucesso!");
+        toast.success("Investimento atualizado com sucesso!");
       } else {
         await createInvestimento(payload);
-        alert("Investimento criado com sucesso!");
+        toast.success("Investimento criado com sucesso!");
       }
 
       closeModal();
@@ -149,18 +152,27 @@ export default function FormInvestimentoModal({
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-2">
-        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
-          <TrendingUp className="w-5 h-5" />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-[var(--primary-light)] border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]">
+          <TrendingUp className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">
-          {isEditMode ? "Editar Investimento" : "Novo Investimento"}
-        </h2>
+        <div>
+          <h2 className="text-2xl font-medium text-[var(--text-primary)]">
+            {isEditMode ? "Editar Investimento" : "Novo Investimento"}
+          </h2>
+          <p className="text-sm text-[var(--text-muted)]">
+            {isEditMode
+              ? "Altere os dados do seu investimento."
+              : "Registre uma nova aplicação financeira."}
+          </p>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* MENSAGEM DE ERRO (Visual suave) */}
         {erro && (
-          <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm border border-red-200 font-medium">
+          <div className="p-4 bg-[var(--danger-color)]/10 text-[var(--danger-color)] rounded-xl text-sm  font-medium">
             {erro}
           </div>
         )}
@@ -170,7 +182,7 @@ export default function FormInvestimentoModal({
           name="ativo"
           value={formData.ativo}
           onChange={handleChange}
-          placeholder="Ex: CDB Banco Inter"
+          placeholder="Ex: CDB Banco Inter, Tesouro IPCA+"
           required
         />
 
@@ -183,11 +195,11 @@ export default function FormInvestimentoModal({
           required
         >
           <option value="" disabled>
-            Selecione uma conta
+            {loadingContas ? "Carregando..." : "Selecione uma conta"}
           </option>
           {contas.map((conta) => (
             <option key={conta.id} value={conta.id}>
-              {conta.instituicao} - R$ {conta.saldo.toFixed(2)}
+              {conta.instituicao} - R$ {conta.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </option>
           ))}
         </Select>
@@ -227,6 +239,7 @@ export default function FormInvestimentoModal({
               name="percentual"
               value={formData.percentual}
               onChange={handleChange}
+              placeholder="Ex: 110"
               step="0.1"
               required
             />
@@ -238,32 +251,47 @@ export default function FormInvestimentoModal({
             value={formData.dataAplicacao}
             onChange={handleChange}
             required
+            className={formData.tipo === "RENDA_VARIAVEL" ? "col-span-2" : ""}
           />
         </div>
 
         {!isEditMode && (
           <Input
-            label="Valor a Investir (R$)"
+            label="Valor a Investir"
             type="number"
+            isCurrency={true}
             name="valorInvestido"
             value={formData.valorInvestido}
             onChange={handleChange}
+            placeholder="0.00"
             step="0.01"
             required
           />
         )}
 
-        <button
-          type="submit"
-          disabled={isLoading || !!erro}
-          className="w-full py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading
-            ? "Salvando..."
-            : isEditMode
-              ? "Atualizar Investimento"
-              : "Aplicar Investimento"}
-        </button>
+        {/* BOTÕES DE AÇÃO */}
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => closeModal()}
+            disabled={isLoading}
+            className="cursor-pointer flex-1 px-4 py-3 text-[var(--text-secondary)] border border-[var(--border-color)] rounded-[var(--radius-md)] hover:bg-[var(--bg-primary)] font-semibold transition disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            disabled={isLoading || !!erro}
+            className="cursor-pointer flex-1 bg-[var(--primary-color)] text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md hover:bg-[var(--primary-hover)] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading
+              ? "Salvando..."
+              : isEditMode
+                ? "Salvar Alterações"
+                : "Aplicar Investimento"}
+          </button>
+        </div>
       </form>
     </div>
   );

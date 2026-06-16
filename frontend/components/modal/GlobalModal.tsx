@@ -6,19 +6,21 @@ import { useModalStore } from "@/store/useModalStore";
 // import ModalLogin from "./modals/ModalLogin";
 // import ModalExcluirUser from "./modals/ModalExcluirUser";
 import Modal from "./Modal";
-import CreateContaModal from "./FormContaModal";
-import CreateCategoriaModal from "./CreateCategoriaModal";
-import TransacaoModal from "./TransacaoModal";
-import FormTransacaoModal from "./FormTransacaoModal";
-import ContaModal from "./ContaModal";
-import FormContaModal from "./FormContaModal";
-import FormInvestimentoModal from "./FormInvestimentoModal";
-import FormAporteInvestimento from "./FormAporteInvestimento";
-import FormResgateInvestimentoModal from "./FormResgateInvestimentoModal";
-import FormAtualizarSaldoInvestidoModal from "./FormAtualizarSaldoInvestidoModal";
-import FormMetaModal from "./FormMetaModal";
-import FormProgressoMetaModal from "./FormProgressoMetaModal";
-import FormResgateMetaModal from "./FormResgateMetaModal";
+import CreateCategoriaModal from "./categoria/CategoriaFormModal";
+import TransacaoViewModal from "./transacao/TransacaoViewModal";
+import TransacaoFormModal from "./transacao/TransacaoFormModal";
+import ContaViewModal from "./conta/ContaViewModal";
+import InvestimentoFormModal from "./investimento/InvestimentoFormModal";
+import FormAtualizarSaldoInvestidoModal from "./investimento/InvestimentoSaldoFormModal";
+import ContaFormModal from "./conta/ContaFormModal";
+import InvestimentoAporteFormModal from "./investimento/InvestimentoAporteFormModal";
+import InvestimentoResgateFormModal from "./investimento/InvestimentoResgateFormModal";
+import MetaFormModal from "./meta/MetaFormModal";
+import MetaProgressoFormModal from "./meta/MetaProgressoFormModal";
+import MetaResgateFormModal from "./meta/MetaResgateFormModal";
+import InvestimentoSaldoFormModal from "./investimento/InvestimentoSaldoFormModal";
+import CategoriaViewModal from "./categoria/CategoriaViewModal";
+import OrcamentoFormModal from "./orcamento/OrcamentoFormModal";
 
 export default function GlobalModal() {
   const { isOpen, view, closeModal, data } = useModalStore();
@@ -27,22 +29,32 @@ export default function GlobalModal() {
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
-      {view === "createTransacao" && <FormTransacaoModal />}
-      {view === "updateTransacao" && <FormTransacaoModal transacao={data}/>}
-      {view === "transacao" && <TransacaoModal transacao={data}/>}
-      {view === "conta" && <ContaModal conta={data} />}
-      {view === "createConta" && <CreateContaModal />}
-      {view === "updateConta" && <FormContaModal conta={data} />}
+      {view === "conta" && <ContaViewModal conta={data} />}
+      {view === "createConta" && <ContaFormModal />}
+      {view === "updateConta" && <ContaFormModal conta={data} />}
+      
+      {view === "transacao" && <TransacaoViewModal transacao={data}/>}
+      {view === "createTransacao" && <TransacaoFormModal />}
+      {view === "updateTransacao" && <TransacaoFormModal transacao={data}/>}
+
+      
+      {view === "createInvestimento" && <InvestimentoFormModal />}
+      {view === "updateInvestimento" && <InvestimentoFormModal investimento={data} />}
+
+      {view === "aporteInvestimento" && <InvestimentoAporteFormModal  investimento={data}/>}
+      {view === "resgateInvestimento" && <InvestimentoResgateFormModal  investimento={data}/>}
+      {view === "updateSaldoInvestimento" && <InvestimentoSaldoFormModal  investimento={data}/>}
+
+      {view === "createMeta" && <MetaFormModal />}
+      {view === "updateMeta" && <MetaFormModal meta={data}/>}
+      {view === "addProgressoMeta" && <MetaProgressoFormModal meta={data}/>}
+      {view === "resgateMeta" && <MetaResgateFormModal meta={data}/>}
+
+      {view === "categoria" && <CategoriaViewModal id={data}/>}
       {view === "createCategoria" && <CreateCategoriaModal />}
-      {view === "createInvestimento" && <FormInvestimentoModal />}
-      {view === "updateInvestimento" && <FormInvestimentoModal investimento={data} />}
-      {view === "aporteInvestimento" && <FormAporteInvestimento  investimento={data}/>}
-      {view === "resgateInvestimento" && <FormResgateInvestimentoModal  investimento={data}/>}
-      {view === "updateSaldoInvestimento" && <FormAtualizarSaldoInvestidoModal  investimento={data}/>}
-      {view === "updateMeta" && <FormMetaModal meta={data}/>}
-      {view === "addProgressoMeta" && <FormProgressoMetaModal meta={data}/>}
-      {view === "resgateMeta" && <FormResgateMetaModal meta={data}/>}
-      {view === "createMeta" && <FormMetaModal />}
+
+      {view === "createOrcamento" && <OrcamentoFormModal />}
+
     </Modal>
   );
 }
