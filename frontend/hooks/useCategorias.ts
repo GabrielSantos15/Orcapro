@@ -4,10 +4,14 @@ import { useModalStore } from "@/store/useModalStore";
 
 export function useCategorias() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [categoriasAtivas, setCategoriasAtivas] = useState<Categoria[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const { atualizarGatilho, triggerUpdate } = useModalStore();
 
+  useEffect(()=>{
+      setCategoriasAtivas(categorias.filter((c) => c.ativa !== false))
+  },[categorias])
 
   const fetchCategorias = async () => {
     try {
@@ -48,7 +52,7 @@ export function useCategorias() {
     }
   };
 
-  const atualizarCategoria = async (
+  const updateCategoria = async (
     id: number,
     nome: string,
     tipo: "ENTRADA" | "SAIDA"
@@ -95,11 +99,11 @@ export function useCategorias() {
   const reativarCategoria = async (id: number) => {
     try {
       const res = await fetch(`/api/categoria/${id}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ativa: 1 }),
+        body: JSON.stringify({ ativa: true }),
       });
 
       if (!res.ok) throw new Error("Falha ao reativar categoria");
@@ -122,10 +126,11 @@ export function useCategorias() {
 
   return {
     categorias,
+    categoriasAtivas,
     carregando,
     erro,
     criarCategoria,
-    atualizarCategoria,
+    updateCategoria, 
     deletarCategoria,
     reativarCategoria,
     recarregar: fetchCategorias,

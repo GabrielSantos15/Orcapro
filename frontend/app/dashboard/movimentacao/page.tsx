@@ -28,12 +28,6 @@ export default function Movimentacao() {
       <div>
         <HeaderDashboard title="Minhas Movimentações" />
         <div className="flex justify-between items-center mb-4">
-          <Button
-            className="w-full md:w-fit"
-            onClick={() => openModal("createTransacao")}
-          >
-            + Adicionar Transação
-          </Button>
           <Filters
             categorias={categorias}
             contas={contas}
@@ -42,6 +36,12 @@ export default function Movimentacao() {
               carregarResumo(filtro);
             }}
           />
+          <Button
+            className="w-full md:w-fit"
+            onClick={() => openModal("createTransacao")}
+          >
+            + Adicionar Transação
+          </Button>
         </div>
       </div>
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-5">
@@ -74,42 +74,12 @@ export default function Movimentacao() {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4">
           <WidgetContainer titulo="Últimas Transações">
             <ListaTransacoes transacoes={transacoes} />
           </WidgetContainer>
         </div>
 
-        <div className="lg:col-span-1">
-          <WidgetContainer
-            titulo="Categorias"
-            subtitulo="Controle suas categorias"
-            headerAction={
-              <button
-                onClick={() => openModal("createCategoria")}
-                className="flex items-center gap-1 text-sm bg-purple-50 text-purple-600 hover:bg-purple-100 px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 5v14M5 12l14 0" />
-                </svg>
-                Adicionar
-              </button>
-            }
-          >
-            <div className="max-h-[400px] overflow-y-auto pr-2">
-              <ListaCategorias categorias={categorias} />
-            </div>
-          </WidgetContainer>
-        </div>
       </section>
     </>
   );

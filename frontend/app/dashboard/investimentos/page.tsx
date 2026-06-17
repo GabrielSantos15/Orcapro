@@ -43,9 +43,6 @@ export default function Investimentos() {
       </Button>
       <ListaInvestimentos
         investimentos={investimentos}
-        onEdit={() => {}}
-        onAporte={() => {}}
-        onResgate={() => {}}
       ></ListaInvestimentos>
     </>
   );

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useCategorias } from "@/hooks/useCategorias";
 import { Tags } from "lucide-react";
 import { toast } from "sonner";
-import { Categoria } from "@/interfaces/Categoria"; // Certifique-se do caminho da interface
+import { Categoria } from "@/interfaces/Categoria";
 import Input from "../../forms/Input";
 
 interface CategoriaFormModalProps {
@@ -15,13 +15,14 @@ interface CategoriaFormModalProps {
 export default function CategoriaFormModal({ categoria }: CategoriaFormModalProps) {
   const { closeModal } = useModalStore();
   const { criarCategoria, updateCategoria } = useCategorias();
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  
+
   const isEditMode = !!categoria;
 
   const [formData, setFormData] = useState({
+    id: 0,
     nome: "",
     tipo: "ENTRADA",
     ativa: true,
@@ -30,6 +31,7 @@ export default function CategoriaFormModal({ categoria }: CategoriaFormModalProp
   useEffect(() => {
     if (categoria) {
       setFormData({
+        id: categoria.id || 0,
         nome: categoria.nome || "",
         tipo: categoria.tipo || "ENTRADA",
         ativa: categoria.ativa ?? true,
@@ -50,8 +52,7 @@ export default function CategoriaFormModal({ categoria }: CategoriaFormModalProp
 
     try {
       if (isEditMode) {
-        // Assumindo que seu hook tenha a função updateCategoria com esta assinatura
-        await updateCategoria(categoria.id, formData.nome, formData.tipo as "ENTRADA" | "SAIDA");
+        await updateCategoria(formData.id, formData.nome, formData.tipo as "ENTRADA" | "SAIDA");
         toast.success("Categoria atualizada com sucesso!");
       } else {
         await criarCategoria(formData.nome, formData.tipo as "ENTRADA" | "SAIDA");
@@ -78,8 +79,8 @@ export default function CategoriaFormModal({ categoria }: CategoriaFormModalProp
             {isEditMode ? "Editar Categoria" : "Nova Categoria"}
           </h2>
           <p className="text-sm text-[var(--text-muted)]">
-            {isEditMode 
-              ? "Altere o nome ou o tipo desta categoria." 
+            {isEditMode
+              ? "O tipo da categoria não pode ser alterado após a criação."
               : "Crie uma nova categoria para organizar suas transações."}
           </p>
         </div>
@@ -95,35 +96,38 @@ export default function CategoriaFormModal({ categoria }: CategoriaFormModalProp
 
         {/* TOGGLE TIPO DE CATEGORIA (Estilo Pílula) */}
         <div>
-          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-            Tipo de Categoria
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 flex justify-between items-end">
+            <span>Tipo de Categoria</span>
+            {isEditMode && <span className="text-[10px] text-[var(--danger-color)] uppercase tracking-wider font-bold">Bloqueado</span>}
           </label>
-          <div className="flex p-1 gap-1 bg-[var(--bg-input)] border border-[var(--border-color)] rounded-xl">
+          <div className={`flex p-1 gap-1 border rounded-xl ${isEditMode ? 'bg-[var(--bg-secondary)]/50 border-[var(--border-color)]/50' : 'bg-[var(--bg-input)] border-[var(--border-color)]'}`}>
             <button
               type="button"
+              disabled={isEditMode}
               onClick={() => {
                 setFormData({ ...formData, tipo: "ENTRADA" });
                 if (erro) setErro(null);
               }}
-              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out cursor-pointer ${
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed ${
                 formData.tipo === "ENTRADA"
                   ? "bg-[var(--success-color)] text-white shadow-md"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/40"
-              }`}
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/40 disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
+              } ${!isEditMode ? "cursor-pointer" : ""}`}
             >
               Entrada (Receita)
             </button>
             <button
               type="button"
+              disabled={isEditMode}
               onClick={() => {
                 setFormData({ ...formData, tipo: "SAIDA" });
                 if (erro) setErro(null);
               }}
-              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out cursor-pointer ${
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed ${
                 formData.tipo === "SAIDA"
                   ? "bg-[var(--danger-color)] text-white shadow-md"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/40"
-              }`}
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]/40 disabled:hover:bg-transparent disabled:hover:text-[var(--text-muted)]"
+              } ${!isEditMode ? "cursor-pointer" : ""}`}
             >
               Saída (Despesa)
             </button>
@@ -156,16 +160,16 @@ export default function CategoriaFormModal({ categoria }: CategoriaFormModalProp
           >
             Cancelar
           </button>
-          
+
           <button
             type="submit"
             disabled={submitting || !formData.nome.trim()}
             className="cursor-pointer flex-1 bg-[var(--primary-color)] text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md hover:bg-[var(--primary-hover)] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting 
-              ? "Salvando..." 
-              : isEditMode 
-                ? "Salvar Alterações" 
+            {submitting
+              ? "Salvando..."
+              : isEditMode
+                ? "Salvar Alterações"
                 : "Criar Categoria"}
           </button>
         </div>

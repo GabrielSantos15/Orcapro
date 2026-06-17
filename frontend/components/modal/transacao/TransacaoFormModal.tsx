@@ -20,7 +20,7 @@ export default function TransacaoFormModal({
   transacao,
 }: FormTransacaoModalProps) {
   const { closeModal, openModal } = useModalStore();
-  const { categorias, carregando: carregandoCategorias } = useCategorias();
+  const { categoriasAtivas, carregando: carregandoCategorias } = useCategorias();
   const { contas, carregando: carregandoContas } = useContas();
   const { createTransacao, updateTransacao, criandoTransacao, atualizandoId } =
     useTransacoes();
@@ -37,7 +37,7 @@ export default function TransacaoFormModal({
   });
 
   const carregando = carregandoContas || carregandoCategorias;
-  const categoriasFiltradas = categorias.filter(
+  const categoriasFiltradas = categoriasAtivas.filter(
     (cat) => cat.tipo === tipoTransacao,
   );
 

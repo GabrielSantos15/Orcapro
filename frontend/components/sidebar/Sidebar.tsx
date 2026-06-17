@@ -1,9 +1,9 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { BadgeDollarSign, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { FaChartPie, FaExchangeAlt, FaBullseye } from "react-icons/fa";
+import { FaChartPie, FaExchangeAlt, FaBullseye, FaSlidersH } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import ThemeToggle from "../themeToggle/ThemeToggle";
 
@@ -37,6 +37,11 @@ export default function Sidebar() {
       label: "Metas",
       path: "/dashboard/metas",
       icon: <FaBullseye size={24} />,
+    },
+    {
+      label: "Orçamento",
+      path: "/dashboard/orcamento",
+      icon: <FaSlidersH size={24} />,
     },
   ];
 

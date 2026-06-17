@@ -4,20 +4,25 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   label?: string;
 }
 
-export default function Textarea({ label, ...props }: TextareaProps) {
+export default function Textarea({ label, className = "", ...props }: TextareaProps) {
   return (
     <div className="flex flex-col w-full">
       {label && (
-        <label className="mb-2 text-sm font-medium text-gray-700">
+        <label className="mb-2 text-sm font-medium text-[var(--text-secondary)]">
           {label}
         </label>
       )}
       <textarea
         {...props}
         rows={props.rows || 4}
-        className="w-full rounded-lg border-2 border-purple-300 bg-white px-4 py-3 text-gray-900 
-                   placeholder-purple-300 shadow-sm focus:border-purple-500 focus:ring-2 
-                   focus:ring-purple-300 focus:outline-none transition duration-200 resize-y"
+        className={`
+          w-full rounded-lg py-3 px-4 shadow-sm transition duration-200 focus:outline-none resize-y
+          bg-[var(--bg-input)] text-[var(--text-primary)] placeholder-[var(--text-muted)]
+          border border-[var(--border-input)] 
+          hover:border-[var(--primary-color)]/70 
+          focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/30
+          ${className}
+        `}
       />
     </div>
   );

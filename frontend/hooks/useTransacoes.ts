@@ -75,7 +75,7 @@ export function useTransacoes() {
     categoriaId: string;
     origemDestino: string;
     descricao: string;
-    valor: string;
+    valor: number; 
     dataTransacao: string;
   }) => {
     setCriandoTransacao(true);
@@ -87,7 +87,7 @@ export function useTransacoes() {
         categoria: { id: formData.categoriaId },
         origemDestino: formData.origemDestino,
         descricao: formData.descricao,
-        valor: parseFloat(formData.valor),
+        valor: formData.valor, // Removido o parseFloat
         dataTransacao: formData.dataTransacao,
       };
 
@@ -115,6 +115,7 @@ export function useTransacoes() {
     }
   };
 
+  // Tipagem do valor alterada de string para number
   const updateTransacao = async (
     transacaoId: number,
     formData: {
@@ -123,7 +124,7 @@ export function useTransacoes() {
       categoriaId: string;
       origemDestino: string;
       descricao: string;
-      valor: string;
+      valor: number;
       dataTransacao: string;
     },
   ) => {
@@ -136,7 +137,7 @@ export function useTransacoes() {
         categoria: { id: formData.categoriaId },
         origemDestino: formData.origemDestino,
         descricao: formData.descricao,
-        valor: parseFloat(formData.valor),
+        valor: formData.valor, // Removido o parseFloat
         dataTransacao: formData.dataTransacao,
       };
 

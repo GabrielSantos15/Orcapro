@@ -12,19 +12,22 @@
   --primary-hover: #059669;
   --primary-light: #D1FAE5;
   --secondary-color: #0886a5;
-  
-  --bg-primary: #f5f5f5;
-  --bg-secondary: #e6e6e6;
+
+  --bg-primary: #f7f7f7;
+  --bg-secondary: #EFEFEF;
   --bg-surface: #FFFFFF;
-  
+
   --text-primary: #0F172A;
   --text-secondary: #37465a;
-  --text-muted: #94A3B8;
-  
+  --text-muted: #6d7885;
+
+  --bg-input: #FAFAFA;
+  --border-input: #E2E8F0;
+
   --success-color: #10B981;
   --danger-color: #EF4444;
   --border-color: #E2E8F0;
-  
+
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
@@ -33,13 +36,16 @@
 
 .dark {
   --bg-primary: #111214;
-  --bg-secondary: #1f1f1f;
-  --bg-surface: #282F35;
+  --bg-secondary: #181a1f;
+  --bg-surface: #181d24;
 
 
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
-  --text-muted: #475569;
+  --text-muted: #64748B;
+
+  --bg-input: #2a2e31;
+  --border-input: #3f3f3f;
 
   --border-color: #1E293B;
 
@@ -77,7 +83,7 @@ body {
   --primary-color: #F59E0B;
   --primary-hover: #D97706;
   --primary-light: #FEF3C7;
-  --secondary-color: #B45309;
+  --secondary-color: #f5610b;
 }
 
 .theme-sky {

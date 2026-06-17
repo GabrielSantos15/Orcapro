@@ -14,6 +14,7 @@ public interface TransacaoRepository extends
     List<Transacao> findByContaId(Long idConta);
     List<Transacao> findByCategoriaId(Long idCategoria);
     boolean existsByContaId(Long contaId);
+    boolean existsByCategoriaId(Long categoriaId);
     // Ordena pela data e desempata pelo ID (no front eu envio apenas a data sem hora, o que atrapalha na hora de ordenar)
     List<Transacao> findByContaUsuarioIdOrderByDataTransacaoDescIdDesc(Long usuarioId);
 }

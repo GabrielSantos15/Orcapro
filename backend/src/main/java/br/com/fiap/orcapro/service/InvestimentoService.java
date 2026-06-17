@@ -77,7 +77,7 @@ public class InvestimentoService {
 
         return categoriaRepository
                 .findByNomeAndTipoAndUsuario(
-                        "Investimento",
+                        "Investimentos",
                         tipo,
                         usuario
                 )

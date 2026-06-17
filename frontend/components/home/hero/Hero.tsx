@@ -33,7 +33,7 @@ function AvatarGroup() {
 
 export default function Hero() {
   return (
-    <section className="bg-gradient-to-br from-gray-300 dark:from-gray-800 via-green-50 dark:via-gray-600 to-green-200 dark:to-gray-850 rounded-2xl p-2 lg:p-5 lg:px-10 mx-5 mt-5 flex flex-col lg:flex-row items-center justify-center gap-12">
+    <section className=" min-h-[750px] bg-gradient-to-br from-gray-300 dark:from-gray-800 via-green-50 dark:via-gray-600 to-green-200 dark:to-gray-850 rounded-2xl p-2 lg:p-5 lg:px-10 mx-5 mt-5 flex flex-col lg:flex-row items-center justify-center gap-12">
       <article className="text-[var(--text-primary)] w-full max-w-3xl flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
         <h1 className="text-5xl md:text-6xl font-medium tracking-tight leading-tight">
           Liberdade financeira começa com organização

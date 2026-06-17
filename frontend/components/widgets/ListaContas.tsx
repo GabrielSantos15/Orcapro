@@ -29,7 +29,7 @@ export default function ListaContas({ contas }: ListaContaProps) {
         <li
           key={c.id}
           onClick={() => openModal("conta", c)}
-          className="flex justify-between p-3 border-b border-gray-100 last:border-0 text-sm"
+          className="flex justify-between p-3 border-b border-[var(--border-color)] last:border-0 text-sm cursor-pointer hover:bg-[var(--bg-secondary)]/50"
         >
           <div className="flex gap-2">
             <figure>
