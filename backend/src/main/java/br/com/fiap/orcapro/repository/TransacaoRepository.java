@@ -1,9 +1,13 @@
 package br.com.fiap.orcapro.repository;
 
+import br.com.fiap.orcapro.dto.ResumoCategoriaDTO;
 import br.com.fiap.orcapro.model.Transacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TransacaoRepository extends
@@ -15,6 +19,18 @@ public interface TransacaoRepository extends
     List<Transacao> findByCategoriaId(Long idCategoria);
     boolean existsByContaId(Long contaId);
     boolean existsByCategoriaId(Long categoriaId);
-    // Ordena pela data e desempata pelo ID (no front eu envio apenas a data sem hora, o que atrapalha na hora de ordenar)
+
+    // Ordena pela data e desempata pelo ID
     List<Transacao> findByContaUsuarioIdOrderByDataTransacaoDescIdDesc(Long usuarioId);
+
+    @Query("SELECT new br.com.fiap.orcapro.dto.ResumoCategoriaDTO(c.id, c.nome, c.tipo, SUM(t.valor), COUNT(t.id)) " +
+            "FROM Transacao t JOIN t.categoria c JOIN t.conta co " +
+            "WHERE co.usuario.id = :usuarioId AND t.dataTransacao BETWEEN :dataInicio AND :dataFim " +
+            "GROUP BY c.id, c.nome, c.tipo " +
+            "ORDER BY SUM(t.valor) DESC")
+    List<ResumoCategoriaDTO> buscarResumoPorCategoriaNoPeriodo(
+            @Param("usuarioId") Long usuarioId,
+            @Param("dataInicio") LocalDate dataInicio,
+            @Param("dataFim") LocalDate dataFim
+    );
 }

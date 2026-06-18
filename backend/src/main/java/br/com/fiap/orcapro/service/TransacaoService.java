@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -280,13 +281,9 @@ public class TransacaoService {
         BigDecimal despesas = BigDecimal.ZERO;
 
         for (Transacao transacao : transacoes) {
-
             if (transacao.getCategoria().getTipo() == TipoCategoria.ENTRADA) {
-
                 receitas = receitas.add(transacao.getValor());
-
             } else {
-
                 despesas = despesas.add(transacao.getValor());
             }
         }
@@ -297,5 +294,11 @@ public class TransacaoService {
                 receitas.subtract(despesas),
                 (long) transacoes.size()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResumoCategoriaDTO> obterResumoPorCategoria(String token, LocalDate dataInicio, LocalDate dataFim) {
+        Long idUsuario = jwtService.extrairId(token);
+        return transacaoRepository.buscarResumoPorCategoriaNoPeriodo(idUsuario, dataInicio, dataFim);
     }
 }

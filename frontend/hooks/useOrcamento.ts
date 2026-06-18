@@ -1,11 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Orcamento } from "@/interfaces/Orcamento";
 import { useModalStore } from "@/store/useModalStore";
 
+// Interface para tipar o retorno do novo endpoint
+export interface ResumoCategoria {
+  categoriaId: number;
+  nomeCategoria: string;
+  tipoCategoria: "ENTRADA" | "SAIDA";
+  totalGasto: number;
+  quantidadeTransacoes: number;
+}
+
 export function useOrcamentos() {
+  // Estados dos Orçamentos
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+
+  // Estados do Resumo de Categorias
+  const [resumoCategorias, setResumoCategorias] = useState<ResumoCategoria[]>([]);
+  const [carregandoResumo, setCarregandoResumo] = useState(false);
+
   const { atualizarGatilho, triggerUpdate } = useModalStore();
 
   const fetchOrcamentos = async () => {
@@ -28,6 +43,28 @@ export function useOrcamentos() {
     }
   };
 
+  // Nova função para buscar o resumo, otimizada com useCallback
+  const fetchResumoCategorias = useCallback(async (dataInicio: string, dataFim: string) => {
+    try {
+      setCarregandoResumo(true);
+      // Ajuste a rota abaixo caso o seu BFF esteja em uma pasta diferente
+      const res = await fetch(`/api/transacao/resumo/categorias?dataInicio=${dataInicio}&dataFim=${dataFim}`);
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Falha ao buscar resumo de categorias");
+      }
+
+      const data = await res.json();
+      setResumoCategorias(data);
+      console.log(resumoCategorias)
+    } catch (err: any) {
+      setErro(err.message);
+    } finally {
+      setCarregandoResumo(false);
+    }
+  }, []);
+
   const criarOrcamento = async (dados: { categoriaId: number; limite: number }) => {
     try {
       const res = await fetch("/api/orcamento", {
@@ -45,7 +82,7 @@ export function useOrcamentos() {
 
       const novoOrcamento = await res.json();
       setOrcamentos([...orcamentos, novoOrcamento]);
-      triggerUpdate(); // Força a atualização dos componentes que dependem dos orçamentos
+      triggerUpdate(); 
       return novoOrcamento;
     } catch (err: any) {
       setErro(err.message);
@@ -108,11 +145,14 @@ export function useOrcamentos() {
 
   return {
     orcamentos,
+    resumoCategorias,
     carregando,
+    carregandoResumo,
     erro,
     criarOrcamento,
     updateOrcamento, 
     deletarOrcamento,
     recarregar: fetchOrcamentos,
+    fetchResumoCategorias, 
   };
 }
