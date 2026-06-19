@@ -311,29 +311,31 @@ public class TransacaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResumoMesDTO> obterResumoAnual(Integer ano, String token) {
-
+    public List<ResumoMesDTO> obterResumoAnual(
+            Integer ano,
+            Long contaId,
+            Long categoriaId,
+            TipoCategoria tipo,
+            String token
+    ) {
         Long idUsuario = jwtService.extrairId(token);
 
-        List<ResumoMesSqlDTO> resultadosSql = transacaoRepository.buscarResumoAnualPivot(idUsuario, ano);
+        List<ResumoMesSqlDTO> resultadosSql = transacaoRepository.buscarResumoAnualPivot(
+                idUsuario, ano, contaId, categoriaId, tipo
+        );
 
         List<ResumoMesDTO> resumoList = new ArrayList<>();
 
         // Monta os 12 meses do ano para o Front-end não bugar com meses vazios
         for (int mes = 1; mes <= 12; mes++) {
-
             final int mesAtual = mes;
 
-            // Busca na lista do banco se esse mês teve algum dado. Se não teve, cria um zerado.
             ResumoMesSqlDTO dadosDoMes = resultadosSql.stream()
                     .filter(r -> r.mes().equals(mesAtual))
                     .findFirst()
                     .orElse(new ResumoMesSqlDTO(mesAtual, BigDecimal.ZERO, BigDecimal.ZERO));
 
-            // Formata a string no padrão "MM/YYYY" (Ex: "01/2026")
             String mesFormatado = String.format("%02d/%d", mes, ano);
-
-            // Calcula o Saldo (Entradas - Saídas)
             BigDecimal saldoDoMes = dadosDoMes.receitas().subtract(dadosDoMes.despesas());
 
             resumoList.add(new ResumoMesDTO(

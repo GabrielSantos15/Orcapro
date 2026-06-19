@@ -2,6 +2,7 @@ package br.com.fiap.orcapro.repository;
 
 import br.com.fiap.orcapro.dto.ResumoCategoriaDTO;
 import br.com.fiap.orcapro.dto.ResumoMesSqlDTO;
+import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.model.Transacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -46,11 +47,17 @@ public interface TransacaoRepository extends
         JOIN t.conta co
         WHERE co.usuario.id = :usuarioId
           AND YEAR(t.dataTransacao) = :ano
+          AND (:contaId IS NULL OR co.id = :contaId)
+          AND (:categoriaId IS NULL OR c.id = :categoriaId)
+          AND (:tipo IS NULL OR c.tipo = :tipo)
         GROUP BY MONTH(t.dataTransacao)
         ORDER BY MONTH(t.dataTransacao)
     """)
     List<ResumoMesSqlDTO> buscarResumoAnualPivot(
             @Param("usuarioId") Long usuarioId,
-            @Param("ano") Integer ano
+            @Param("ano") Integer ano,
+            @Param("contaId") Long contaId,
+            @Param("categoriaId") Long categoriaId,
+            @Param("tipo") TipoCategoria tipo
     );
 }

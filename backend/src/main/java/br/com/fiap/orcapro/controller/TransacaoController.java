@@ -1,6 +1,7 @@
 package br.com.fiap.orcapro.controller;
 
 import br.com.fiap.orcapro.dto.*;
+import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.model.Transacao;
 import br.com.fiap.orcapro.service.TransacaoService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -116,24 +117,20 @@ public class TransacaoController {
         );
     }
 
-    @GetMapping("/resumo/categorias")
-    public ResponseEntity<List<ResumoCategoriaDTO>> obterResumoCategorias(
-            @RequestHeader("Authorization") String token,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
-
-        List<ResumoCategoriaDTO> resumo = transacaoService.obterResumoPorCategoria( token.substring(7), dataInicio, dataFim);
-        return ResponseEntity.ok(resumo);
-    }
-
     @GetMapping("/resumo/anual")
     public ResponseEntity<List<ResumoMesDTO>> obterResumoAnual(
             @RequestParam Integer ano,
+            @RequestParam(required = false) Long contaId,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) TipoCategoria tipo,
             @RequestHeader("Authorization") String token
     ) {
         String tokenLimpo = token != null ? token.replace("Bearer ", "") : "";
 
-        List<ResumoMesDTO> resumo = transacaoService.obterResumoAnual(ano, tokenLimpo);
+        List<ResumoMesDTO> resumo = transacaoService.obterResumoAnual(
+                ano, contaId, categoriaId, tipo, tokenLimpo
+        );
+
         return ResponseEntity.ok(resumo);
     }
 }
