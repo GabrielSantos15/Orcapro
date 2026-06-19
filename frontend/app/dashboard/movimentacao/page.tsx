@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/button/Button";
 import CardResumo from "@/components/cards/CardResumo";
@@ -14,9 +14,9 @@ import { useCategorias } from "@/hooks/useCategorias";
 import { useContas } from "@/hooks/useContas";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { useTransacoes } from "@/hooks/useTransacoes";
-import { FiltroTransacao } from "@/hooks/useTransacoes";
 import { obterDatasMesAtual } from "@/lib/utils";
 import { useModalStore } from "@/store/useModalStore";
+import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 
 export default function Movimentacao() {
   const { openModal, atualizarGatilho } = useModalStore();
@@ -26,25 +26,31 @@ export default function Movimentacao() {
   const { categorias } = useCategorias();
   const { contas } = useContas();
 
-  const [filtro, setFiltro] = useState<FiltroTransacao>(obterDatasMesAtual);
 
-  const filtroRef = useRef(filtro);
-  filtroRef.current = filtro;
+  const [filtroRascunho, setFiltroRascunho] = useState<FiltroTransacao>(() => obterDatasMesAtual());
+  const [filtroAplicado, setFiltroAplicado] = useState<FiltroTransacao>(() => obterDatasMesAtual());
 
   const carregarTudo = (filtroAtual: FiltroTransacao) => {
     carregarTransacoes(filtroAtual);
     carregarResumo(filtroAtual);
   };
 
+
   useEffect(() => {
-    carregarTudo(filtroRef.current);
+    carregarTudo(filtroAplicado);
   }, [atualizarGatilho]);
 
-  const handleApply = () => carregarTudo(filtro);
+
+  const handleApply = () => {
+    setFiltroAplicado(filtroRascunho); 
+    carregarTudo(filtroRascunho);  
+  };
+
 
   const handleClear = () => {
     const filtroResetado = obterDatasMesAtual();
-    setFiltro(filtroResetado);
+    setFiltroRascunho(filtroResetado);
+    setFiltroAplicado(filtroResetado);
     carregarTudo(filtroResetado);
   };
 
@@ -53,11 +59,12 @@ export default function Movimentacao() {
       <div>
         <HeaderDashboard title="Minhas Movimentações" />
         <div className="flex justify-between items-center mb-4">
+    
           <FiltersTransacao
             categorias={categorias}
             contas={contas}
-            filtro={filtro}
-            setFiltro={setFiltro}
+            filtro={filtroRascunho}
+            setFiltro={setFiltroRascunho}
             onApply={handleApply}
             onClear={handleClear}
           />
@@ -86,7 +93,7 @@ export default function Movimentacao() {
             titulo="Entradas vs Saídas"
             subtitulo="Acompanhamento ao longo do tempo"
           >
-            <GraficoColunas transacoes={transacoes} />
+            <GraficoColunas filtro={filtroAplicado} />
           </WidgetContainer>
         </div>
 

@@ -133,4 +133,16 @@ public class TransacaoController {
 
         return ResponseEntity.ok(resumo);
     }
+
+    @GetMapping("/resumo/categorias")
+    public ResponseEntity<List<ResumoCategoriaDTO>> obterResumoCategorias(
+            @RequestHeader("Authorization") String token,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+
+        String tokenLimpo = token != null ? token.replace("Bearer ", "") : "";
+
+        List<ResumoCategoriaDTO> resumo = transacaoService.obterResumoPorCategoria(tokenLimpo, dataInicio, dataFim);
+        return ResponseEntity.ok(resumo);
+    }
 }

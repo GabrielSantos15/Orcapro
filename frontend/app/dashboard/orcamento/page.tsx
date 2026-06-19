@@ -11,16 +11,17 @@ import { useModalStore } from "@/store/useModalStore";
 import { obterDatasMesAtual } from "@/lib/utils";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { getIconeCategoria } from "@/lib/categoriaUtils";
+import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
+import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 
 export default function Orcamento() {
   const {
     orcamentos,
     carregando,
     deletarOrcamento,
-    resumoCategorias,
-    fetchResumoCategorias,
-    carregandoResumo,
   } = useOrcamentos();
+
+  const {resumoCategorias,  fetchResumoCategorias, carregandoCategoria} = useResumoTransacoes()
 
   const { openModal, atualizarGatilho } = useModalStore();
 
@@ -35,28 +36,28 @@ export default function Orcamento() {
     }
   };
 
-  // Dispara na montagem e quando um orçamento/transação é criado/deletado
   useEffect(() => {
     carregarResumo(filtroRef.current);
   }, [atualizarGatilho]);
-
+  
   const handleApply = () => carregarResumo(filtro);
-
+  
   const handleClear = () => {
     const filtroResetado = obterDatasMesAtual();
     setFiltro(filtroResetado);
     carregarResumo(filtroResetado);
   };
-
+  
   const formatarMoeda = (valor: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
-
-  const isLoading = carregando || carregandoResumo;
+  
+  const isLoading = carregando || carregandoCategoria;
   const orcamentosIds = orcamentos.map((o) => o.categoriaId);
   const gastosSemOrcamento = resumoCategorias.filter(
     (r) => !orcamentosIds.includes(r.categoriaId)
   );
-
+  
+  console.log(resumoCategorias)
   return (
     <main>
       <HeaderDashboard

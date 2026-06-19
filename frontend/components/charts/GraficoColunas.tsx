@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -19,12 +19,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Transacao } from "@/interfaces/Transacao";
-
-interface GraficoColunasProps {
-  transacoes: Transacao[];
-}
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
+import { FiltroResumoAnual } from "@/interfaces/FiltroResumoAnual";
 
 const chartConfig = {
   receitas: {
@@ -34,118 +31,106 @@ const chartConfig = {
   despesas: {
     label: "Saídas",
     color: "#ef4444",
-  },
+  }
 } satisfies ChartConfig;
 
 const meses = [
-  "Jan",
-  "Fev",
-  "Mar",
-  "Abr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Set",
-  "Out",
-  "Nov",
-  "Dez",
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
 ];
 
-export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
-  // =========================
-  // ANOS DISPONÍVEIS
-  // =========================
-  const anosDisponiveis = useMemo(() => {
-    const anos = transacoes.map((t) =>
-      new Date(t.dataTransacao).getUTCFullYear()
-    );
-    return [...new Set(anos)].sort((a, b) => a - b);
-  }, [transacoes]);
+interface GraficoColunasProps {
+  filtro?: Partial<FiltroResumoAnual>;
+}
 
-  // =========================
-  // ANO ATUAL
-  // =========================
-  const [anoSelecionado, setAnoSelecionado] = useState(
-    anosDisponiveis[anosDisponiveis.length - 1] || new Date().getUTCFullYear()
-  );
+export default function GraficoColunas({ filtro }: GraficoColunasProps) {
+
+  const [anoSelecionado, setAnoSelecionado] = useState(new Date().getUTCFullYear());
+  const [editandoAno, setEditandoAno] = useState(false);
+  const [inputAno, setInputAno] = useState(anoSelecionado.toString());
+
+  const { resumoAnual, carregandoAnual, fetchResumoAnual } = useResumoTransacoes();
+
+
+  const contaId = filtro?.contaId;
+  const categoriaId = filtro?.categoriaId;
+  const tipo = filtro?.tipo;
+
+  useEffect(() => {
+    fetchResumoAnual({ 
+      ano: anoSelecionado, 
+      contaId, 
+      categoriaId, 
+      tipo 
+    });
+    setInputAno(anoSelecionado.toString()); 
+
+  }, [anoSelecionado, contaId, categoriaId, tipo, fetchResumoAnual]);
+
+  const confirmarAno = () => {
+    const novoAno = parseInt(inputAno, 10);
+    if (!isNaN(novoAno) && novoAno > 1900 && novoAno < 2100) {
+      setAnoSelecionado(novoAno);
+    } else {
+      setInputAno(anoSelecionado.toString()); 
+    }
+    setEditandoAno(false);
+  };
 
   // =========================
   // DADOS DO GRÁFICO
   // =========================
   const dadosDoGrafico = useMemo(() => {
-    // Estrutura fixa dos 12 meses
-    const dados = meses.map((mes) => ({
-      mes,
-      receitas: 0,
-      despesas: 0,
+    if (!resumoAnual || resumoAnual.length === 0) return [];
+
+    return resumoAnual.map((item, index) => ({
+      mes: meses[index],
+      receitas: item.receitas,
+      despesas: item.despesas,
     }));
+  }, [resumoAnual]);
 
-    transacoes.forEach((transacao) => {
-      // Ignora saldo inicial ou valores de abertura de conta
-      // if (
-      //   transacao.origemDestino === "Saldo inicial" ||
-      //   transacao.descricao?.includes("Valor inicial da conta")
-      // ) {
-      //   return;
-      // }
-
-      const data = new Date(transacao.dataTransacao);
-      const ano = data.getUTCFullYear();
-
-      // Filtra pelo ano selecionado
-      if (ano !== anoSelecionado) {
-        return;
-      }
-
-      const mesIndex = data.getUTCMonth();
-
-      if (transacao.categoria?.tipo === "ENTRADA") {
-        dados[mesIndex].receitas += transacao.valor;
-      } else if (transacao.categoria?.tipo === "SAIDA") {
-        dados[mesIndex].despesas += transacao.valor;
-      }
-    });
-
-    return dados;
-  }, [transacoes, anoSelecionado]);
-
-  // =========================
-  // CONTROLES DE PAGINAÇÃO
-  // =========================
-  const anoAtualIndex = anosDisponiveis.indexOf(anoSelecionado);
-  const podeVoltar = anoAtualIndex > 0;
-  const podeAvancar = anoAtualIndex < anosDisponiveis.length - 1;
-
-  // =========================
-  // EMPTY STATE
-  // =========================
   const semDados = dadosDoGrafico.every(
     (item) => item.receitas === 0 && item.despesas === 0
   );
 
   return (
     <div className="w-full p-2 sm:p-4">
-      
-      {/* SELETOR DE ANO */}
+      {/* SELETOR DE ANO INTERATIVO */}
       <div className="mb-4 flex justify-end">
         <div className="flex items-center gap-2">
           <button
-            onClick={() => podeVoltar && setAnoSelecionado(anosDisponiveis[anoAtualIndex - 1])}
-            disabled={!podeVoltar}
-            className="rounded-lg border p-1.5 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setAnoSelecionado((prev) => prev - 1)}
+            disabled={carregandoAnual || editandoAno}
+            className="rounded-lg border border-[var(--border-color)] p-1.5 transition hover:bg-[var(--bg-secondary)] disabled:cursor-not-allowed disabled:opacity-40 text-[var(--text-primary)]"
           >
             <ChevronLeft size={16} />
           </button>
 
-          <span className="min-w-[60px] text-center text-sm font-medium text-gray-700">
-            {anoSelecionado}
-          </span>
+          {editandoAno ? (
+            <input
+              type="number"
+              value={inputAno}
+              onChange={(e) => setInputAno(e.target.value)}
+              onBlur={confirmarAno} 
+              onKeyDown={(e) => e.key === "Enter" && confirmarAno()} 
+              autoFocus
+              className="w-[60px] text-center text-sm font-medium border-b-2 border-[var(--primary-color)] bg-transparent text-[var(--text-primary)] outline-none"
+            />
+          ) : (
+            <span
+              onClick={() => setEditandoAno(true)}
+              title="Clique para digitar o ano"
+              className="min-w-[60px] text-center text-sm font-medium text-[var(--text-primary)] cursor-pointer hover:text-[var(--primary-color)] transition-colors"
+            >
+              {anoSelecionado}
+            </span>
+          )}
 
           <button
-            onClick={() => podeAvancar && setAnoSelecionado(anosDisponiveis[anoAtualIndex + 1])}
-            disabled={!podeAvancar}
-            className="rounded-lg border p-1.5 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+            onClick={() => setAnoSelecionado((prev) => prev + 1)}
+            disabled={carregandoAnual || editandoAno}
+            className="rounded-lg border border-[var(--border-color)] p-1.5 transition hover:bg-[var(--bg-secondary)] disabled:cursor-not-allowed disabled:opacity-40 text-[var(--text-primary)]"
           >
             <ChevronRight size={16} />
           </button>
@@ -154,26 +139,26 @@ export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
 
       {/* ÁREA DO GRÁFICO */}
       <div className="h-[280px] w-full">
-        {semDados ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-gray-500">
-            <p className="text-sm text-gray-400">Nenhuma movimentação em {anoSelecionado}.</p>
+        {carregandoAnual ? (
+          <div className="flex h-full flex-col items-center justify-center gap-4 text-[var(--text-muted)]">
+            <Loader2 className="animate-spin" size={32} />
+            <p className="text-sm">Buscando resumo de {anoSelecionado}...</p>
+          </div>
+        ) : semDados ? (
+          <div className="flex h-full flex-col items-center justify-center gap-4 text-[var(--text-muted)]">
+            <p className="text-sm">Nenhuma movimentação em {anoSelecionado}.</p>
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={dadosDoGrafico}
-                margin={{
-                  top: 5,
-                  right: 5,
-                  left: 0,
-                  bottom: 0,
-                }}
+                margin={{ top: 5, right: 5, left: 0, bottom: 0 }}
               >
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="3 3"
-                  className="stroke-gray-200"
+                  className="stroke-[var(--border-color)] opacity-50"
                 />
 
                 <XAxis
@@ -181,15 +166,17 @@ export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={10}
-                  className="text-xs text-gray-500 font-medium"
+                  className="text-xs font-medium"
+                  stroke="var(--text-muted)"
                 />
 
-                {/* Novo Eixo Y com formatação compacta */}
                 <YAxis
+                  domain={[0, 'auto']}
                   tickLine={false}
                   axisLine={false}
                   tickMargin={10}
-                  className="text-[10px] sm:text-xs text-gray-500 font-medium"
+                  className="text-[10px] sm:text-xs font-medium"
+                  stroke="var(--text-muted)"
                   width={65}
                   tickFormatter={(value) =>
                     new Intl.NumberFormat("pt-BR", {
@@ -202,8 +189,13 @@ export default function GraficoColunas({ transacoes }: GraficoColunasProps) {
                 />
 
                 <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dot" className="bg-white border-none"/>}
+                  cursor={{ fill: "var(--bg-secondary)", opacity: 0.4 }}
+                  content={
+                    <ChartTooltipContent
+                      indicator="dot"
+                      className="bg-[var(--bg-surface)] border-[var(--border-color)] text-[var(--text-primary)] shadow-lg"
+                    />
+                  }
                 />
 
                 <ChartLegend content={<ChartLegendContent />} />

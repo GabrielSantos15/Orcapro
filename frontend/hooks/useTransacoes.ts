@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import { Transacao } from "@/interfaces/Transacao";
 import { useModalStore } from "@/store/useModalStore";
-
-export interface FiltroTransacao {
-  categoriaId?: number;
-  contaId?: number;
-  tipo?: "ENTRADA" | "SAIDA";
-  dataInicio?: string;
-  dataFim?: string;
-}
+import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 
 export function useTransacoes() {
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);

@@ -19,15 +19,17 @@ import { MetaCard } from "@/components/cards/cardMeta";
 import GraficoColunas from "@/components/charts/GraficoColunas";
 import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
+import { useEffect } from "react";
+import { obterDatasMesAtual } from "@/lib/utils";
 
 export default function DashBoardPage() {
+  const { openModal , atualizarGatilho} = useModalStore();
   const { contas } = useContas();
-  const { transacoes } = useTransacoes();
-  const { resumo } = useResumoTransacoes();
+  const { transacoes, carregarTransacoes } = useTransacoes();
+  const { resumo, carregarResumo } = useResumoTransacoes();
   const { categorias } = useCategorias();
   const { investimentos } = useInvestimentos();
   const { metas } = useMetas();
-  const { openModal } = useModalStore();
 
   //  5 metas mais próximas
   const metasProximas = metas
@@ -41,6 +43,12 @@ export default function DashBoardPage() {
     (acc, inv) => acc + (inv.valorInvestido || 0),
     0,
   );
+
+useEffect(() => {
+    const filtroMesAtual = obterDatasMesAtual(); 
+    carregarResumo(filtroMesAtual);
+    carregarTransacoes(filtroMesAtual);
+  }, [atualizarGatilho]);
 
   return (
     <>
@@ -101,7 +109,7 @@ export default function DashBoardPage() {
           subtitulo="Acompanhamento ao longo do tempo"
           className="lg:col-span-2 dark:bg-gradient-to-br from-[var(--primary-color)]/30 from-20% to-[var(--bg-primary)] to-90% "
         >
-          <GraficoColunas transacoes={transacoes} />
+          <GraficoColunas/>
         </WidgetContainer>
 
         <WidgetContainer
