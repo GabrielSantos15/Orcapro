@@ -1,9 +1,6 @@
 package br.com.fiap.orcapro.controller;
 
-import br.com.fiap.orcapro.dto.ResumoCategoriaDTO;
-import br.com.fiap.orcapro.dto.ResumoTransacaoDTO;
-import br.com.fiap.orcapro.dto.TransacaoFiltroDTO;
-import br.com.fiap.orcapro.dto.TransacaoResponseDTO;
+import br.com.fiap.orcapro.dto.*;
 import br.com.fiap.orcapro.model.Transacao;
 import br.com.fiap.orcapro.service.TransacaoService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -126,6 +123,17 @@ public class TransacaoController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
 
         List<ResumoCategoriaDTO> resumo = transacaoService.obterResumoPorCategoria( token.substring(7), dataInicio, dataFim);
+        return ResponseEntity.ok(resumo);
+    }
+
+    @GetMapping("/resumo/anual")
+    public ResponseEntity<List<ResumoMesDTO>> obterResumoAnual(
+            @RequestParam Integer ano,
+            @RequestHeader("Authorization") String token
+    ) {
+        String tokenLimpo = token != null ? token.replace("Bearer ", "") : "";
+
+        List<ResumoMesDTO> resumo = transacaoService.obterResumoAnual(ano, tokenLimpo);
         return ResponseEntity.ok(resumo);
     }
 }

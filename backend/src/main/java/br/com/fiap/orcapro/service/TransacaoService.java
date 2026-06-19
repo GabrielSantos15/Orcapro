@@ -14,7 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TransacaoService {
@@ -258,6 +262,10 @@ public class TransacaoService {
         return toDTO(transacaoAtualizada);
     }
 
+    // ======================================================
+    // RELATÓRIOS
+    // ======================================================
+
     @Transactional(readOnly = true)
     public ResumoTransacaoDTO buscarResumo(
             TransacaoFiltroDTO filtro,
@@ -300,5 +308,42 @@ public class TransacaoService {
     public List<ResumoCategoriaDTO> obterResumoPorCategoria(String token, LocalDate dataInicio, LocalDate dataFim) {
         Long idUsuario = jwtService.extrairId(token);
         return transacaoRepository.buscarResumoPorCategoriaNoPeriodo(idUsuario, dataInicio, dataFim);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResumoMesDTO> obterResumoAnual(Integer ano, String token) {
+
+        Long idUsuario = jwtService.extrairId(token);
+
+        List<ResumoMesSqlDTO> resultadosSql = transacaoRepository.buscarResumoAnualPivot(idUsuario, ano);
+
+        List<ResumoMesDTO> resumoList = new ArrayList<>();
+
+        // Monta os 12 meses do ano para o Front-end não bugar com meses vazios
+        for (int mes = 1; mes <= 12; mes++) {
+
+            final int mesAtual = mes;
+
+            // Busca na lista do banco se esse mês teve algum dado. Se não teve, cria um zerado.
+            ResumoMesSqlDTO dadosDoMes = resultadosSql.stream()
+                    .filter(r -> r.mes().equals(mesAtual))
+                    .findFirst()
+                    .orElse(new ResumoMesSqlDTO(mesAtual, BigDecimal.ZERO, BigDecimal.ZERO));
+
+            // Formata a string no padrão "MM/YYYY" (Ex: "01/2026")
+            String mesFormatado = String.format("%02d/%d", mes, ano);
+
+            // Calcula o Saldo (Entradas - Saídas)
+            BigDecimal saldoDoMes = dadosDoMes.receitas().subtract(dadosDoMes.despesas());
+
+            resumoList.add(new ResumoMesDTO(
+                    mesFormatado,
+                    dadosDoMes.receitas(),
+                    dadosDoMes.despesas(),
+                    saldoDoMes
+            ));
+        }
+
+        return resumoList;
     }
 }
