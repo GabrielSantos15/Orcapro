@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FiltroTransacao } from "./useTransacoes";
-import { useModalStore } from "@/store/useModalStore";
 
 export interface ResumoTransacoes {
   receitas: number;
@@ -19,8 +18,6 @@ export function useResumoTransacoes() {
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
-
-  const { atualizarGatilho } = useModalStore();
 
   const carregarResumo = async (
     filtros?: FiltroTransacao
@@ -96,10 +93,6 @@ export function useResumoTransacoes() {
       setCarregando(false);
     }
   };
-
-  useEffect(() => {
-    carregarResumo();
-  }, [atualizarGatilho]);
 
   return {
     resumo,

@@ -65,10 +65,6 @@ export function useTransacoes() {
     }
   };
 
-  useEffect(() => {
-    carregarTransacoes();
-  }, [atualizarGatilho]);
-
   const createTransacao = async (formData: {
     tipo: string;
     contaId: string;

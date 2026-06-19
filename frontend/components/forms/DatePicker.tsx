@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ value, onChange }: DatePickerProps) {
-  const selectedDate = value ? new Date(value) : undefined;
+  const selectedDate = value ? parseISO(value) : undefined;
   const { theme } = useThemeColor();
 
   return (
