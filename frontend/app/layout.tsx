@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "sonner";
+import { ServerWakeUp } from "@/components/serverWakeUp/ServerWakeUp";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="pt-br" suppressHydrationWarning className={`h-full antialiased ${poppins.variable}`}>
       <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <Providers>
+          <ServerWakeUp></ServerWakeUp>
           {children}
           <Toaster></Toaster> 
         </Providers>
