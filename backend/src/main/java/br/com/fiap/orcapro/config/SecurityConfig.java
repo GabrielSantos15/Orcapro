@@ -14,11 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @Configuration
 public class SecurityConfig {
 
-    // Como foi comentado na live, essa parte de autenticação ainda não foi passada em aula,
-    // mas resolvi tentar implementar para entender melhor como funciona na prática.
-    // Usei documentação, pesquisas e apoio de IA para estudar e conseguir desenvolver essa parte.
-    // Como ainda estou aprendendo sobre o tema, provavelmente ainda existem pontos para melhorar.
-
     private final JwtFiltro jwtFiltro;
 
     public SecurityConfig(JwtFiltro jwtFiltro) {
@@ -40,6 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/usuario/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuario").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -41,7 +41,7 @@ public class JwtFiltro extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } else {
-                System.out.println(">>> Token inválido!"); // e isso
+                System.out.println(">>> Token inválido!");
             }
         }
 
