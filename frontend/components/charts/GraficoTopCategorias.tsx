@@ -109,7 +109,6 @@ export default function GraficoTopCategorias({
                 strokeWidth={3}
                 stroke="#ffffff"
                 paddingAngle={2}
-                activeIndex={activeIndex}
                 onMouseEnter={(_, index) => setActiveIndex(index)}
                 onMouseLeave={() => setActiveIndex(undefined)}
               >

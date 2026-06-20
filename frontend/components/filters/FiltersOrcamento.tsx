@@ -1,6 +1,7 @@
 
 "use client";
 
+import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 import { FaFilterCircleXmark } from "react-icons/fa6";
 
 interface FiltersOrcamentoProps {

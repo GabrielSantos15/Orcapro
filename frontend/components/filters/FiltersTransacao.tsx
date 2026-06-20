@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 
 import { DatePicker } from "../forms/DatePicker";
+import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 
 interface FiltersTransacaoProps {
   categorias: Categoria[];

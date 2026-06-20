@@ -55,7 +55,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             onChange(date ? format(date, "yyyy-MM-dd") : undefined)
           }
           locale={ptBR}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

@@ -13,19 +13,14 @@ export async function GET() {
   return Response.json(data, { status });
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params;
-  
+export async function PUT(request: Request) {
   const body = await request.json();
 
   const { data, status, ok } = await forwardToBackend("/api/usuario", {
     method: "PUT",
     body,
   });
-  
+
   if (!ok) {
     return Response.json(
       { error: data.error || data.message || "Erro ao atualizar usuário" },
