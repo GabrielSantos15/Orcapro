@@ -2,11 +2,12 @@ import { forwardToBackend } from "@/lib/server/api";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const body = await request.json();
 
-  const { data, status, ok } = await forwardToBackend(`/api/orcamento/${params.id}`, {
+  const { data, status, ok } = await forwardToBackend(`/api/orcamento/${id}`, {
     method: "PUT",
     body,
   });
@@ -23,9 +24,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { data, status, ok } = await forwardToBackend(`/api/orcamento/${params.id}`, {
+  const { id } = await params;
+  const { data, status, ok } = await forwardToBackend(`/api/orcamento/${id}`, {
     method: "DELETE",
   });
 

@@ -12,15 +12,13 @@ export async function PATCH(
   );
 
   if (!ok) {
-    if (!ok) {
-      return Response.json(
-        {
-          error:
-            data.error || data.message || "Erro ao adicionar progresso na meta",
-        },
-        { status },
-      );
-    }
+    return Response.json(
+      {
+        error:
+          data.error || data.message || "Erro ao adicionar progresso na meta",
+      },
+      { status },
+    );
   }
 
   return Response.json(data, { status });
