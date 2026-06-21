@@ -2,6 +2,7 @@ package br.com.fiap.orcapro.controller;
 
 import br.com.fiap.orcapro.dto.OrcamentoRequestDTO;
 import br.com.fiap.orcapro.dto.OrcamentoResponseDTO;
+import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.service.OrcamentoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -47,9 +48,10 @@ public class OrcamentoController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<OrcamentoResponseDTO> listarTodos(
+            @RequestParam(required = false) TipoCategoria tipo,
             @RequestHeader("Authorization") String token
     ) {
-        return orcamentoService.listarTodos(extrairToken(token));
+        return orcamentoService.listarTodos(tipo, extrairToken(token));
     }
 
     @PutMapping("/{id}")

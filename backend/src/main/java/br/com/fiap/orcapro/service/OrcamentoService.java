@@ -2,6 +2,7 @@ package br.com.fiap.orcapro.service;
 
 import br.com.fiap.orcapro.dto.OrcamentoRequestDTO;
 import br.com.fiap.orcapro.dto.OrcamentoResponseDTO;
+import br.com.fiap.orcapro.enums.TipoCategoria;
 import br.com.fiap.orcapro.model.Categoria;
 import br.com.fiap.orcapro.model.Orcamento;
 import br.com.fiap.orcapro.model.Usuario;
@@ -74,11 +75,17 @@ public class OrcamentoService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrcamentoResponseDTO> listarTodos(String token) {
+    public List<OrcamentoResponseDTO> listarTodos(TipoCategoria tipo, String token) {
         Long idUsuario = jwtService.extrairId(token);
+        List<Orcamento> orcamentos;
 
-        return orcamentoRepository.findByUsuarioId(idUsuario)
-                .stream()
+        if (tipo != null) {
+            orcamentos = orcamentoRepository.findByUsuarioIdAndCategoriaTipo(idUsuario, tipo);
+        } else {
+            orcamentos = orcamentoRepository.findByUsuarioId(idUsuario);
+        }
+
+        return orcamentos.stream()
                 .map(OrcamentoResponseDTO::new)
                 .toList();
     }
