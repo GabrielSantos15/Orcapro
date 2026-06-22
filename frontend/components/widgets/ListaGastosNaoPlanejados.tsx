@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useModalStore } from "@/store/useModalStore";
 import { useOrcamentos } from "@/hooks/useOrcamento";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
-import { obterDatasMesAtual } from "@/lib/utils";
+import { obterDatasMesAtual, formatarMoeda } from "@/lib/utils"; 
 import { AlertCircle, BarChart3 } from "lucide-react";
 
 interface PainelLateralProps {
@@ -12,7 +12,6 @@ interface PainelLateralProps {
 }
 
 export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps) {
-  // Estado para controlar qual aba está ativa
   const [abaAtiva, setAbaAtiva] = useState<"avisos" | "ranking">("avisos");
   
   const { openModal, atualizarGatilho } = useModalStore();
@@ -25,18 +24,15 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
     fetchResumoCategorias(datas.dataInicio, datas.dataFim);
   }, [filtro, atualizarGatilho, fetchOrcamentos]);
 
-  const formatarMoeda = (valor: number) =>
-    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
-
   const isLoading = carregando || carregandoCategoria;
 
-  // 1. LÓGICA: Gastos Não Planejados (Avisos)
-  const orcamentosIds = orcamentos.map((o) => o.categoriaId);
+  // Gastos Não Planejados (Avisos)
+  const orcamentosIds = orcamentos.map((o) => o.categoria.id);
   const gastosSemOrcamento = resumoCategorias.filter(
     (r) => !orcamentosIds.includes(r.categoriaId) && r.totalGasto > 0
   );
 
-  // 2. LÓGICA: Ranking Completo (Top Gastos)
+  // Ranking Completo (Top Gastos)
   const rankingGastos = [...resumoCategorias]
     .filter((r) => r.tipoCategoria === "SAIDA" && r.totalGasto > 0)
     .sort((a, b) => b.totalGasto - a.totalGasto);
@@ -58,14 +54,13 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
   }
 
   return (
-    // As classes 'h-fit sticky top-6' são o segredo do layout perfeito na lateral!
     <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl shadow-sm h-fit sticky top-6 overflow-hidden">
       
       {/* HEADER: Navegação por Abas (Tabs) */}
       <div className="flex border-b border-[var(--border-color)]">
         <button
           onClick={() => setAbaAtiva("avisos")}
-          className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all ${
+          className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all ${
             abaAtiva === "avisos"
               ? "border-b-2 border-orange-500 text-orange-500 bg-orange-500/5"
               : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
@@ -74,7 +69,6 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
           <AlertCircle size={16} />
           <span className="relative">
             Avisos
-            {/* Bolinha vermelha indicando que tem avisos pendentes */}
             {gastosSemOrcamento.length > 0 && (
               <span className="absolute -top-1 -right-3 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             )}
@@ -83,7 +77,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
 
         <button
           onClick={() => setAbaAtiva("ranking")}
-          className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all ${
+          className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all ${
             abaAtiva === "ranking"
               ? "border-b-2 border-[var(--primary-color)] text-[var(--primary-color)] bg-[var(--primary-color)]/5"
               : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
@@ -97,7 +91,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
       {/* BODY: Conteúdo Dinâmico */}
       <div className="p-6">
         
-        {/* ABA 1: AVISOS (Não Planejados) */}
+        {/* ABA 1: AVISOS */}
         {abaAtiva === "avisos" && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
             {gastosSemOrcamento.length === 0 ? (
@@ -127,7 +121,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
                         {resumo.tipoCategoria === "SAIDA" && (
                           <button
                             onClick={() => openModal("createOrcamento")}
-                            className="text-[10px] text-blue-500 font-bold uppercase hover:underline mt-1"
+                            className="text-[10px] text-blue-500 font-bold uppercase hover:underline mt-1 cursor-pointer"
                           >
                             Criar Limite
                           </button>
@@ -164,10 +158,10 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
                           {formatarMoeda(resumo.totalGasto)}
                         </span>
                       </div>
-                      {/* Mini barra de progresso para o Ranking */}
-                      <div className="w-full bg-[var(--bg-secondary)] rounded-full h-1.5 ml-6 w-[calc(100%-24px)]">
+                      {/* Corrigido conflito do w-full, adicionado overflow-hidden e transition */}
+                      <div className="bg-[var(--bg-secondary)] rounded-full h-1.5 ml-6 w-[calc(100%-24px)] overflow-hidden">
                         <div
-                          className="bg-[var(--primary-color)] h-1.5 rounded-full opacity-70"
+                          className="bg-[var(--primary-color)] h-1.5 rounded-full opacity-70 transition-all duration-1000 ease-out"
                           style={{ width: `${percentualDoTotal}%` }}
                         />
                       </div>

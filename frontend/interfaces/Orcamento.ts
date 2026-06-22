@@ -5,3 +5,8 @@ export interface Orcamento {
   limite: number;
   categoria: Categoria
 }
+
+export interface OrcamentoRequest {
+  categoriaId: number; 
+  limite: number;
+}

@@ -47,7 +47,7 @@ export default function Orcamento() {
   const isLoading = carregando || carregandoCategoria;
 
   // Lógica dos Gastos sem Orçamento
-  const orcamentosIds = orcamentos.map((o) => o.categoriaId);
+  const orcamentosIds = orcamentos.map((o) => o.categoria.id);
   const gastosSemOrcamento = resumoCategorias.filter(
     (r) => !orcamentosIds.includes(r.categoriaId) && r.totalGasto > 0 // Ignora zerados
   );
