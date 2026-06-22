@@ -46,7 +46,7 @@ export default function FiltersTransacao({
   };
 
   return (
-    <div className="rounded-lg flex flex-wrap gap-2 items-end">
+    <div className="rounded-lg flex flex-wrap gap-2 items-end">obterDatasMesAtual
       {/* Conta */}
       <div className="flex flex-col">
         <label className="text-sm">Conta</label>

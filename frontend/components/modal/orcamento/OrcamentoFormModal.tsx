@@ -2,18 +2,13 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import { useState, useEffect } from "react";
-import Input from "../../forms/Input";
-import Select from "../../forms/Select";
-import { PieChart } from "lucide-react";
+import { PieChart, TrendingUp, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 import { useCategorias } from "@/hooks/useCategorias";
 import { useOrcamentos } from "@/hooks/useOrcamento";
-
-interface Orcamento {
-  id: number;
-  categoria: { id: number; nome: string };
-  limite: number;
-}
+import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
+import { Orcamento } from "@/interfaces/Orcamento";
 
 interface OrcamentoFormModalProps {
   orcamento?: Orcamento | null;
@@ -22,11 +17,15 @@ interface OrcamentoFormModalProps {
 export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProps) {
   const { closeModal } = useModalStore();
   const { categorias, carregando: carregandoCategorias } = useCategorias();
-  
+
   const { criarOrcamento, updateOrcamento } = useOrcamentos();
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+
+  const [tipo, setTipo] = useState<"SAIDA" | "ENTRADA">(
+    orcamento?.categoria?.tipo || "SAIDA"
+  );
 
   const isEditMode = !!orcamento;
 
@@ -41,14 +40,28 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
         categoriaId: String(orcamento.categoria?.id || ""),
         limite: orcamento.limite ? orcamento.limite.toFixed(2) : "",
       });
+
+      // Descobre o tipo da categoria sendo editada 
+      if (categorias.length > 0) {
+        const categoriaEditada = categorias.find(c => c.id === orcamento.categoria?.id);
+        if (categoriaEditada) {
+          setTipo(categoriaEditada.tipo);
+        }
+      }
     }
-  }, [orcamento]);
+  }, [orcamento, categorias]);
+
+  // Limpa a categoria selecionada sempre que o usuário trocar de aba
+  useEffect(() => {
+    if (!isEditMode) {
+      setFormData(prev => ({ ...prev, categoriaId: "" }));
+    }
+  }, [tipo, isEditMode]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErro(null);
 
-    // Limpeza da máscara de moeda (ex: "1.500,00" -> 1500.00)
     const getValorNumerico = (valorStr: string) => {
       if (!valorStr) return 0;
       const valorSemPonto = valorStr.replace(/\./g, "");
@@ -64,7 +77,7 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
     }
 
     if (limiteNumerico <= 0) {
-      setErro("O limite do orçamento deve ser maior que zero.");
+      setErro(`A ${tipo === "SAIDA" ? "limite" : "meta"} deve ser maior que zero.`);
       return;
     }
 
@@ -76,84 +89,129 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
           categoriaId: parseInt(formData.categoriaId),
           limite: limiteNumerico,
         });
-        toast.success("Orçamento atualizado com sucesso!");
+        toast.success(`${tipo === "SAIDA" ? "Orçamento" : "Objetivo"} atualizado com sucesso!`);
       } else {
         await criarOrcamento({
           categoriaId: parseInt(formData.categoriaId),
           limite: limiteNumerico,
         });
-        toast.success("Orçamento criado com sucesso!");
+        toast.success(`${tipo === "SAIDA" ? "Orçamento" : "Objetivo"} criado com sucesso!`);
       }
       closeModal();
     } catch (error: any) {
-      setErro(error.message || "Erro ao salvar o orçamento. Tente novamente.");
+      setErro(error.message || "Erro ao salvar. Tente novamente.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const categoriasDisponiveis = categorias;
+  // Filtra as categorias disponíveis com base no tipo selecionado
+  const categoriasFiltradas = categorias.filter(cat => cat.tipo === tipo);
 
   return (
     <div>
       {/* HEADER */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-[var(--primary-light)] border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]">
+        <div className={`p-2 border rounded-[var(--radius-md)] ${tipo === "SAIDA"
+          ? "bg-[var(--primary-light)] border-[var(--border-color)] text-[var(--primary-color)]"
+          : "bg-green-500/10 border-green-500/20 text-green-500"
+          }`}
+        >
           <PieChart className="w-8 h-8" />
         </div>
         <div>
           <h2 className="text-2xl font-medium text-[var(--text-primary)]">
-            {isEditMode ? "Editar Orçamento" : "Novo Orçamento"}
+            {isEditMode
+              ? (tipo === "SAIDA" ? "Editar Limite" : "Editar Meta")
+              : (tipo === "SAIDA" ? "Novo Limite de Gasto" : "Nova Meta de Ganho")}
           </h2>
           <p className="text-sm text-[var(--text-muted)]">
-            {isEditMode 
-              ? "Ajuste o limite de gastos para esta categoria." 
-              : "Defina um limite de gastos para controlar seu dinheiro."}
+            {isEditMode
+              ? "Ajuste o valor para esta categoria."
+              : `Defina ${tipo === "SAIDA" ? "um limite de gastos para controlar" : "uma meta para seus ganhos com"} essa categoria.`}
           </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        
-        {/* MENSAGEM DE ERRO (Dentro do form, no topo) */}
+
+        {/* MENSAGEM DE ERRO */}
         {erro && (
           <div className="p-4 bg-[var(--danger-color)]/10 text-[var(--danger-color)] border border-[var(--danger-color)]/20 rounded-xl text-sm font-medium">
             {erro}
           </div>
         )}
 
-        {/* SELECT DE CATEGORIA */}
-        <Select
-          label="Categoria"
-          name="categoriaId"
-          value={formData.categoriaId}
-          onChange={(e) => {
-            setFormData({ ...formData, categoriaId: e.target.value });
-            if (erro) setErro(null);
-          }}
-          disabled={carregandoCategorias || isEditMode} // Em edição, geralmente não se muda a categoria
-          required
-        >
-          <option value="" disabled>
-            {carregandoCategorias ? "Carregando categorias..." : "Selecione a categoria"}
-          </option>
-          {categoriasDisponiveis.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.nome}
-            </option>
-          ))}
-        </Select>
+        {/* TABS DE SELEÇÃO (Meta vs Limite) - Oculto/Desabilitado em Edit Mode */}
+        {!isEditMode && (
+          <div className="flex bg-[var(--bg-secondary)] p-1 rounded-[var(--radius-md)]">
+            <button
+              type="button"
+              onClick={() => setTipo("SAIDA")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tipo === "SAIDA"
+                ? "bg-[var(--bg-surface)] text-[var(--primary-color)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+            >
+              <TrendingDown className="w-4 h-4" /> Limite (Saídas)
+            </button>
+            <button
+              type="button"
+              onClick={() => setTipo("ENTRADA")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold rounded-md transition-all ${tipo === "ENTRADA"
+                ? "bg-[var(--bg-surface)] text-green-500 shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+            >
+              <TrendingUp className="w-4 h-4" /> Meta (Entradas)
+            </button>
+          </div>
+        )}
 
-        {/* INPUT DE LIMITE */}
+        {/* SELECT DE CATEGORIA */}
+        {isEditMode ? (
+          <Input
+            label="Categoria"
+            name="categoriaNome"
+            type="text"
+            value={orcamento?.categoria.nome || ""}
+            disabled
+            readOnly
+            className="opacity-70 cursor-not-allowed"
+          />
+        ) : (
+          <Select
+            label="Categoria"
+            name="categoriaId"
+            value={formData.categoriaId}
+            onChange={(e) => {
+              setFormData({ ...formData, categoriaId: e.target.value });
+              if (erro) setErro(null);
+            }}
+            disabled={carregandoCategorias}
+            required
+          >
+            <option value="" disabled>
+              {carregandoCategorias ? "Carregando categorias..." : "Selecione a categoria"}
+            </option>
+            {categoriasFiltradas.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.nome}
+              </option>
+            ))}
+          </Select>
+        )}
+
+        {/* INPUT DE LIMITE / META */}
         <Input
-          label="Limite de Gastos (R$)"
+          label={tipo === "SAIDA" ? "Limite de Gastos (R$)" : "Meta de Ganhos (R$)"}
           type="number"
           isCurrency={true}
           name="limite"
           value={formData.limite}
           onChange={(e) => {
-             setFormData({ ...formData, limite: e.target.value });
-             if (erro) setErro(null);
+            setFormData({ ...formData, limite: e.target.value });
+            if (erro) setErro(null);
           }}
           placeholder="0.00"
           required
@@ -170,17 +228,20 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
           >
             Cancelar
           </button>
-          
+
           <button
             type="submit"
             disabled={submitting || !formData.categoriaId || !formData.limite}
-            className="cursor-pointer flex-1 bg-[var(--primary-color)] text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md hover:bg-[var(--primary-hover)] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`cursor-pointer flex-1 text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${tipo === "SAIDA"
+              ? "bg-[var(--primary-color)] hover:bg-[var(--primary-hover)]"
+              : "bg-green-600 hover:bg-green-700"
+              }`}
           >
-            {submitting 
-              ? "Salvando..." 
-              : isEditMode 
-                ? "Salvar Alterações" 
-                : "Criar Orçamento"}
+            {submitting
+              ? "Salvando..."
+              : isEditMode
+                ? "Salvar Alterações"
+                : (tipo === "SAIDA" ? "Criar Limite" : "Criar Meta")}
           </button>
         </div>
       </form>

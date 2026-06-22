@@ -58,6 +58,38 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.skeleton {
+  background-color: #e0e0e0;
+  background-image: linear-gradient(
+    90deg,
+    #e0e0e0 0%,
+    #f5f5f5 50%,
+    #e0e0e0 100%
+  );
+  
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+.dark .skeleton {
+  background-color: #1e2127;
+  background-image: linear-gradient(
+    90deg,
+    #1e2127 0%,
+    #33343a 50%,
+    #1e2127 100%
+  );
+  
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .theme-emerald {
   --primary-color: #10B981;
   --primary-hover: #059669;

@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 
-import { User, Shield, Palette, Tags, Bell, LogOut, X } from "lucide-react";
+import { User, Shield, Palette, Tags, Bell, LogOut, X, Router } from "lucide-react";
 import { subtle } from "crypto";
 import { useUsuario } from "@/hooks/useUsuario";
 
@@ -16,12 +16,13 @@ interface HeaderDashboardProps {
   subTitle?: string;
 }
 
+
 export default function HeaderDashboard({
   showWelcome = false,
   title,
   subTitle,
 }: HeaderDashboardProps) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { avatarUrl } = useUsuario();
 
   const pathname = usePathname();
@@ -30,6 +31,7 @@ export default function HeaderDashboard({
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const firstName = user?.nome?.split(" ")[0] ?? "Usuário";
 
   const accountMenu = [
@@ -68,6 +70,16 @@ export default function HeaderDashboard({
     setIsMenuOpen(false);
   }, [pathname]);
 
+  const handleLogout = async () => {
+    if (confirm("Tem certeza que deseja sair?")) {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      router.push("/");
+    }
+  };
+
   function AccountMenuContent() {
     return (
       <>
@@ -104,9 +116,9 @@ export default function HeaderDashboard({
         <div>
           {showWelcome ? (
             <>
-              <h1 className="text-2xl font-medium">
+              <h1 className="text-2xl font-medium flex align-baseline">
                 Bem-vindo de volta,{" "}
-                <span className="text-[var(--primary-color)]">{firstName}</span>
+                <span className="text-[var(--primary-color)]">{isLoading ? <div className="skeleton h-6 w-[90px] rounded-md inline-block" /> : firstName}</span>
                 !
               </h1>
 
@@ -132,34 +144,36 @@ export default function HeaderDashboard({
         </div>
 
         <div ref={menuRef} className="relative">
-          <button
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="
-              flex items-center gap-4
-              bg-[var(--bg-surface)]
-              border border-[var(--border-color)]
-              rounded-full
-              px-2 py-2
-              hover:bg-[var(--bg-secondary)]
-              transition
-            "
-          >
-            <img
-              src={avatarUrl}
-              alt={user?.nome || "Avatar"}
-              width={56}
-              height={56}
-              className="rounded-full"
-            />
+          {isLoading ? (
+            <div className="flex items-center gap-4 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-full px-2 py-2 pr-4 w-56 ">
+              <div className="w-[56px] h-[56px] rounded-full skeleton shrink-0"></div>
 
-            <div className="text-left">
-              <h2 className="font-medium">{user?.nome}</h2>
-
-              <p className="text-sm text-[var(--text-secondary)]">
-                {user?.email}
-              </p>
+              <div className="flex flex-col gap-2 w-full">
+                <div className="h-4 skeleton rounded-md w-24"></div>
+                <div className="h-3 skeleton rounded-md w-32"></div>
+              </div>
             </div>
-          </button>
+          ) : (
+            <button
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              className="flex items-center gap-4 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-full px-2 py-2 pr-4 hover:bg-[var(--bg-secondary)] transition text-left"
+            >
+              <img
+                src={avatarUrl}
+                alt={user?.nome || "Avatar"}
+                width={56}
+                height={56}
+                className="rounded-full shrink-0"
+              />
+
+              <div className="flex flex-col overflow-hidden">
+                <h2 className="font-medium truncate">{user?.nome}</h2>
+                <p className="text-sm text-[var(--text-secondary)] truncate">
+                  {user?.email}
+                </p>
+              </div>
+            </button>
+          )}
 
           <div
             className={`
@@ -199,7 +213,9 @@ export default function HeaderDashboard({
                   text-red-500
                   hover:bg-red-500/10
                   transition
+                  cursor-pointer
                 "
+                onClick={handleLogout}
               >
                 <LogOut size={18} />
                 Sair da conta
@@ -220,9 +236,9 @@ export default function HeaderDashboard({
             </>
           ) : (
             <>
-              <h1 className="text-2xl font-semibold text-white">{title}</h1>
+              <h1 className="text-2xl font-semibold text-white backdrop-blur-md">{title}</h1>
               {subTitle && (
-                <p className="text-sm text-[var(--text-secondary)] mt-1">
+                <p className="text-sm text-white/80 mt-1">
                   {subTitle}
                 </p>
               )}
@@ -318,6 +334,7 @@ export default function HeaderDashboard({
               bg-red-500/10
               text-red-500
             "
+            onClick={handleLogout}
           >
             <LogOut size={18} />
             Sair da conta

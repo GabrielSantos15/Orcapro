@@ -21,23 +21,12 @@ import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { useEffect } from "react";
 import { obterDatasMesAtual } from "@/lib/utils";
+import ListaResumoMetas from "@/components/widgets/ListaResumoMetas";
 
 export default function DashBoardPage() {
   const { openModal , atualizarGatilho} = useModalStore();
-  const { contas } = useContas();
-  const { transacoes, carregarTransacoes } = useTransacoes();
-  const { resumo, carregarResumo } = useResumoTransacoes();
-  const { categorias } = useCategorias();
+  const { resumo, carregarResumo, carregando } = useResumoTransacoes();
   const { investimentos } = useInvestimentos();
-  const { metas } = useMetas();
-
-  //  5 metas mais próximas
-  const metasProximas = metas
-    .sort(
-      (a, b) =>
-        new Date(a.dataLimite).getTime() - new Date(b.dataLimite).getTime(),
-    )
-    .slice(0, 5);
 
   const totalInvestido = investimentos.reduce(
     (acc, inv) => acc + (inv.valorInvestido || 0),
@@ -47,7 +36,6 @@ export default function DashBoardPage() {
 useEffect(() => {
     const filtroMesAtual = obterDatasMesAtual(); 
     carregarResumo(filtroMesAtual);
-    carregarTransacoes(filtroMesAtual);
   }, [atualizarGatilho]);
 
   return (
@@ -60,10 +48,11 @@ useEffect(() => {
             value={resumo.saldo}
             title="Saldo Total"
             color="primary"
+            isLoading={carregando}
           />
-          <CardResumo value={resumo.receitas} title="Entradas" color="green" />
-          <CardResumo value={resumo.despesas} title="Saídas" color="red" />
-          <CardResumo value={totalInvestido} title="Investido" color="blue" />
+          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="green" />
+          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="red" />
+          <CardResumo value={totalInvestido} isLoading={carregando} title="Investido" color="blue" />
         </section>
 
         <section className="md:hidden flex flex-col gap-4">
@@ -71,6 +60,7 @@ useEffect(() => {
             value={resumo.saldo}
             title="Saldo Total"
             color="primary"
+            isLoading={carregando}
           />
           <Button
             className="md:hidden"
@@ -82,11 +72,12 @@ useEffect(() => {
             <CardResumo
               value={resumo.receitas}
               title="Entradas"
+              isLoading={carregando}
               color="green"
             />
-            <CardResumo value={resumo.despesas} title="Saídas" color="red" />
+            <CardResumo value={resumo.despesas} title="Saídas" color="red" isLoading={carregando}/>
           </div>
-          <CardResumo value={totalInvestido} title="Investido" color="blue" />
+          <CardResumo value={totalInvestido} title="Investido" color="blue" isLoading={carregando}/>
         </section>
 
         <WidgetContainer
@@ -101,7 +92,7 @@ useEffect(() => {
           }
           className="lg:col-span-1 lg:row-span-2"
         >
-          <ListaContas contas={contas} />
+          <ListaContas />
         </WidgetContainer>
 
         <WidgetContainer
@@ -144,7 +135,7 @@ useEffect(() => {
           }
           className="lg:col-span-1"
         >
-          <ListaTransacoes transacoes={transacoes.slice(0, 5)} />
+        <ListaTransacoes limite={5} />
         </WidgetContainer>
 
         <WidgetContainer
@@ -159,27 +150,7 @@ useEffect(() => {
           }
           className="lg:col-span-4"
         >
-          {metasProximas.length > 0 ? (
-            <div className="flex gap-6 overflow-x-auto pb-4">
-              {metasProximas.map((meta) => (
-                <div key={meta.id} className="flex-shrink-0">
-                  <MetaCard
-                    meta={{
-                      id: meta.id,
-                      nome: meta.nome,
-                      descricao: meta.descricao,
-                      valorAlvo: meta.valorAlvo,
-                      valorAtual: meta.valorAtual,
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 py-8">
-              Nenhuma meta próxima
-            </p>
-          )}
+        <ListaResumoMetas ></ListaResumoMetas>
         </WidgetContainer>
       </div>
     </>

@@ -6,13 +6,12 @@ import { toast } from "sonner";
 import { Pencil, RotateCcw, Search, Trash2 } from "lucide-react";
 import { getCoresTipo, getIconeCategoria } from "@/lib/categoriaUtils";
 
-
 type FiltroTipo = "TODAS" | "ENTRADA" | "SAIDA";
 
 export default function ListaCategorias() {
-  
   const { openModal } = useModalStore();
-  const { categorias, deletarCategoria, reativarCategoria } = useCategorias();
+  // Adicionado o 'carregando' extraído do hook
+  const { categorias, carregando, deletarCategoria, reativarCategoria } = useCategorias();
 
   const [filtroTipo, setFiltroTipo] = useState<FiltroTipo>("TODAS");
   const [busca, setBusca] = useState("");
@@ -21,7 +20,7 @@ export default function ListaCategorias() {
   const categoriasFiltradas = useMemo(() => {
     return categorias
       .filter((c) => c.nome !== "Outros") 
-      .filter((c) => (mostrarInativas ? true : c.ativa !== false)) // Filtra inativas 
+      .filter((c) => (mostrarInativas ? true : c.ativa !== false))
       .filter((c) => (filtroTipo === "TODAS" ? true : c.tipo === filtroTipo)) 
       .filter((c) => c.nome.toLowerCase().includes(busca.toLowerCase())); 
   }, [categorias, filtroTipo, busca, mostrarInativas]);
@@ -63,10 +62,11 @@ export default function ListaCategorias() {
           placeholder="Buscar categoria..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-[var(--bg-input)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
+          className="w-full pl-10 pr-4 py-2.5 bg-[var(--bg-input)] border border-[var(--border-color)] rounded-xl text-sm font-medium text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] transition-all"
         />
       </div>
 
+      {/* FILTROS */}
       <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
         <div className="flex gap-2 flex-1 min-w-[200px]">
           {(["TODAS", "ENTRADA", "SAIDA"] as FiltroTipo[]).map((tipo) => (
@@ -94,7 +94,7 @@ export default function ListaCategorias() {
             />
             <div className="w-9 h-5 bg-[var(--border-color)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--border-color)] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--primary-color)]"></div>
           </div>
-          <span className="text-xs font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">
+          <span className="text-sm font-medium text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors">
             Mostrar inativas
           </span>
         </label>
@@ -102,44 +102,69 @@ export default function ListaCategorias() {
 
       {/* ÁREA DA TABELA */}
       <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-        {categorias.length === 0 ? (
-          <p className="py-8 text-center text-sm font-medium text-[var(--text-muted)]">
-            Carregando ou nenhuma categoria cadastrada.
-          </p>
-        ) : categoriasFiltradas.length === 0 ? (
-          <p className="py-8 text-center text-sm font-medium text-[var(--text-muted)]">
-            Nenhuma categoria encontrada para estes filtros.
-          </p>
-        ) : (
-          <table className="w-full text-left border-collapse">
-            {/* CABEÇALHO DA TABELA (THEAD) */}
-            <thead>
-              <tr className="border-b border-[var(--border-color)]">
-                <th className="pb-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-                  Nome da Categoria
-                </th>
-                <th className="pb-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider text-center">
-                  Tipo
-                </th>
-                <th className="pb-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider text-right">
-                  Ações
-                </th>
+        <table className="w-full text-left border-collapse">
+          {/* CABEÇALHO DA TABELA (THEAD) */}
+          <thead>
+            <tr className="border-b border-[var(--border-color)]">
+              <th className="pb-3 px-2 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                Nome da Categoria
+              </th>
+              <th className="pb-3 px-2 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider text-center">
+                Tipo
+              </th>
+              <th className="pb-3 px-2 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider text-right">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          
+          {/* CORPO DA TABELA (TBODY) */}
+          <tbody>
+            {carregando ? (
+              // SKELETON LOADING DA TABELA
+              [1, 2, 3, 4, 5].map((i) => (
+                <tr key={`skeleton-${i}`} className="border-b border-[var(--border-color)] last:border-0">
+                  <td className="py-3 px-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 skeleton rounded-lg flex-shrink-0" />
+                      <div className="w-32 h-4 skeleton rounded-md" />
+                    </div>
+                  </td>
+                  <td className="py-3 px-2 text-center align-middle">
+                    <div className="w-16 h-5 skeleton rounded-full mx-auto" />
+                  </td>
+                  <td className="py-3 px-2 align-middle">
+                    <div className="flex items-center justify-end gap-2">
+                      <div className="w-8 h-8 skeleton rounded-lg" />
+                      <div className="w-8 h-8 skeleton rounded-lg" />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : categoriasFiltradas.length === 0 ? (
+              // MENSAGEM DE TABELA VAZIA
+              <tr>
+                <td colSpan={3} className="py-8 text-center">
+                  <p className="text-sm font-medium text-[var(--text-muted)]">
+                    {categorias.length === 0 
+                      ? "Nenhuma categoria cadastrada." 
+                      : "Nenhuma categoria encontrada para estes filtros."}
+                  </p>
+                </td>
               </tr>
-            </thead>
-            
-            {/* CORPO DA TABELA (TBODY) */}
-            <tbody>
-              {categoriasFiltradas.map((c) => {
+            ) : (
+              // LISTAGEM DE CATEGORIAS
+              categoriasFiltradas.map((c) => {
                 const isInactive = c.ativa === false;
                 const corTema = getCoresTipo(c.tipo);
 
                 return (
                   <tr
                     key={c.id}
-                    onClick={() => !isInactive && openModal("categoria", c.id)} 
+                    onClick={() => !isInactive && openModal("updateCategoria", c)} 
                     className={`group border-b border-[var(--border-color)] last:border-0 transition-colors ${
                       isInactive 
-                        ? "bg-[var(--bg-secondary)]/30 opacity-70" // Visual esmaecido para inativas
+                        ? "bg-[var(--bg-secondary)]/30 opacity-70" 
                         : "hover:bg-[var(--bg-secondary)]/40 cursor-pointer"
                     }`}
                   >
@@ -152,9 +177,9 @@ export default function ListaCategorias() {
                           {getIconeCategoria(c.nome)}
                         </div>
                         <div className="flex flex-col">
-                          <h4 className={`font-medium text-sm truncate ${isInactive ? "text-[var(--text-muted)] line-through" : "text-[var(--text-primary)]"}`}>
+                          <p className={`font-medium text-sm truncate ${isInactive ? "text-[var(--text-muted)] line-through" : "text-[var(--text-primary)]"}`}>
                             {c.nome}
-                          </h4>
+                          </p>
                           {isInactive && (
                             <span className="text-[10px] text-[var(--danger-color)] uppercase tracking-wider font-bold mt-0.5">
                               Desativada
@@ -173,7 +198,7 @@ export default function ListaCategorias() {
                       </span>
                     </td>
 
-                    {/* DIREITA: Ações (Editar e Excluir OU Reativar) */}
+                    {/* DIREITA: Ações */}
                     <td className="py-3 px-2 align-middle">
                       <div className="flex items-center justify-end gap-1">
                         {isInactive ? (
@@ -215,10 +240,10 @@ export default function ListaCategorias() {
                     </td>
                   </tr>
                 );
-              })}
-            </tbody>
-          </table>
-        )}
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

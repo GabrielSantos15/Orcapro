@@ -22,7 +22,7 @@ export default function Movimentacao() {
   const { openModal, atualizarGatilho } = useModalStore();
 
   const { transacoes, carregarTransacoes } = useTransacoes();
-  const { resumo, carregarResumo } = useResumoTransacoes();
+  const { resumo, carregarResumo, carregando } = useResumoTransacoes();
   const { categorias } = useCategorias();
   const { contas } = useContas();
 
@@ -81,11 +81,12 @@ export default function Movimentacao() {
         <div className="flex flex-col gap-4 lg:col-span-1">
           <CardResumo
             value={resumo.saldo}
+            isLoading={carregando}
             title="Saldo Total"
             color="primary"
           />
-          <CardResumo value={resumo.receitas} title="Entradas" color="green" />
-          <CardResumo value={resumo.despesas} title="Saídas" color="red" />
+          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="green" />
+          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="red" />
         </div>
 
         <div className="lg:col-span-2">
@@ -99,7 +100,7 @@ export default function Movimentacao() {
 
         <div className="lg:col-span-1">
           <WidgetContainer titulo="Maiores Gastos" subtitulo="Top 5 categorias">
-            <GraficoTopCategorias transacoes={transacoes} />
+            <GraficoTopCategorias dataInicio={filtroAplicado.dataInicio} dataFim={filtroAplicado.dataFim}/>
           </WidgetContainer>
         </div>
       </section>
@@ -107,7 +108,7 @@ export default function Movimentacao() {
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-4">
           <WidgetContainer titulo="Últimas Transações">
-            <ListaTransacoes transacoes={transacoes} />
+            <ListaTransacoes filtro={filtroAplicado}/>
           </WidgetContainer>
         </div>
       </section>

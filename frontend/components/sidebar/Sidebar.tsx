@@ -58,11 +58,10 @@ export default function Sidebar() {
             <Link
               key={item.path}
               href={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                pathname === item.path
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${pathname === item.path
                   ? "bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white font-semibold shadow-md "
                   : "text-gray-600 hover:bg-[var(--primary-color)]/10 hover:text-bg-[var(--primary-hover)] dark:hover:text-white"
-              }`}
+                }`}
             >
               {item.icon}
               {item.label}
@@ -82,54 +81,43 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-50 border-t border-gray-100">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--bg-surface)] rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.5)] z-50 border-t border-[var(--border-color)] overflow-hidden">
         <div className="grid grid-cols-5 h-24 relative">
-          {/* Indicador animado que se move */}
+          {/* Indicador */}
           <div
-            className="absolute top-0 h-1 bg-gradient-to-r from-purple-600 to-purple-500 rounded-b-full transition-all duration-200 ease-out"
+            className="absolute top-0 h-1 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] rounded-b-full transition-all duration-400 ease-out"
             style={{
               left: `calc(${navItems.findIndex((item) => item.path === pathname) * 20}%)`,
               width: "20%",
             }}
           />
-
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <Link
                 key={item.path}
                 href={item.path}
-                className={`flex flex-col items-center justify-center gap-1 relative transition-all duration-300 ${
-                  isActive
-                    ? "text-purple-600"
-                    : "text-gray-400 hover:text-gray-600"
-                }`}
+                className={`flex flex-col items-center justify-center gap-2 relative transition-all duration-300 ${isActive
+                    ? "text-[var(--primary-color)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                  }`}
               >
-                {/* Ícone com escala animada */}
+                {/* Ícone */}
                 <div
                   className={`transition-transform duration-300 ${isActive ? "scale-110" : "scale-100"}`}
                 >
                   {item.icon}
                 </div>
 
-                {/* Label com background sutil quando ativo */}
+                {/* Label */}
                 {isActive && (
-                  <span className="text-[11px] font-semibold bg-purple-100 text-purple-700 px-2 py-1 rounded-full transition-all duration-300">
+                  <span className="text-[11px] font-semibold bg-[var(--primary-color)]/10 text-[var(--primary-color)] px-2 py-1 rounded-full transition-all duration-300">
                     {item.label}
                   </span>
                 )}
               </Link>
             );
           })}
-
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-red-500 transition-colors duration-300"
-          >
-            <div className="transition-transform duration-300 hover:scale-110">
-              <FiLogOut size={28} />
-            </div>
-          </button>
         </div>
       </nav>
     </>

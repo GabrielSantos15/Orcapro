@@ -1,7 +1,9 @@
 import { forwardToBackend } from "@/lib/server/api";
 
 export async function GET(request: Request) {
-  const { data, status, ok } = await forwardToBackend("/api/orcamento", {
+   const { searchParams } = new URL(request.url);
+     const queryString = searchParams.toString();
+  const { data, status, ok } = await forwardToBackend(`/api/orcamento?${queryString}`, {
     method: "GET",
   });
 

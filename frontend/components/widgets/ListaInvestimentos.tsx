@@ -1,6 +1,5 @@
 "use client";
 
-import { Investimento } from "@/interfaces/Investimento";
 import { useModalStore } from "@/store/useModalStore";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
 import {
@@ -17,15 +16,9 @@ import {
   Trash2,
 } from "lucide-react";
 
-interface ListaInvestimentosProps {
-  investimentos: Investimento[];
-}
-
-export default function ListaInvestimentos({
-  investimentos,
-}: ListaInvestimentosProps) {
+export default function ListaInvestimentos() {
   const { openModal } = useModalStore();
-  const { deletarInvestimento } = useInvestimentos();
+  const { investimentos, carregando, erro, deletarInvestimento } = useInvestimentos();
 
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -50,53 +43,85 @@ export default function ListaInvestimentos({
   const getCorFundoTipo = (tipo: string) => {
     switch (tipo) {
       case "RENDA_FIXA":
-        return "bg-blue-50";
+        return "bg-blue-500/10";
       case "RENDA_VARIAVEL":
-        return "bg-emerald-50";
+        return "bg-emerald-500/10";
       case "CRIPTOMOEDAS":
-        return "bg-orange-50";
+        return "bg-orange-500/10";
       default:
-        return "bg-purple-50";
+        return "bg-purple-500/10";
     }
   };
 
+  // ==========================================
+  // ESTADOS DA UI (Early Returns)
+  // ==========================================
+
+  // Estado de Carregamento 
+  if (carregando) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-color)] p-5 shadow-sm flex flex-col h-full min-h-[250px]"
+            >
+              {/* Header: Ícone, Ativo, Instituição e Botão Editar */}
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="w-10 h-10 rounded-xl skeleton shrink-0" />
+                  <div className="flex flex-col gap-2 flex-1">
+                    <div className="w-2/3 h-4 skeleton rounded-md" />
+                    <div className="w-1/3 h-3 skeleton rounded-md" />
+                  </div>
+                </div>
+                <div className="w-7 h-7 skeleton rounded-lg shrink-0" />
+              </div>
+
+              {/* Valores Principais */}
+              <div className="mb-6 flex-grow">
+                <div className="w-32 h-3 skeleton rounded-md mb-2" />
+                <div className="w-40 h-8 skeleton rounded-md mb-3" />
+                <div className="w-24 h-6 skeleton rounded-md mt-3" />
+              </div>
+
+              {/* Botões de Ação Inferiores */}
+              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
+                <div className="w-full h-9 skeleton rounded-lg" />
+                <div className="w-full h-9 skeleton rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Estado Vazio
   if (!investimentos || investimentos.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-dashed border-gray-300">
-        <Wallet className="w-12 h-12 text-gray-300 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900">
+      <div className="flex flex-col items-center justify-center p-12 bg-[var(--bg-surface)] rounded-2xl border border-dashed border-[var(--border-color)]">
+        <Wallet className="w-12 h-12 text-[var(--text-muted)] mb-4" />
+        <h3 className="text-lg font-medium text-[var(--text-primary)]">
           Nenhum investimento encontrado
         </h3>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-[var(--text-muted)] mt-1">
           Você ainda não possui aplicações cadastradas.
         </p>
       </div>
     );
   }
 
+  // Renderização Principal 
   return (
-    <div className="space-y-6">
-      {/* BANNER INFORMATIVO */}
-      <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-        <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <h4 className="text-sm font-semibold text-blue-900">
-            Sobre o saldo dos investimentos
-          </h4>
-          <p className="text-sm text-blue-800 mt-1 leading-relaxed">
-            Seu dinheiro pode render diariamente. Caso o valor real na sua
-            corretora esteja diferente do registrado aqui, clique no ícone de
-            recarregar ao lado do saldo para sincronizar e manter seu patrimônio
-            atualizado!
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {investimentos.map((inv) => (
-          <div
+          <article
             key={inv.id}
-            className={`relative bg-white rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md flex flex-col ${!inv.ativoStatus ? "opacity-75 grayscale-[0.5] border-gray-200" : "border-gray-100"}`}
+            className={`relative bg-[var(--bg-surface)] rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md flex flex-col ${
+              !inv.ativoStatus ? "opacity-75 grayscale-[0.5] border-[var(--border-color)]" : "border-[var(--border-color)]"
+            }`}
           >
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
@@ -106,10 +131,10 @@ export default function ListaInvestimentos({
                   {getIconeTipo(inv.tipo)}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 leading-tight">
+                  <h3 className="font-semibold text-[var(--text-primary)] leading-tight">
                     {inv.ativo}
                   </h3>
-                  <span className="text-xs text-gray-500 font-medium">
+                  <span className="text-xs text-[var(--text-muted)] font-medium">
                     {inv.conta?.instituicao}
                   </span>
                 </div>
@@ -117,13 +142,13 @@ export default function ListaInvestimentos({
 
               <div className="flex items-center gap-2">
                 {!inv.ativoStatus && (
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full uppercase">
+                  <span className="px-2 py-0.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-[10px] font-bold rounded-full uppercase">
                     Inativo
                   </span>
                 )}
                 <button
                   onClick={() => openModal("updateInvestimento", inv)}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                  className="p-1.5 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -131,12 +156,14 @@ export default function ListaInvestimentos({
             </div>
 
             <div className="mb-6 flex-grow">
-              <p className="text-sm text-gray-500 mb-1">
+              <p className="text-sm text-[var(--text-muted)] mb-1">
                 Saldo Atual Registrado
               </p>
               <div className="flex items-center gap-2">
                 <h2
-                  className={`text-2xl font-bold tracking-tight ${!inv.ativoStatus ? "text-gray-500" : "text-gray-900"}`}
+                  className={`text-2xl font-bold tracking-tight ${
+                    !inv.ativoStatus ? "text-[var(--text-muted)]" : "text-[var(--text-primary)]"
+                  }`}
                 >
                   {formatarMoeda(inv.valorInvestido)}
                 </h2>
@@ -145,7 +172,7 @@ export default function ListaInvestimentos({
                 {inv.ativoStatus && (
                   <button
                     onClick={() => openModal("updateSaldoInvestimento", inv)}
-                    className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    className="p-1 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded transition-colors"
                     title="Atualizar rendimento"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -154,7 +181,7 @@ export default function ListaInvestimentos({
               </div>
 
               <div className="flex items-center gap-2 mt-3">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-md">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500/10 text-green-500 text-xs font-semibold rounded-md">
                   <TrendingUp className="w-3 h-3" />
                   {inv.percentual > 0 && <span>{inv.percentual}%</span>} {inv.indicador}
                 </span>
@@ -162,39 +189,38 @@ export default function ListaInvestimentos({
             </div>
 
             {inv.ativoStatus ? (
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
+              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
                 <button
                   onClick={() => openModal("aporteInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-semibold"
+                  className="flex items-center justify-center gap-2 py-2 px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-lg text-sm font-semibold transition-colors"
                 >
                   <ArrowUpCircle className="w-4 h-4" /> Aportar
                 </button>
                 <button
                   onClick={() => openModal("resgateInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg text-sm font-semibold"
+                  className="flex items-center justify-center gap-2 py-2 px-3 bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)] hover:text-[var(--text-primary)] rounded-lg text-sm font-semibold transition-colors"
                 >
                   <ArrowDownCircle className="w-4 h-4" /> Resgatar
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
+              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
                 <button
                   onClick={() => openModal("aporteInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 rounded-lg text-sm font-semibold"
+                  className="flex items-center justify-center gap-2 py-2 px-3 bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 rounded-lg text-sm font-semibold transition-colors"
                 >
                   <ArrowUpCircle className="w-4 h-4" /> Reativar
                 </button>
                 <button
                   onClick={() => deletarInvestimento(inv.id)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-sm font-semibold"
+                  className="flex items-center justify-center gap-2 py-2 px-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg text-sm font-semibold transition-colors"
                 >
                   <Trash2 className="w-4 h-4" /> Deletar
                 </button>
               </div>
             )}
-          </div>
+          </article>
         ))}
-      </div>
-    </div>
+      </section>
   );
 }

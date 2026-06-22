@@ -24,10 +24,10 @@ export function useResumoTransacoes() {
   const [carregando, setCarregando] = useState(true);
 
   const [resumoCategorias, setResumoCategorias] = useState<ResumoCategoria[]>([]);
-  const [carregandoCategoria, setCarregandoCategoria] = useState(false);
+  const [carregandoCategoria, setCarregandoCategoria] = useState(true);
 
   const [resumoAnual, setResumoAnual] = useState<ResumoAnual[]>([]);
-  const [carregandoAnual, setCarregandoAnual] = useState(false); // Novo estado de loading isolado
+  const [carregandoAnual, setCarregandoAnual] = useState(true);
 
 
   const carregarResumo = useCallback(async (filtros?: FiltroTransacao) => {

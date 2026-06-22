@@ -5,7 +5,7 @@ function AvatarGroup() {
   const users = [1, 2, 3, 4, 5];
 
   return (
-    <div className="hidden lg:flex items-center gap-4 my-4">
+    <div className="flex items-center gap-4 my-4">
       <div className="flex -space-x-3">
         {users.map((i) => (
           <img
@@ -33,13 +33,13 @@ function AvatarGroup() {
 
 export default function Hero() {
   return (
-    <section className=" min-h-[750px] bg-gradient-to-br from-gray-300 dark:from-gray-800 via-green-50 dark:via-gray-600 to-green-200 dark:to-gray-850 rounded-2xl p-2 lg:p-5 lg:px-10 mx-5 mt-5 flex flex-col lg:flex-row items-center justify-center gap-12">
+    <section className="min-h-[calc(100dvh-100px)] lg:min-h-[750px] bg-gray-300 dark:bg-gradient-to-br dark:bg-gray-800  dark:from-gray-800 dark:via-gray-600 to-green-100  md:rounded-2xl p-4 lg:p-5 lg:px-10 md:mx-5 md:mt-5 flex flex-col lg:flex-row items-center justify-center gap-12">
       <article className="text-[var(--text-primary)] w-full max-w-3xl flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
-        <h1 className="text-5xl md:text-6xl font-medium tracking-tight leading-tight">
+        <h1 className="text-4xl md:text-6xl font-medium tracking-tight leading-tight">
           Liberdade financeira começa com organização
         </h1>
 
-        <p className="text-xl max-w-xl leading-relaxed">
+        <p className="hidden lg:inline text-xl max-w-xl leading-relaxed text-[var(--text-secondary)]">
           Abandone as planilhas complexas. O OrçaPro transforma a gestão do seu
           dinheiro em uma experiência visual, inteligente e sem estresse
         </p>

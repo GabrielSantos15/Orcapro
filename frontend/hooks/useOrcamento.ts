@@ -1,26 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-import { Orcamento } from "@/interfaces/Orcamento";
+import { useState, useCallback } from "react";
+import { Orcamento, OrcamentoRequest } from "@/interfaces/Orcamento";
+import { TipoCategoria } from "@/interfaces/Categoria"; 
 import { useModalStore } from "@/store/useModalStore";
-
 
 export function useOrcamentos() {
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
-  const { atualizarGatilho, triggerUpdate } = useModalStore();
+  const { triggerUpdate } = useModalStore();
 
-  const fetchOrcamentos = async () => {
+  const fetchOrcamentos = useCallback(async (tipo?: TipoCategoria) => {
     try {
       setCarregando(true);
-      const res = await fetch("/api/orcamento");
+
+      const url = tipo ? `/api/orcamento?tipo=${tipo}` : "/api/orcamento";
+      const res = await fetch(url);
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || "Falha ao buscar orçamentos");
       }
 
-      const data = await res.json();
+      // Tipamos a resposta diretamente com a interface
+      const data: Orcamento[] = await res.json();
       setOrcamentos(data);
       setErro(null);
     } catch (err: any) {
@@ -28,9 +31,9 @@ export function useOrcamentos() {
     } finally {
       setCarregando(false);
     }
-  };
+  }, []);
 
-  const criarOrcamento = async (dados: { categoriaId: number; limite: number }) => {
+  const criarOrcamento = useCallback(async (dados: OrcamentoRequest) => {
     try {
       const res = await fetch("/api/orcamento", {
         method: "POST",
@@ -45,20 +48,16 @@ export function useOrcamentos() {
         throw new Error(errData.error || "Falha ao criar orçamento");
       }
 
-      const novoOrcamento = await res.json();
-      setOrcamentos([...orcamentos, novoOrcamento]);
+      const novoOrcamento: Orcamento = await res.json();
       triggerUpdate(); 
       return novoOrcamento;
     } catch (err: any) {
       setErro(err.message);
       throw err;
     }
-  };
+  }, [triggerUpdate]);
 
-  const updateOrcamento = async (
-    id: number,
-    dados: { categoriaId: number; limite: number }
-  ) => {
+  const updateOrcamento = useCallback(async (id: number, dados: OrcamentoRequest) => {
     try {
       const res = await fetch(`/api/orcamento/${id}`, {
         method: "PUT",
@@ -73,19 +72,16 @@ export function useOrcamentos() {
         throw new Error(errData.error || "Falha ao atualizar orçamento");
       }
 
-      const orcamentoAtualizado = await res.json();
-      setOrcamentos(
-        orcamentos.map((orc) => (orc.id === id ? orcamentoAtualizado : orc))
-      );
+      const orcamentoAtualizado: Orcamento = await res.json();
       triggerUpdate();
       return orcamentoAtualizado;
     } catch (err: any) {
       setErro(err.message);
       throw err;
     }
-  };
+  }, [triggerUpdate]);
 
-  const deletarOrcamento = async (id: number) => {
+  const deletarOrcamento = useCallback(async (id: number) => {
     try {
       const res = await fetch(`/api/orcamento/${id}`, {
         method: "DELETE",
@@ -96,17 +92,12 @@ export function useOrcamentos() {
         throw new Error(errData.error || "Falha ao deletar orçamento");
       }
 
-      setOrcamentos(orcamentos.filter((orc) => orc.id !== id));
       triggerUpdate();
     } catch (err: any) {
       setErro(err.message);
       throw err;
     }
-  };
-
-  useEffect(() => {
-    fetchOrcamentos();
-  }, [atualizarGatilho]);
+  }, [triggerUpdate]);
 
   return {
     orcamentos,
@@ -115,6 +106,6 @@ export function useOrcamentos() {
     criarOrcamento,
     updateOrcamento, 
     deletarOrcamento,
-    recarregar: fetchOrcamentos,
+    fetchOrcamentos,
   };
 }

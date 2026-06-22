@@ -10,26 +10,8 @@ import { Info } from "lucide-react";
 import { useEffect } from "react";
 
 export default function Investimentos() {
-  const { investimentos, carregando, erro } = useInvestimentos();
+
   const { openModal } = useModalStore();
-
-  if (carregando) {
-    return (
-      <>
-        <HeaderDashboard title="Meus Investimentos" />
-        <p>Carregando investimentos...</p>
-      </>
-    );
-  }
-
-  if (erro) {
-    return (
-      <>
-        <HeaderDashboard title="Meus Investimentos" />
-        <p style={{ color: "red" }}>Erro: {erro}</p>
-      </>
-    );
-  }
 
   return (
     <>
@@ -41,8 +23,22 @@ export default function Investimentos() {
       >
         + Adicionar Investimento
       </Button>
+      {/* BANNER INFORMATIVO */}
+      <div className="flex items-start gap-3 p-4 bg-blue-200/10 backdrop-blur-2xl border border-blue-500 rounded-xl mb-4">
+        <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <h4 className="text-sm font-semibold text-blue-500">
+            Sobre o saldo dos investimentos
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">
+            Seu dinheiro pode render diariamente. Caso o valor real na sua
+            corretora esteja diferente do registrado aqui, clique no ícone de
+            recarregar ao lado do saldo para sincronizar e manter seu patrimônio
+            atualizado!
+          </p>
+        </div>
+      </div>
       <ListaInvestimentos
-        investimentos={investimentos}
       ></ListaInvestimentos>
     </>
   );

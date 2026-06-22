@@ -19,7 +19,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { FiltroResumoAnual } from "@/interfaces/FiltroResumoAnual";
 
@@ -44,13 +44,11 @@ interface GraficoColunasProps {
 }
 
 export default function GraficoColunas({ filtro }: GraficoColunasProps) {
-
   const [anoSelecionado, setAnoSelecionado] = useState(new Date().getUTCFullYear());
   const [editandoAno, setEditandoAno] = useState(false);
   const [inputAno, setInputAno] = useState(anoSelecionado.toString());
 
   const { resumoAnual, carregandoAnual, fetchResumoAnual } = useResumoTransacoes();
-
 
   const contaId = filtro?.contaId;
   const categoriaId = filtro?.categoriaId;
@@ -64,7 +62,6 @@ export default function GraficoColunas({ filtro }: GraficoColunasProps) {
       tipo 
     });
     setInputAno(anoSelecionado.toString()); 
-
   }, [anoSelecionado, contaId, categoriaId, tipo, fetchResumoAnual]);
 
   const confirmarAno = () => {
@@ -81,18 +78,22 @@ export default function GraficoColunas({ filtro }: GraficoColunasProps) {
   // DADOS DO GRÁFICO
   // =========================
   const dadosDoGrafico = useMemo(() => {
-    if (!resumoAnual || resumoAnual.length === 0) return [];
+    // Se estiver carregando ou se a API ainda não devolveu nada,
+    // renderiza a estrutura com valores zerados para manter o layout fixo.
+    if (carregandoAnual || !resumoAnual || resumoAnual.length === 0) {
+      return meses.map((mes) => ({
+        mes,
+        receitas: 0,
+        despesas: 0,
+      }));
+    }
 
     return resumoAnual.map((item, index) => ({
       mes: meses[index],
       receitas: item.receitas,
       despesas: item.despesas,
     }));
-  }, [resumoAnual]);
-
-  const semDados = dadosDoGrafico.every(
-    (item) => item.receitas === 0 && item.despesas === 0
-  );
+  }, [resumoAnual, carregandoAnual]);
 
   return (
     <div className="w-full p-2 sm:p-4">
@@ -137,86 +138,75 @@ export default function GraficoColunas({ filtro }: GraficoColunasProps) {
         </div>
       </div>
 
-      {/* ÁREA DO GRÁFICO */}
+      {/* ÁREA DO GRÁFICO*/}
       <div className="h-[280px] w-full">
-        {carregandoAnual ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-[var(--text-muted)]">
-            <Loader2 className="animate-spin" size={32} />
-            <p className="text-sm">Buscando resumo de {anoSelecionado}...</p>
-          </div>
-        ) : semDados ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-[var(--text-muted)]">
-            <p className="text-sm">Nenhuma movimentação em {anoSelecionado}.</p>
-          </div>
-        ) : (
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={dadosDoGrafico}
-                margin={{ top: 5, right: 5, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="3 3"
-                  className="stroke-[var(--border-color)] opacity-50"
-                />
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={dadosDoGrafico}
+              margin={{ top: 5, right: 5, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="3 3"
+                className="stroke-[var(--border-color)] opacity-50"
+              />
 
-                <XAxis
-                  dataKey="mes"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                  className="text-xs font-medium"
-                  stroke="var(--text-muted)"
-                />
+              <XAxis
+                dataKey="mes"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                className="text-xs font-medium"
+                stroke="var(--text-muted)"
+              />
 
-                <YAxis
-                  domain={[0, 'auto']}
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                  className="text-[10px] sm:text-xs font-medium"
-                  stroke="var(--text-muted)"
-                  width={65}
-                  tickFormatter={(value) =>
-                    new Intl.NumberFormat("pt-BR", {
-                      notation: "compact",
-                      compactDisplay: "short",
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(value)
-                  }
-                />
+              <YAxis
+                domain={[0, 'auto']}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                className="text-[10px] sm:text-xs font-medium"
+                stroke="var(--text-muted)"
+                width={65}
+                tickFormatter={(value) =>
+                  new Intl.NumberFormat("pt-BR", {
+                    notation: "compact",
+                    compactDisplay: "short",
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(value)
+                }
+              />
 
-                <ChartTooltip
-                  cursor={{ fill: "var(--bg-secondary)", opacity: 0.4 }}
-                  content={
-                    <ChartTooltipContent
-                      indicator="dot"
-                      className="bg-[var(--bg-surface)] border-[var(--border-color)] text-[var(--text-primary)] shadow-lg"
-                    />
-                  }
-                />
+              <ChartTooltip
+                cursor={{ fill: "var(--bg-secondary)", opacity: 0.4 }}
+                content={
+                  <ChartTooltipContent
+                    indicator="dot"
+                    className="bg-[var(--bg-surface)] border-[var(--border-color)] text-[var(--text-primary)] shadow-lg"
+                  />
+                }
+              />
 
-                <ChartLegend content={<ChartLegendContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
 
-                <Bar
-                  dataKey="receitas"
-                  fill="var(--color-receitas)"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={32}
-                />
+              <Bar
+                dataKey="receitas"
+                fill="var(--color-receitas)"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={32}
+              />
 
-                <Bar
-                  dataKey="despesas"
-                  fill="var(--color-despesas)"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={32}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        )}
+              <Bar
+                dataKey="despesas"
+                fill="var(--color-despesas)"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={32}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   );

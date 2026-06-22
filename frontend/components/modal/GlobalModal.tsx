@@ -55,6 +55,7 @@ export default function GlobalModal() {
       {view === "updateCategoria" && <CreateCategoriaModal categoria={data}/>}
 
       {view === "createOrcamento" && <OrcamentoFormModal />}
+      {view === "updateOrcamento" && <OrcamentoFormModal orcamento={data} />}
 
     </Modal>
   );

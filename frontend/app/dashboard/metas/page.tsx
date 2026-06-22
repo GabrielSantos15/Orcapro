@@ -18,34 +18,7 @@ import {
 
 export default function Metas() {
   const { openModal } = useModalStore();
-  const { metas, deletarMeta, carregando, erro } = useMetas();
 
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valor);
-  };
-
-  if (carregando) {
-    return (
-      <div>
-        <HeaderDashboard title="Minhas Metas" />
-        <p className="text-center text-gray-500 mt-8">Carregando metas...</p>
-      </div>
-    );
-  }
-
-  if (erro) {
-    return (
-      <div>
-        <HeaderDashboard title="Minhas Metas" />
-        <p className="text-center text-[var(--primary-color)] mt-8">
-          Erro ao carregar metas: {erro}
-        </p>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -56,19 +29,8 @@ export default function Metas() {
       >
         + Adicionar Meta
       </Button>
-      {metas.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 bg-[var(--bg-secondary)] rounded-2xl border border-dashed border-[var(--border-color)]">
-          <Target className="w-12 h-12 text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium">
-            Nenhuma meta encontrada
-          </h3>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Comece a definir suas metas financeiras!
-          </p>
-        </div>
-      ) : (
-        <ListaMetas metas={metas}></ListaMetas>
-      )}
+      <ListaMetas></ListaMetas>
+
     </>
   );
 }
