@@ -33,7 +33,7 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         <Button
           variant="outline"
           className={cn(
-            "w-[150px] justify-start text-left font-normal bg-[var(--bg-surface)] border-hidden",
+            "justify-start text-left font-normal bg-[var(--bg-surface)] border-[var(--border-color)]",
             !selectedDate && "text-muted-foreground",
           )}
         >

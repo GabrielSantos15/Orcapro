@@ -24,37 +24,63 @@ interface FiltersTransacaoProps {
   onClear: () => void;
 }
 
-export default function FiltersTransacao({ 
-  categorias, 
-  contas, 
-  filtro, 
-  setFiltro, 
-  onApply, 
-  onClear 
+export default function FiltersTransacao({
+  categorias,
+  contas,
+  filtro,
+  setFiltro,
+  onApply,
+  onClear
 }: FiltersTransacaoProps) {
 
-  const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
-    setFiltro((prev) => ({
-      ...prev,
-      [campo]:
-        valor === ""
-          ? undefined
-          : campo === "categoriaId" || campo === "contaId"
-            ? Number(valor)
-            : valor,
-    }));
+const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
+    setFiltro((prev) => {
+      const novoFiltro = { ...prev };
+
+      // Atualiza o campo que o usuário acabou de mexer
+      if (valor === "" || valor === "all") {
+        (novoFiltro as any)[campo] = undefined;
+      } else {
+        (novoFiltro as any)[campo] = (campo === "categoriaId" || campo === "contaId") ? Number(valor) : valor;
+      }
+
+      //  Se escolheu uma Categoria, descobre o Tipo e já preenche
+      if (campo === "categoriaId" && valor !== "all" && valor !== "") {
+        const catSelecionada = categorias.find((c) => c.id === Number(valor));
+        if (catSelecionada) {
+          novoFiltro.tipo = catSelecionada.tipo;
+        }
+      }
+
+      // Se mudou o Tipo, verifica se a Categoria atual ainda faz sentido
+      if (campo === "tipo" && valor !== "all" && valor !== "") {
+        const catAtual = categorias.find((c) => c.id === prev.categoriaId);
+        if (catAtual && catAtual.tipo !== valor) {
+          novoFiltro.categoriaId = undefined; // Limpa a categoria pois é do tipo oposto
+        }
+      }
+
+      return novoFiltro;
+    });
   };
 
+  // Filtra as categorias para o Dropdown (esconde as que não batem com o Tipo)
+  const categoriasFiltradas = categorias.filter((c) => {
+    if (!filtro.tipo) return true;
+    return c.tipo === filtro.tipo;
+  });
+
   return (
-    <div className="rounded-lg flex flex-wrap gap-2 items-end">obterDatasMesAtual
+    <div className="rounded-lg grid grid-cols-2 gap-3 items-end md:flex md:flex-wrap md:gap-2">
+
       {/* Conta */}
-      <div className="flex flex-col">
-        <label className="text-sm">Conta</label>
+      <div className="flex flex-col col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Conta</label>
         <Select
           value={filtro.contaId?.toString() ?? "all"}
           onValueChange={(value) => atualizarFiltro("contaId", value === "all" ? "" : value)}
         >
-          <SelectTrigger className="min-w-[100px]">
+          <SelectTrigger className="w-full md:w-auto min-w-[100px]">
             <SelectValue placeholder="Todas as contas" />
           </SelectTrigger>
           <SelectContent>
@@ -69,18 +95,18 @@ export default function FiltersTransacao({
       </div>
 
       {/* Categoria */}
-      <div className="flex flex-col">
-        <label className="text-sm">Categoria</label>
+      <div className="flex flex-col col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Categoria</label>
         <Select
           value={filtro.categoriaId?.toString() ?? "all"}
           onValueChange={(value) => atualizarFiltro("categoriaId", value === "all" ? "" : value)}
         >
-          <SelectTrigger className="min-w-[100px]">
+          <SelectTrigger className="w-full md:w-auto min-w-[100px]">
             <SelectValue placeholder="Todas as categorias" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas</SelectItem>
-            {[...categorias]
+            {[...categoriasFiltradas]
               .sort((a, b) => {
                 if (a.nome === "Outros") return 1;
                 if (b.nome === "Outros") return -1;
@@ -98,13 +124,13 @@ export default function FiltersTransacao({
       </div>
 
       {/* Tipo */}
-      <div className="flex flex-col">
-        <label className="text-sm">Tipo</label>
+      <div className="flex flex-col col-span-2 md:col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Tipo</label>
         <Select
           value={filtro.tipo ?? "all"}
           onValueChange={(value) => atualizarFiltro("tipo", value === "all" ? "" : value)}
         >
-          <SelectTrigger className="min-w-[100px]">
+          <SelectTrigger className="w-full md:w-auto min-w-[100px]">
             <SelectValue placeholder="Todos" />
           </SelectTrigger>
           <SelectContent>
@@ -116,8 +142,8 @@ export default function FiltersTransacao({
       </div>
 
       {/* Data Inicial */}
-      <div className="flex flex-col">
-        <label className="text-sm">Data Inicial</label>
+      <div className="flex flex-col col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Data Inicial</label>
         <DatePicker
           value={filtro.dataInicio}
           onChange={(value) => atualizarFiltro("dataInicio", value ?? "")}
@@ -125,29 +151,31 @@ export default function FiltersTransacao({
       </div>
 
       {/* Data Final */}
-      <div className="flex flex-col">
-        <label className="text-sm">Data Final</label>
+      <div className="flex flex-col col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Data Final</label>
         <DatePicker
           value={filtro.dataFim}
           onChange={(value) => atualizarFiltro("dataFim", value ?? "")}
         />
       </div>
 
-      {/* Ações não precisam de lógica, só avisam o Pai que foram clicadas */}
-      <button
-        onClick={onApply}
-        className="cursor-pointer font-medium bg-[var(--primary-color)] hover:bg-[var(--secondary-color)] text-white rounded-lg py-1 px-3"
-      >
-        Aplicar
-      </button>
+      {/* Ações */}
+      <div className="col-span-2 flex justify-end gap-2 mt-1 md:mt-0">
+        <button
+          onClick={onApply}
+          className="cursor-pointer font-medium bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white rounded-lg py-1 px-3"
+        >
+          Aplicar
+        </button>
 
-      <button
-        onClick={onClear}
-        className="cursor-pointer flex items-center gap-2 rounded-lg border border-[var(--border-color)] py-1 px-3 hover:text-[var(--primary-color)] transition-all duration-200"
-      >
-        <FaFilterCircleXmark />
-        Limpar
-      </button>
+        <button
+          onClick={onClear}
+          className="cursor-pointer flex items-center gap-2 rounded-lg border border-[var(--border-color)] py-1 px-3 hover:text-[var(--primary-hover)] transition-all duration-200"
+        >
+          <FaFilterCircleXmark />
+          Limpar
+        </button>
+      </div>
     </div>
   );
 }

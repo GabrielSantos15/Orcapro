@@ -22,7 +22,6 @@ export function useOrcamentos() {
         throw new Error(errData.error || "Falha ao buscar orçamentos");
       }
 
-      // Tipamos a resposta diretamente com a interface
       const data: Orcamento[] = await res.json();
       setOrcamentos(data);
       setErro(null);

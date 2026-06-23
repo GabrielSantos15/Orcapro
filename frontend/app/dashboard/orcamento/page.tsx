@@ -4,23 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/components/button/Button";
 import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import FiltersOrcamento from "@/components/filters/FiltersOrcamento";
-import ListaOrcamentos from "@/components/widgets/ListaOrcamentos"; // <-- Seu novo componente
-import { useOrcamentos } from "@/hooks/useOrcamento";
+import ListaOrcamentos from "@/components/widgets/ListaOrcamentos";
+import ListaGastosNaoPlanejados from "@/components/widgets/ListaGastosNaoPlanejados";
+import WidgetContainer from "@/components/widgets/WidgetContainer";
+
 import { useModalStore } from "@/store/useModalStore";
 import { obterDatasMesAtual } from "@/lib/utils";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
-import GastosNaoPlanejados from "@/components/widgets/ListaGastosNaoPlanejados";
-import ListaGastosNaoPlanejados from "@/components/widgets/ListaGastosNaoPlanejados";
-import WidgetContainer from "@/components/widgets/WidgetContainer";
 
 export default function Orcamento() {
-  // Nota: Assumindo que o seu useOrcamentos() busca TODOS os orçamentos misturados
-  const { orcamentos, carregando, deletarOrcamento } = useOrcamentos();
-  const { resumoCategorias, fetchResumoCategorias, carregandoCategoria } = useResumoTransacoes();
+  // Mantemos apenas a função de fetch, já que os dados não são renderizados diretamente aqui
+  const { fetchResumoCategorias } = useResumoTransacoes();
   const { openModal, atualizarGatilho } = useModalStore();
 
   const [filtro, setFiltro] = useState<FiltroTransacao>(obterDatasMesAtual);
+  
   const filtroRef = useRef(filtro);
   filtroRef.current = filtro;
 
@@ -35,22 +34,12 @@ export default function Orcamento() {
   }, [atualizarGatilho]);
 
   const handleApply = () => carregarResumo(filtro);
+  
   const handleClear = () => {
     const filtroResetado = obterDatasMesAtual();
     setFiltro(filtroResetado);
     carregarResumo(filtroResetado);
   };
-
-  const formatarMoeda = (valor: number) =>
-    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(valor);
-
-  const isLoading = carregando || carregandoCategoria;
-
-  // Lógica dos Gastos sem Orçamento
-  const orcamentosIds = orcamentos.map((o) => o.categoria.id);
-  const gastosSemOrcamento = resumoCategorias.filter(
-    (r) => !orcamentosIds.includes(r.categoriaId) && r.totalGasto > 0 // Ignora zerados
-  );
 
   return (
     <main>
@@ -59,17 +48,15 @@ export default function Orcamento() {
         subTitle="Controle seus limites de gastos e defina metas de recebimentos"
       />
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="mt-6 mb-8">
-          <FiltersOrcamento
-            filtro={filtro}
-            setFiltro={setFiltro}
-            onApply={handleApply}
-            onClear={handleClear}
-          />
-        </div>
+      <div className="flex flex-col-reverse lg:flex-row lg:items-center justify-between gap-4 mb-4">
+        <FiltersOrcamento
+          filtro={filtro}
+          setFiltro={setFiltro}
+          onClear={handleClear}
+        />
+        
         <Button
-          className="w-full md:w-fit"
+          className="w-full lg:w-auto shrink-0 shadow-sm"
           onClick={() => openModal("createOrcamento")}
         >
           + Adicionar Orçamento
@@ -77,27 +64,26 @@ export default function Orcamento() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Lado Esquerdo: Listas Principais */}
         <div className="lg:col-span-8 flex flex-col gap-8">
-
           <section>
             <WidgetContainer titulo="Limites de Gasto (Saídas)">
-              <ListaOrcamentos
-                tipo="SAIDA"
-              />
+              <ListaOrcamentos tipo="SAIDA"  filtro={filtro}/>
             </WidgetContainer>
           </section>
+          
           <section>
             <WidgetContainer titulo="Metas de Ganho (Entradas)">
-              <ListaOrcamentos
-                tipo="ENTRADA"
-              />
+              <ListaOrcamentos tipo="ENTRADA" filtro={filtro}/>
             </WidgetContainer>
           </section>
         </div>
+
         <div className="lg:col-span-4 h-fit sticky top-6">
-          <ListaGastosNaoPlanejados />
+          <ListaGastosNaoPlanejados filtro={filtro} />
         </div>
       </div>
+      
     </main>
   );
 }

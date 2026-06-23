@@ -1,38 +1,32 @@
-
 "use client";
 
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
-import { FaFilterCircleXmark } from "react-icons/fa6";
+import { FaRotateLeft } from "react-icons/fa6"; 
 
 interface FiltersOrcamentoProps {
     filtro: FiltroTransacao;
     setFiltro: React.Dispatch<React.SetStateAction<FiltroTransacao>>;
-    onApply: () => void;
-    onClear: () => void;
+    onClear: () => void; 
 }
 
 export default function FiltersOrcamento({
     filtro,
     setFiltro,
-    onApply,
     onClear,
 }: FiltersOrcamentoProps) {
 
-    // Extrai apenas a parte "YYYY-MM" do dataInicio para o input nativo entender
     const mesAnoAtual = filtro.dataInicio ? filtro.dataInicio.substring(0, 7) : "";
 
     const handleMesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const valor = e.target.value; // O input retorna no formato "YYYY-MM"
+        const valor = e.target.value; 
 
         if (!valor) return;
 
         const [ano, mes] = valor.split("-");
 
-        // Calcula o último dia do mês selecionado dinamicamente
         const ultimoDiaObj = new Date(Number(ano), Number(mes), 0);
         const ultimoDia = String(ultimoDiaObj.getDate()).padStart(2, "0");
 
-        // Alimenta o state mantendo a compatibilidade com a API
         setFiltro((prev) => ({
             ...prev,
             dataInicio: `${ano}-${mes}-01`,
@@ -41,37 +35,31 @@ export default function FiltersOrcamento({
     };
 
     return (
-        <div className="rounded-lg flex flex-wrap gap-2 items-end">
+        <div className="flex flex-wrap items-end gap-3 rounded-lg bg-[var(--bg-surface)] lg:bg-transparent border lg:border-0 border-[var(--border-color)] p-3 lg:p-0">
 
-            {/* Seletor de Mês/Ano */}
-            <div className="flex flex-col">
-                <label className="text-sm text-[var(--text-primary)] mb-1">
+            <div className="flex flex-col flex-1 min-w-[180px] sm:min-w-0 sm:flex-none">
+                <label className="text-sm text-[var(--text-muted)] mb-1 whitespace-nowrap">
                     Mês de Referência
                 </label>
                 <input
                     type="month"
                     value={mesAnoAtual}
                     onChange={handleMesChange}
-                    className="flex h-10 rounded-md border border-[var(--border-color)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)] min-w-[150px]"
+                    className="flex h-10 w-full sm:w-[200px] rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-color)] transition-colors cursor-pointer"
                 />
             </div>
 
-            {/* Ações */}
-            <button
-                onClick={onApply}
-                className="flex h-10 items-center justify-center cursor-pointer font-medium bg-[var(--primary-color)] hover:bg-[var(--secondary-color)] text-white rounded-md px-4 transition-colors"
-            >
-                Buscar
-            </button>
+            <div className="flex flex-1 sm:flex-none justify-end gap-2">
+                <button
+                    onClick={onClear}
+                    className="cursor-pointer flex-1 sm:flex-none flex items-center justify-center gap-2 h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] px-4 sm:px-5 hover:bg-[var(--bg-secondary)] hover:text-[var(--primary-color)] transition-all duration-200 whitespace-nowrap"
+                    title="Voltar para o mês atual"
+                >
+                    <FaRotateLeft />
+                    Atual
+                </button>
+            </div>
 
-            <button
-                onClick={onClear}
-                className="flex h-10 items-center justify-center gap-2 rounded-md border border-[var(--border-color)] px-4 hover:text-[var(--primary-color)] transition-colors"
-                title="Voltar para o mês atual"
-            >
-                <FaFilterCircleXmark />
-                Mês Atual
-            </button>
         </div>
     );
 }

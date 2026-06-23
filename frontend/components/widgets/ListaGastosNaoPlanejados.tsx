@@ -91,7 +91,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
       {/* BODY: Conteúdo Dinâmico */}
       <div className="p-6">
         
-        {/* ABA 1: AVISOS */}
+        {/* ABA AVISOS */}
         {abaAtiva === "avisos" && (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
             {gastosSemOrcamento.length === 0 ? (
@@ -135,7 +135,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
           </div>
         )}
 
-        {/* ABA 2: RANKING GERAL */}
+        {/* ABA RANKING GERAL */}
         {abaAtiva === "ranking" && (
           <div className="animate-in fade-in slide-in-from-left-4 duration-300">
             {rankingGastos.length === 0 ? (
@@ -158,7 +158,6 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
                           {formatarMoeda(resumo.totalGasto)}
                         </span>
                       </div>
-                      {/* Corrigido conflito do w-full, adicionado overflow-hidden e transition */}
                       <div className="bg-[var(--bg-secondary)] rounded-full h-1.5 ml-6 w-[calc(100%-24px)] overflow-hidden">
                         <div
                           className="bg-[var(--primary-color)] h-1.5 rounded-full opacity-70 transition-all duration-1000 ease-out"

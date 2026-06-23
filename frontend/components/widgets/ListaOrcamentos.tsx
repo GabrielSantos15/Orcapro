@@ -32,7 +32,7 @@ export default function ListaOrcamentos({ tipo, filtro }: ListaOrcamentosProps) 
 
   if (isLoadingTotal) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12 p-5">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
@@ -54,7 +54,7 @@ export default function ListaOrcamentos({ tipo, filtro }: ListaOrcamentosProps) 
 
   if (orcamentos.length === 0) {
     return (
-      <div className="p-10 text-center bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-color)] shadow-sm mb-12">
+      <div className="p-10 text-center">
         <p className="text-[var(--text-muted)] mb-4">
           Você ainda não definiu nenhum(a) {isSaida ? "limite de gasto" : "meta de ganho"}.
         </p>
@@ -69,7 +69,7 @@ export default function ListaOrcamentos({ tipo, filtro }: ListaOrcamentosProps) 
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-12 p-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 -12 p-5">
       {orcamentos.map((orcamento) => {
         const resumo = resumoCategorias.find(
           (r) => r.categoriaId === orcamento.categoria.id
@@ -77,7 +77,7 @@ export default function ListaOrcamentos({ tipo, filtro }: ListaOrcamentosProps) 
         const valorRealizado = resumo ? resumo.totalGasto : 0;
         const percentual = orcamento.limite > 0 ? (valorRealizado / orcamento.limite) * 100 : 0;
 
-        let corBarra = "bg-[var(--primary-color)]";
+        let corBarra = "bg-green-500";
         let corTextoMoeda = "text-[var(--text-primary)]";
 
         if (isSaida) {
@@ -89,7 +89,7 @@ export default function ListaOrcamentos({ tipo, filtro }: ListaOrcamentosProps) 
           if (percentual >= 100) {
             corBarra = "bg-green-500";
             corTextoMoeda = "text-green-500";
-          } else if (percentual > 50) corBarra = "bg-[var(--primary-color)]";
+          } else if (percentual > 50) corBarra = "bg-green-500";
           else corBarra = "bg-orange-500";
         }
 

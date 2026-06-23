@@ -23,12 +23,13 @@ export function useResumoTransacoes() {
   });
   const [carregando, setCarregando] = useState(true);
 
-  const [resumoCategorias, setResumoCategorias] = useState<ResumoCategoria[]>([]);
+  const [resumoCategorias, setResumoCategorias] = useState<ResumoCategoria[]>(
+    [],
+  );
   const [carregandoCategoria, setCarregandoCategoria] = useState(true);
 
   const [resumoAnual, setResumoAnual] = useState<ResumoAnual[]>([]);
   const [carregandoAnual, setCarregandoAnual] = useState(true);
-
 
   const carregarResumo = useCallback(async (filtros?: FiltroTransacao) => {
     setCarregando(true);
@@ -37,14 +38,17 @@ export function useResumoTransacoes() {
     try {
       const params = new URLSearchParams();
 
-      if (filtros?.categoriaId) params.set("categoriaId", filtros.categoriaId.toString());
+      if (filtros?.categoriaId)
+        params.set("categoriaId", filtros.categoriaId.toString());
       if (filtros?.contaId) params.set("contaId", filtros.contaId.toString());
       if (filtros?.tipo) params.set("tipo", filtros.tipo);
       if (filtros?.dataInicio) params.set("dataInicio", filtros.dataInicio);
       if (filtros?.dataFim) params.set("dataFim", filtros.dataFim);
 
       const query = params.toString();
-      const response = await fetch(`/api/transacao/resumo${query ? `?${query}` : ""}`);
+      const response = await fetch(
+        `/api/transacao/resumo${query ? `?${query}` : ""}`,
+      );
 
       if (!response.ok) {
         throw new Error("Falha ao carregar resumo");
@@ -63,7 +67,7 @@ export function useResumoTransacoes() {
     } finally {
       setCarregando(false);
     }
-  }, []); 
+  }, []);
 
   const fetchResumoCategorias = useCallback(
     async (dataInicio: string, dataFim: string) => {
@@ -74,11 +78,15 @@ export function useResumoTransacoes() {
         params.set("dataInicio", dataInicio);
         params.set("dataFim", dataFim);
 
-        const res = await fetch(`/api/transacao/resumo/categorias?${params.toString()}`);
+        const res = await fetch(
+          `/api/transacao/resumo/categorias?${params.toString()}`,
+        );
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || "Falha ao buscar resumo de categorias");
+          throw new Error(
+            errData.error || "Falha ao buscar resumo de categorias",
+          );
         }
 
         const data = await res.json();
@@ -100,9 +108,12 @@ export function useResumoTransacoes() {
       if (filtros?.ano) params.set("ano", filtros.ano.toString());
       if (filtros?.contaId) params.set("contaId", filtros.contaId.toString());
       if (filtros?.tipo) params.set("tipo", filtros.tipo);
-      if (filtros?.categoriaId) params.set("categoriaId", filtros.categoriaId.toString());
+      if (filtros?.categoriaId)
+        params.set("categoriaId", filtros.categoriaId.toString());
 
-      const res = await fetch(`/api/transacao/resumo/anual?${params.toString()}`);
+      const res = await fetch(
+        `/api/transacao/resumo/anual?${params.toString()}`,
+      );
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -114,7 +125,7 @@ export function useResumoTransacoes() {
     } catch (err: any) {
       setErro(err.message);
     } finally {
-      setCarregandoAnual(false); 
+      setCarregandoAnual(false);
     }
   }, []);
 
@@ -130,6 +141,7 @@ export function useResumoTransacoes() {
     fetchResumoCategorias,
     // Anual
     resumoAnual,
-    carregandoAnual,   fetchResumoAnual,
+    carregandoAnual,
+    fetchResumoAnual,
   };
 }
