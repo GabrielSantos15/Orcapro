@@ -27,20 +27,17 @@ export default async function DashboardLayout({
     : "indigo";
 
   return (
-    <AuthProvider>
+<AuthProvider>
       <ThemeProvider initialTheme={initialTheme}>
-        <div className="h-screen grid grid-cols-1 md:grid-cols-[250px_1fr] grid-rows-[1fr_auto] md:grid-rows-1">
-          <aside className="fixed bottom-0 left-0 right-0 md:static md:col-auto md:row-auto z-50 md:z-auto">
-            <Sidebar />
-          </aside>
-
-          <main className="overflow-y-auto overflow-x-hidden p-6">
-            <div className="pb-30 md:pb-6 p-1 sm:p-3 xl:p-4">
-
-            {children}
+        <div className="flex min-h-screen w-full relative">
+          <Sidebar />
+          <main className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+            <div className="flex-1 p-4 sm:p-6 lg:p-8 pb-32 md:pb-8">
+              {children}
             </div>
             <GlobalModal />
           </main>
+          
         </div>
       </ThemeProvider>
     </AuthProvider>

@@ -47,7 +47,8 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex bg-[var(--bg-secondary)] p-6 h-full w-64 flex-col mb-3">
+      {/* Sidebar Desktop */}
+      <aside className="hidden lg:flex bg-[var(--bg-secondary)] p-6 h-screen sticky top-0 border-r border-[var(--border-color)] z-40 w-64 flex-col">
         <h1 className="text-4xl font-bold mb-8 text-center">
           <span className="">Orça</span>
           <span className="text-[var(--primary-color)]">Pro</span>
@@ -58,10 +59,11 @@ export default function Sidebar() {
             <Link
               key={item.path}
               href={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${pathname === item.path
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                pathname === item.path
                   ? "bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white font-semibold shadow-md "
                   : "text-gray-600 hover:bg-[var(--primary-color)]/10 hover:text-bg-[var(--primary-hover)] dark:hover:text-white"
-                }`}
+              }`}
             >
               {item.icon}
               {item.label}
@@ -70,12 +72,51 @@ export default function Sidebar() {
         </nav>
 
         <ThemeToggle />
-        <div className="border-t border-gray-100 pt-6 mt-6">
+        <div className="border-t border-[var(--border-color)] pt-6 mt-6">
           <button
             onClick={handleLogout}
-            className="w-full py-3 px-4 text-red-500 font-semibold rounded-xl transition duration-200 flex justify-center items-center gap-2 hover:bg-red-50"
+            className="w-full py-3 px-4 text-red-500 font-semibold rounded-xl transition duration-200 flex justify-center items-center gap-2 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
           >
             <FiLogOut size={20} /> Sair
+          </button>
+        </div>
+      </aside>
+
+      {/* Sidebar Table */}
+      <aside className="hidden md:flex lg:hidden bg-[var(--bg-secondary)] py-6 px-3 h-screen sticky top-0 border-r border-[var(--border-color)] z-40 w-20 flex-col items-center">
+        <h1 className="text-3xl font-bold mb-8 text-center cursor-default" title="OrçaPro">
+          <span className="">O</span>
+          <span className="text-[var(--primary-color)]">P</span>
+        </h1>
+
+        <nav className="flex-1 flex flex-col gap-4 w-full">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              title={item.label}
+              className={`flex items-center justify-center py-3 rounded-xl transition-all w-full ${
+                pathname === item.path
+                  ? "bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white shadow-md"
+                  : "text-[var(--text-muted)] hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-hover)] dark:hover:text-white"
+              }`}
+            >
+              {item.icon}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="mb-6 flex justify-center w-full">
+          <ThemeToggle />
+        </div>
+        
+        <div className="border-t border-[var(--border-color)] pt-6 mt-2 w-full flex justify-center">
+          <button
+            onClick={handleLogout}
+            title="Sair"
+            className="w-full py-3 flex justify-center items-center text-red-500 rounded-xl transition duration-200 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
+          >
+            <FiLogOut size={24} />
           </button>
         </div>
       </aside>
@@ -97,10 +138,11 @@ export default function Sidebar() {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`flex flex-col items-center justify-center gap-2 relative transition-all duration-300 ${isActive
+                className={`flex flex-col items-center justify-center gap-2 relative transition-all duration-300 ${
+                  isActive
                     ? "text-[var(--primary-color)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
-                  }`}
+                }`}
               >
                 {/* Ícone */}
                 <div
