@@ -26,11 +26,11 @@ import { FiltroResumoAnual } from "@/interfaces/FiltroResumoAnual";
 const chartConfig = {
   receitas: {
     label: "Entradas",
-    color: "#22c55e",
+    color: "var(--color-receita)",
   },
   despesas: {
     label: "Saídas",
-    color: "#ef4444",
+    color: "var(--color-despesa)",
   }
 } satisfies ChartConfig;
 

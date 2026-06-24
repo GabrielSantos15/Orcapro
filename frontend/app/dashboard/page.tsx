@@ -1,21 +1,15 @@
 "use client";
 
-import { Usuario } from "@/interfaces/Usuario";
-import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import Link from "next/link";
-import Modal from "@/components/modal/Modal";
 import { useModalStore } from "@/store/useModalStore";
 import { useContas } from "@/hooks/useContas";
-import { useTransacoes } from "@/hooks/useTransacoes";
-import { useCategorias } from "@/hooks/useCategorias";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
-import { useMetas } from "@/hooks/useMetas";
 import CardResumo from "@/components/cards/CardResumo";
 import Button from "@/components/button/Button";
 import WidgetContainer from "@/components/widgets/WidgetContainer";
 import ListaTransacoes from "@/components/widgets/ListaTransacoes";
 import ListaContas from "@/components/widgets/ListaContas";
-import { MetaCard } from "@/components/cards/cardMeta";
 import GraficoColunas from "@/components/charts/GraficoColunas";
 import HeaderDashboard from "@/components/headerDashboard/HeaderDashboard";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
@@ -24,17 +18,22 @@ import { obterDatasMesAtual } from "@/lib/utils";
 import ListaResumoMetas from "@/components/widgets/ListaResumoMetas";
 
 export default function DashBoardPage() {
-  const { openModal , atualizarGatilho} = useModalStore();
+  const { openModal, atualizarGatilho } = useModalStore();
   const { resumo, carregarResumo, carregando } = useResumoTransacoes();
-  const { investimentos } = useInvestimentos();
+  const { investimentos, carregando: carregandoInvestimentos } = useInvestimentos();
+  const { contas, carregando: carregandoContas } = useContas();
 
   const totalInvestido = investimentos.reduce(
     (acc, inv) => acc + (inv.valorInvestido || 0),
     0,
   );
+  const totalConta = contas.reduce(
+    (acc, con) => acc + (con.saldo || 0),
+    0,
+  );
 
-useEffect(() => {
-    const filtroMesAtual = obterDatasMesAtual(); 
+  useEffect(() => {
+    const filtroMesAtual = obterDatasMesAtual();
     carregarResumo(filtroMesAtual);
   }, [atualizarGatilho]);
 
@@ -44,24 +43,14 @@ useEffect(() => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
-          <CardResumo
-            value={resumo.saldo}
-            title="Saldo Total"
-            color="primary"
-            isLoading={carregando}
-          />
-          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="green" />
-          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="red" />
-          <CardResumo value={totalInvestido} isLoading={carregando} title="Investido" color="blue" />
+          <CardResumo value={totalConta} isLoading={carregandoContas} title="Saldo Total" variant="highlight" />
+          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="var(--color-receita)" icon={ArrowUp} />
+          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="var(--color-despesa)" icon={ArrowDown} />
+          <CardResumo value={totalInvestido} isLoading={carregandoInvestimentos} title="Investido" color="var(--color-info)" />
         </section>
 
-        <section className="md:hidden flex flex-col gap-4">
-          <CardResumo
-            value={resumo.saldo}
-            title="Saldo Total"
-            color="primary"
-            isLoading={carregando}
-          />
+        <section className="md:hidden flex flex-col gap-4 ">
+          <CardResumo value={totalConta} isLoading={carregandoContas} title="Saldo Total" variant="highlight" />
           <Button
             className="md:hidden"
             onClick={() => openModal("createTransacao")}
@@ -69,15 +58,10 @@ useEffect(() => {
             + Adicionar Transação
           </Button>
           <div className="flex justify-between gap-4">
-            <CardResumo
-              value={resumo.receitas}
-              title="Entradas"
-              isLoading={carregando}
-              color="green"
-            />
-            <CardResumo value={resumo.despesas} title="Saídas" color="red" isLoading={carregando}/>
+            <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="var(--color-receita)" icon={ArrowUp} />
+            <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="var(--color-despesa)" icon={ArrowDown} />
           </div>
-          <CardResumo value={totalInvestido} title="Investido" color="blue" isLoading={carregando}/>
+          <CardResumo value={totalInvestido} isLoading={carregandoInvestimentos} title="Investido" color="var(--color-info)" />
         </section>
 
         <WidgetContainer
@@ -100,7 +84,7 @@ useEffect(() => {
           subtitulo="Acompanhamento ao longo do tempo"
           className="lg:col-span-2 light-effect"
         >
-          <GraficoColunas/>
+          <GraficoColunas />
         </WidgetContainer>
 
         <WidgetContainer
@@ -135,7 +119,7 @@ useEffect(() => {
           }
           className="lg:col-span-1"
         >
-        <ListaTransacoes limite={5} />
+          <ListaTransacoes limite={5} />
         </WidgetContainer>
 
         <WidgetContainer
@@ -150,7 +134,7 @@ useEffect(() => {
           }
           className="lg:col-span-4"
         >
-        <ListaResumoMetas ></ListaResumoMetas>
+          <ListaResumoMetas ></ListaResumoMetas>
         </WidgetContainer>
       </div>
     </>

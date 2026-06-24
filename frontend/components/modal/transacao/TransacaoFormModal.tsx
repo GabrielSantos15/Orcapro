@@ -53,7 +53,6 @@ export default function TransacaoFormModal({
         categoriaId: String(transacao.categoria?.id) || "",
         origemDestino: transacao.origemDestino || "",
         descricao: transacao.descricao || "",
-        // Formatar o valor para ter duas casas decimais no edit mode, para a máscara inicializar bem
         valor: transacao.valor ? transacao.valor.toFixed(2) : "",
         dataTransacao: dataFormatada,
       });
@@ -105,7 +104,7 @@ export default function TransacaoFormModal({
     <div>
       {/* HEADER */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]  bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white">
+        <div className="p-2 border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)] bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white">
           <Receipt className="w-8 h-8" />
         </div>
         <div>

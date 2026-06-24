@@ -19,6 +19,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 import { FaFilterCircleXmark } from "react-icons/fa6";
 import { FaFilter } from "react-icons/fa";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 export default function Movimentacao() {
   const { openModal, atualizarGatilho } = useModalStore();
@@ -103,14 +104,9 @@ export default function Movimentacao() {
 
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         <div className="flex flex-col gap-4 lg:col-span-1">
-          <CardResumo
-            value={resumo.saldo}
-            isLoading={carregando}
-            title="Saldo Total"
-            color="primary"
-          />
-          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="green" />
-          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="red" />
+          <CardResumo value={resumo.saldo} isLoading={carregando} title="Fluxo de Caixa" color={resumo.saldo >= 0 ? "var(--color-receita)" : "var(--color-despesa)"} className="light-effect-subtle" />
+          <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="var(--color-receita)" icon={ArrowUp} />
+          <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="var(--color-despesa)" icon={ArrowDown} />
         </div>
 
         <div className="lg:col-span-2">

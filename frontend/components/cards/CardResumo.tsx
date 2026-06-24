@@ -1,36 +1,63 @@
+import { formatarMoeda } from "@/lib/utils";
+import { LucideIcon, Wallet } from "lucide-react";
+import React from "react";
+
 interface CardResumoProps {
   value: number;
   title: string;
-  color?: "green" | "blue" | "red" | "primary";
-  isLoading: boolean;
+  subtitle?: string;
+  color?: string;
+  isLoading?: boolean;
+  icon?: LucideIcon;
+  variant?: "default" | "highlight";
+  className?: string
 }
-
-const colorClasses = {
-  green: "text-green-600",
-  blue: "text-blue-600",
-  red: "text-red-600",
-  primary: "text-[var(--primary-color)]",
-};
 
 export default function CardResumo({
   value,
   title,
-  color = "green",
-  isLoading = true
+  variant = "default",
+  icon: Icon = Wallet,
+  color,
+  isLoading = true,
+  className
 }: CardResumoProps) {
-  return (
-    <article className="flex flex-col bg-[var(--bg-surface)] rounded-lg shadow-sm transition-colors w-full h-full p-5">
 
-      <h3 className="text-[var(--text-secondary)]">{title}</h3>
+  const isHighlight = variant === "highlight";
+
+
+  return (
+    <article
+      className={`flex flex-col justify-center gap-3 rounded-xl p-5 transition-all duration-300 w-full h-full ${className ?? ""} 
+    ${isHighlight
+          ? "bg-[#0B1015] border-white/10 text-white light-effect"
+          : "bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] shadow-sm"
+        }`}
+    >
+
+      <div className="flex items-center gap-3">
+        <div
+          className={`p-2 rounded-lg ${isHighlight
+            ? "bg-white/20 text-white"
+            : "bg-[var(--bg-primary)] text-[var(--primary-color)]"
+            }`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+        <h3 className={`font-medium ${isHighlight && "text-white/80"}`}>{title}</h3>
+      </div>
+
       {isLoading ? (
-        <>
-          <div className="skeleton h-8 w-full rounded-md"></div>
-        </>
-      ) :
-        <p className={`text-2xl font-semibold ${colorClasses[color]}`}>
-          {value < 0 && "-"}R${" "}
-          {Math.abs(value).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-        </p>}
+        <div className="skeleton h-8 w-full rounded-md opacity-30"></div>
+      ) : (
+        <p
+          className="text-2xl font-semibold tracking-tight"
+          style={{ color: isHighlight ? "#ffffff" : color }}
+        >
+          {formatarMoeda(value)}
+        </p>
+
+      )}
     </article>
   );
 }
