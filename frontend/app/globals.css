@@ -10,11 +10,11 @@
      ========================================= */
   --primary-color: #10B981;
   --primary-hover: #059669;
-  --primary-light: #D1FAE5;
   --secondary-color: #0886a5;
+  /* --primary-light: #D1FAE5; */
 
   --bg-primary: #f7f7f7;
-  --bg-secondary: #EFEFEF;
+  --bg-secondary: #e9edf0;
   --bg-surface: #FFFFFF;
 
   --text-primary: #0F172A;
@@ -44,11 +44,10 @@
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
 
-  --bg-input: #2a2e31;
+  --bg-input: #20232b;
   --border-input: #3f3f3f;
 
   --border-color: #1E293B;
-
 }
 
 body {
@@ -60,74 +59,115 @@ body {
 
 .skeleton {
   background-color: #e0e0e0;
-  background-image: linear-gradient(
-    90deg,
-    #e0e0e0 0%,
-    #f5f5f5 50%,
-    #e0e0e0 100%
-  );
-  
+  background-image: linear-gradient(90deg,
+      #e0e0e0 0%,
+      #f5f5f5 50%,
+      #e0e0e0 100%);
+
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite linear;
 }
+
 .dark .skeleton {
   background-color: #1e2127;
-  background-image: linear-gradient(
-    90deg,
-    #1e2127 0%,
-    #33343a 50%,
-    #1e2127 100%
-  );
-  
+  background-image: linear-gradient(90deg,
+      #1e2127 0%,
+      #33343a 50%,
+      #1e2127 100%);
+
 }
 
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
 }
 
+@keyframes infinite-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-infinite-scroll {
+  animation: infinite-scroll 40s linear infinite;
+}
+
+/* Opcional: Pausa a animação se o utilizador passar o rato por cima */
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* .light-effect {
+  background-image: linear-gradient(to bottom right,
+      var(--primary-light) 30%,
+      transparent);
+} */
+
+.dark .light-effect {
+  background:
+    radial-gradient(circle at 20% 20%,
+      color-mix(in srgb, var(--primary-color) 35%, transparent),
+      transparent 50%),
+    radial-gradient(circle at 80% 80%,
+      color-mix(in srgb, var(--secondary-color) 30%, transparent),
+      transparent 50%);
+}
+
+.dark .light-effect-subtle {
+  background-image:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--primary-color) 20%, transparent),
+      transparent 40%
+    );
+}
+
+/* =========================================
+   TEMAS DO USUÁRIO 
+   ========================================= */
+
 .theme-emerald {
+
   --primary-color: #10B981;
   --primary-hover: #059669;
-  --primary-light: #D1FAE5;
-  --secondary-color: #0886a5;
+  --secondary-color: #06B6D4;
 }
 
 .theme-indigo {
   --primary-color: #6366F1;
   --primary-hover: #4F46E5;
-  --primary-light: #E0E7FF;
-  --secondary-color: #4338CA;
+  --secondary-color: #8B5CF6;
 }
 
 .theme-purple {
   --primary-color: #8b5cf6;
   --primary-hover: #7d2adb;
-  --primary-light: #FFE4E6;
   --secondary-color: #471de1;
 }
 
 .theme-amber {
   --primary-color: #F59E0B;
   --primary-hover: #D97706;
-  --primary-light: #FEF3C7;
-  --secondary-color: #f5610b;
+  --secondary-color: #f5420b;
 }
 
 .theme-sky {
   --primary-color: #0EA5E9;
   --primary-hover: #0284C7;
-  --primary-light: #E0F2FE;
-  --secondary-color: #0369A1;
+  --secondary-color: #6366F1;
 }
 
 .theme-pink {
   --primary-color: #ec4899;
   --primary-hover: #b9256f;
-  --primary-light: #E0F2FE;
-  --secondary-color: #8b0184;
+  --secondary-color: #A855F7;
 }

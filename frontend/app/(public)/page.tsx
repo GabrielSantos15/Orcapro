@@ -11,6 +11,7 @@ import Impact from "@/components/home/impact/Impact";
 import Beneficits from "@/components/home/benefits/Benefits";
 import Budget from "@/components/home/Budget/Budget";
 import CtaStrip from "@/components/home/ctaStrip/CtaStrip";
+import CarrosselBancos from "@/components/home/carrosel/carrosel";
 
 export default function Home() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function Home() {
     <main className="space-y-20">
       <Hero></Hero>
       <Beneficits></Beneficits>
+      <CarrosselBancos></CarrosselBancos>
       <Features></Features>
       <Budget></Budget>
       <Impact></Impact>

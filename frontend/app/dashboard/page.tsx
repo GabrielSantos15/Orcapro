@@ -90,7 +90,7 @@ useEffect(() => {
               + Adicionar
             </button>
           }
-          className="lg:col-span-1 lg:row-span-2"
+          className="lg:col-span-1 lg:row-span-2 light-effect-subtle"
         >
           <ListaContas />
         </WidgetContainer>
@@ -98,7 +98,7 @@ useEffect(() => {
         <WidgetContainer
           titulo="Entradas vs Saídas"
           subtitulo="Acompanhamento ao longo do tempo"
-          className="lg:col-span-2 dark:bg-gradient-to-br from-[var(--primary-color)]/30 from-20% to-[var(--bg-primary)] to-90% "
+          className="lg:col-span-2 light-effect"
         >
           <GraficoColunas/>
         </WidgetContainer>

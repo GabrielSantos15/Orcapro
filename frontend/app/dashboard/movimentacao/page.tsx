@@ -117,13 +117,14 @@ export default function Movimentacao() {
           <WidgetContainer
             titulo="Entradas vs Saídas"
             subtitulo="Acompanhamento ao longo do tempo"
+            className="light-effect"
           >
             <GraficoColunas filtro={filtroAplicado} />
           </WidgetContainer>
         </div>
 
         <div className="lg:col-span-1">
-          <WidgetContainer titulo="Maiores Gastos" subtitulo="Top 5 categorias">
+          <WidgetContainer titulo="Maiores Gastos" subtitulo="Top 5 categorias" className="light-effect-subtle">
             <GraficoTopCategorias dataInicio={filtroAplicado.dataInicio} dataFim={filtroAplicado.dataFim} />
           </WidgetContainer>
         </div>

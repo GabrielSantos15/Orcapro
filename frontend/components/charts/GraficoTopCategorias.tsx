@@ -14,7 +14,13 @@ interface GraficoTopCategoriasProps {
   limite?: number;
 }
 
-const CORES_TOP_5 = ["#8b5cf6", "#c084fc", "#e879f9", "#f472b6", "#fb7185"];
+const CORES_TOP_5 = [
+  "var(--primary-color)", 
+  "color-mix(in srgb, var(--primary-color) 50%, var(--secondary-color))", 
+  "var(--secondary-color)", 
+  "color-mix(in srgb, var(--secondary-color) 60%, var(--bg-surface))", 
+  "color-mix(in srgb, var(--secondary-color) 25%, var(--bg-surface))"  
+];
 
 export default function GraficoTopCategorias({ dataInicio, dataFim, limite = 5 }: GraficoTopCategoriasProps) {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);

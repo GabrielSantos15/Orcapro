@@ -54,7 +54,7 @@ export default function ListaGastosNaoPlanejados({ filtro }: PainelLateralProps)
   }
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl shadow-sm h-fit sticky top-6 overflow-hidden">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl shadow-sm h-fit sticky top-6 overflow-hidden light-effect-subtle ">
       
       {/* HEADER: Navegação por Abas (Tabs) */}
       <div className="flex border-b border-[var(--border-color)]">

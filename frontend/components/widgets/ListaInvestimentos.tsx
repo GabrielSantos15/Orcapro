@@ -53,11 +53,24 @@ export default function ListaInvestimentos() {
     }
   };
 
+  // Nova função: Mapeia o brilho exato para cada cor no Dark Mode
+  const getGlowTipo = (tipo: string) => {
+    switch (tipo) {
+      case "RENDA_FIXA":
+        return "dark:shadow-[0_0_15px_rgba(59,130,246,0.45)]"; // Blue
+      case "RENDA_VARIAVEL":
+        return "dark:shadow-[0_0_15px_rgba(16,185,129,0.45)]"; // Emerald
+      case "CRIPTOMOEDAS":
+        return "dark:shadow-[0_0_15px_rgba(249,115,22,0.45)]"; // Orange
+      default:
+        return "dark:shadow-[0_0_15px_rgba(168,85,247,0.45)]"; // Purple
+    }
+  };
+
   // ==========================================
   // ESTADOS DA UI (Early Returns)
   // ==========================================
 
-  // Estado de Carregamento 
   if (carregando) {
     return (
       <div className="space-y-6">
@@ -67,7 +80,6 @@ export default function ListaInvestimentos() {
               key={i}
               className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-color)] p-5 shadow-sm flex flex-col h-full min-h-[250px]"
             >
-              {/* Header: Ícone, Ativo, Instituição e Botão Editar */}
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="w-10 h-10 rounded-xl skeleton shrink-0" />
@@ -79,14 +91,12 @@ export default function ListaInvestimentos() {
                 <div className="w-7 h-7 skeleton rounded-lg shrink-0" />
               </div>
 
-              {/* Valores Principais */}
               <div className="mb-6 flex-grow">
                 <div className="w-32 h-3 skeleton rounded-md mb-2" />
                 <div className="w-40 h-8 skeleton rounded-md mb-3" />
                 <div className="w-24 h-6 skeleton rounded-md mt-3" />
               </div>
 
-              {/* Botões de Ação Inferiores */}
               <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
                 <div className="w-full h-9 skeleton rounded-lg" />
                 <div className="w-full h-9 skeleton rounded-lg" />
@@ -98,7 +108,6 @@ export default function ListaInvestimentos() {
     );
   }
 
-  // Estado Vazio
   if (!investimentos || investimentos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-[var(--bg-surface)] rounded-2xl border border-dashed border-[var(--border-color)]">
@@ -113,114 +122,112 @@ export default function ListaInvestimentos() {
     );
   }
 
-  // Renderização Principal 
   return (
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {investimentos.map((inv) => (
-          <article
-            key={inv.id}
-            className={`relative bg-[var(--bg-surface)] rounded-2xl border p-5 shadow-sm transition-all hover:shadow-md flex flex-col ${
-              !inv.ativoStatus ? "opacity-75 grayscale-[0.5] border-[var(--border-color)]" : "border-[var(--border-color)]"
-            }`}
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`p-2.5 rounded-xl ${getCorFundoTipo(inv.tipo)}`}
-                >
-                  {getIconeTipo(inv.tipo)}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-[var(--text-primary)] leading-tight">
-                    {inv.ativo}
-                  </h3>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">
-                    {inv.conta?.instituicao}
-                  </span>
-                </div>
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {investimentos.map((inv) => (
+        <article
+          key={inv.id}
+          className={`relative bg-[var(--bg-surface)] rounded-2xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col ${
+            !inv.ativoStatus ? "opacity-75 grayscale-[0.5] border-[var(--border-color)]" : "border-[var(--border-color)]"
+          }`}
+        >
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-3">
+              <div
+                className={`p-2.5 rounded-xl transition-shadow duration-300 ${getCorFundoTipo(inv.tipo)} ${inv.ativoStatus ? getGlowTipo(inv.tipo) : ""}`}
+              >
+                {getIconeTipo(inv.tipo)}
               </div>
-
-              <div className="flex items-center gap-2">
-                {!inv.ativoStatus && (
-                  <span className="px-2 py-0.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-[10px] font-bold rounded-full uppercase">
-                    Inativo
-                  </span>
-                )}
-                <button
-                  onClick={() => openModal("updateInvestimento", inv)}
-                  className="p-1.5 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mb-6 flex-grow">
-              <p className="text-sm text-[var(--text-muted)] mb-1">
-                Saldo Atual Registrado
-              </p>
-              <div className="flex items-center gap-2">
-                <h2
-                  className={`text-2xl font-bold tracking-tight ${
-                    !inv.ativoStatus ? "text-[var(--text-muted)]" : "text-[var(--text-primary)]"
-                  }`}
-                >
-                  {formatarMoeda(inv.valorInvestido)}
-                </h2>
-
-                {/* === BOTÃO DE ATUALIZAR RENDIMENTO === */}
-                {inv.ativoStatus && (
-                  <button
-                    onClick={() => openModal("updateSaldoInvestimento", inv)}
-                    className="p-1 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded transition-colors"
-                    title="Atualizar rendimento"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 mt-3">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500/10 text-green-500 text-xs font-semibold rounded-md">
-                  <TrendingUp className="w-3 h-3" />
-                  {inv.percentual > 0 && <span>{inv.percentual}%</span>} {inv.indicador}
+              <div>
+                <h3 className="font-semibold text-[var(--text-primary)] leading-tight">
+                  {inv.ativo}
+                </h3>
+                <span className="text-xs text-[var(--text-muted)] font-medium">
+                  {inv.conta?.instituicao}
                 </span>
               </div>
             </div>
 
-            {inv.ativoStatus ? (
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
+            <div className="flex items-center gap-2">
+              {!inv.ativoStatus && (
+                <span className="px-2 py-0.5 bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-[10px] font-bold rounded-full uppercase">
+                  Inativo
+                </span>
+              )}
+              <button
+                onClick={() => openModal("updateInvestimento", inv)}
+                className="p-1.5 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-6 flex-grow">
+            <p className="text-sm text-[var(--text-muted)] mb-1">
+              Saldo Atual Registrado
+            </p>
+            <div className="flex items-center gap-2">
+              <h2
+                className={`text-2xl font-bold tracking-tight ${
+                  !inv.ativoStatus ? "text-[var(--text-muted)]" : "text-[var(--text-primary)]"
+                }`}
+              >
+                {formatarMoeda(inv.valorInvestido)}
+              </h2>
+
+              {inv.ativoStatus && (
                 <button
-                  onClick={() => openModal("aporteInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-lg text-sm font-semibold transition-colors"
+                  onClick={() => openModal("updateSaldoInvestimento", inv)}
+                  className="p-1 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded transition-colors"
+                  title="Atualizar rendimento"
                 >
-                  <ArrowUpCircle className="w-4 h-4" /> Aportar
+                  <RefreshCw className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={() => openModal("resgateInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)] hover:text-[var(--text-primary)] rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <ArrowDownCircle className="w-4 h-4" /> Resgatar
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
-                <button
-                  onClick={() => openModal("aporteInvestimento", inv)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <ArrowUpCircle className="w-4 h-4" /> Reativar
-                </button>
-                <button
-                  onClick={() => deletarInvestimento(inv.id)}
-                  className="flex items-center justify-center gap-2 py-2 px-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" /> Deletar
-                </button>
-              </div>
-            )}
-          </article>
-        ))}
-      </section>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-3">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500/10 text-green-500 text-xs font-semibold rounded-md">
+                <TrendingUp className="w-3 h-3" />
+                {inv.percentual > 0 && <span>{inv.percentual}%</span>} {inv.indicador}
+              </span>
+            </div>
+          </div>
+
+          {inv.ativoStatus ? (
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
+              <button
+                onClick={() => openModal("resgateInvestimento", inv)}
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)] hover:text-[var(--text-primary)] rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              >
+                <ArrowDownCircle className="w-4 h-4" /> Resgatar
+              </button>
+              <button
+                onClick={() => openModal("aporteInvestimento", inv)}
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-[var(--primary-color)]/10 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/20 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              >
+                <ArrowUpCircle className="w-4 h-4" /> Aportar
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border-color)]">
+              <button
+                onClick={() => deletarInvestimento(inv.id)}
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" /> Deletar
+              </button>
+              <button
+                onClick={() => openModal("aporteInvestimento", inv)}
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              >
+                <ArrowUpCircle className="w-4 h-4" /> Reativar
+              </button>
+            </div>
+          )}
+        </article>
+      ))}
+    </section>
   );
 }

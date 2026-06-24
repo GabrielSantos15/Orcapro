@@ -60,8 +60,8 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8 m-auto">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-8 text-center">
@@ -156,7 +156,7 @@ export default function Cadastro() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold rounded-lg transition duration-200 ease-in-out"
+            className="w-full py-3 px-4 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] disabled:bg-gray-400 text-white font-bold rounded-lg transition duration-200 ease-in-out cursor-pointer"
           >
             {loading ? "Carregando..." : "Cadastrar"}
           </button>

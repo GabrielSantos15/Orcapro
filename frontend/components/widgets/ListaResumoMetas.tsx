@@ -34,7 +34,7 @@ function MetaCard({ meta }: MetaCardProps) {
   return (
     <button
       onClick={() => router.push("/dashboard/metas")}
-      className="w-full max-w-[200px] aspect-square p-4 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-200 cursor-pointer"
+      className="group w-full max-w-[200px] aspect-square p-4 flex flex-col items-center justify-center hover:scale-105 transition-transform duration-200 cursor-pointer"
     >
       <div className="relative flex items-center justify-center w-full h-full">
         <svg
@@ -54,7 +54,7 @@ function MetaCard({ meta }: MetaCardProps) {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="stroke-[var(--primary-color)] origin-center -rotate-90 transition-all duration-1000 ease-out" 
+            className="stroke-[var(--primary-color)] origin-center -rotate-90 transition-all duration-1000 ease-out group-hover:drop-shadow-[0_0_5px_var(--secondary-color)]" 
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}

@@ -8,7 +8,7 @@ import { Investimento } from "@/interfaces/Investimento";
 import { useInvestimentos } from "@/hooks/useInvestimentos";
 import { useContas } from "@/hooks/useContas";
 import { TrendingUp } from "lucide-react";
-import { toast } from "sonner"; // Usando toast ao invés de alert
+import { toast } from "sonner"; 
 
 interface FormInvestimentoModalProps {
   investimento?: Investimento | null;
@@ -47,6 +47,7 @@ export default function InvestimentoFormModal({
     "FUNDOS",
     "OUTROS",
   ];
+  
   const indicadores = [
     "CDI",
     "IPCA",
@@ -55,6 +56,9 @@ export default function InvestimentoFormModal({
     "IBOVESPA",
     "OUTRO",
   ];
+
+  const usaIndicador = ["RENDA_FIXA", "RENDA_VARIAVEL", "FUNDOS"].includes(formData.tipo);
+  const usaRentabilidade = formData.tipo === "RENDA_FIXA";
 
   useEffect(() => {
     if (investimento) {
@@ -81,8 +85,25 @@ export default function InvestimentoFormModal({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    setErro(null);
 
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: value };
+
+      if (name === "tipo") {
+        if (!["RENDA_FIXA", "RENDA_VARIAVEL", "FUNDOS"].includes(value)) {
+          newData.indicador = "OUTRO";
+        }
+        if (value !== "RENDA_FIXA") {
+          newData.percentual = "";
+        }
+      }
+
+      return newData;
+    });
+
+    // Validação de Saldo da Conta
     if (name === "idConta") {
       const contaSelecionada = contas.find((c) => String(c.id) === value);
       setSaldoContaSelecionada(contaSelecionada?.saldo || 0);
@@ -92,11 +113,7 @@ export default function InvestimentoFormModal({
       const valorSemMascara = parseFloat(value.replace(/\./g, "").replace(",", ".")) || 0;
       if (valorSemMascara > saldoContaSelecionada) {
         setErro(`Saldo insuficiente. Saldo disponível: R$ ${saldoContaSelecionada.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
-      } else {
-        setErro(null);
       }
-    } else {
-      setErro(null);
     }
   };
 
@@ -122,13 +139,14 @@ export default function InvestimentoFormModal({
         return;
       }
 
+      // Monta o payload respeitando as regras de negócio de cada tipo
       const payload = {
         conta: contaSelecionada,
         ativo: formData.ativo,
         tipo: formData.tipo,
         valorInvestido: valorInvestidoLimpo,
-        percentual: formData.tipo === "RENDA_VARIAVEL" ? 0 : parseFloat(formData.percentual),
-        indicador: formData.indicador,
+        percentual: usaRentabilidade ? parseFloat(formData.percentual) : 0,
+        indicador: usaIndicador ? formData.indicador : "OUTRO",
         dataAplicacao: formData.dataAplicacao,
         ativoStatus: investimento ? investimento.ativoStatus : true,
       };
@@ -153,7 +171,7 @@ export default function InvestimentoFormModal({
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-[var(--primary-light)] border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]">
+        <div className="p-2 bg-[var(--primary-color)]/20 border border-[var(--border-color)] text-[var(--primary-color)] rounded-[var(--radius-md)]">
           <TrendingUp className="w-8 h-8" />
         </div>
         <div>
@@ -168,11 +186,10 @@ export default function InvestimentoFormModal({
         </div>
       </div>
 
-
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* MENSAGEM DE ERRO (Visual suave) */}
+        
         {erro && (
-          <div className="p-4 bg-[var(--danger-color)]/10 text-[var(--danger-color)] rounded-xl text-sm  font-medium">
+          <div className="p-4 bg-[var(--danger-color)]/10 text-[var(--danger-color)] rounded-xl text-sm font-medium">
             {erro}
           </div>
         )}
@@ -182,7 +199,7 @@ export default function InvestimentoFormModal({
           name="ativo"
           value={formData.ativo}
           onChange={handleChange}
-          placeholder="Ex: CDB Banco Inter, Tesouro IPCA+"
+          placeholder="Ex: CDB Banco Inter, Bitcoin, Tesouro Direto"
           required
         />
 
@@ -204,7 +221,8 @@ export default function InvestimentoFormModal({
           ))}
         </Select>
 
-        <div className="grid grid-cols-2 gap-4">
+        {/* Linha Dinâmica: Tipo e Indicador (se aplicável) */}
+        <div className={`grid gap-4 ${usaIndicador ? "grid-cols-2" : "grid-cols-1"}`}>
           <Select
             label="Tipo"
             name="tipo"
@@ -217,22 +235,25 @@ export default function InvestimentoFormModal({
               </option>
             ))}
           </Select>
-          <Select
-            label="Indicador"
-            name="indicador"
-            value={formData.indicador}
-            onChange={handleChange}
-          >
-            {indicadores.map((ind) => (
-              <option key={ind} value={ind}>
-                {ind}
-              </option>
-            ))}
-          </Select>
+          
+          {usaIndicador && (
+            <Select
+              label="Indicador"
+              name="indicador"
+              value={formData.indicador}
+              onChange={handleChange}
+            >
+              {indicadores.map((ind) => (
+                <option key={ind} value={ind}>
+                  {ind}
+                </option>
+              ))}
+            </Select>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {formData.tipo !== "RENDA_VARIAVEL" && (
+        <div className={`grid gap-4 ${usaRentabilidade ? "grid-cols-2" : "grid-cols-1"}`}>
+          {usaRentabilidade && (
             <Input
               label="Rentabilidade (%)"
               type="number"
@@ -251,7 +272,6 @@ export default function InvestimentoFormModal({
             value={formData.dataAplicacao}
             onChange={handleChange}
             required
-            className={formData.tipo === "RENDA_VARIAVEL" ? "col-span-2" : ""}
           />
         </div>
 
@@ -269,7 +289,6 @@ export default function InvestimentoFormModal({
           />
         )}
 
-        {/* BOTÕES DE AÇÃO */}
         <div className="flex gap-3 pt-4">
           <button
             type="button"

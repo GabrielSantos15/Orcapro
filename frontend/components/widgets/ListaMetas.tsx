@@ -24,7 +24,6 @@ export default function ListaMetas() {
   };
 
   const getCorTextoStatus = (percentual: number) => {
-    // Pesos ajustados para 500 para melhor leitura no Light e Dark mode
     if (percentual >= 100) return "text-green-500";
     if (percentual >= 75) return "text-blue-500";
     if (percentual >= 50) return "text-yellow-500";
@@ -120,8 +119,8 @@ export default function ListaMetas() {
             {/* Header com nome e ações */}
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="p-2.5 rounded-xl bg-purple-500/10 shrink-0">
-                  <Target className="w-5 h-5 text-purple-500" />
+                <div className="p-2.5 rounded-xl bg-[var(--primary-color)]/10 shrink-0">
+                  <Target className="w-5 h-5 text-[var(--primary-color)]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-[var(--text-primary)] leading-tight truncate">

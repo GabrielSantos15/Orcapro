@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header className="sticky z-50 top-0 w-full mx-auto bg-[var(--bg-surface)] border-b border-[var(--border-color)]">
-      <div className="flex justify-between items-center px-4 py-2 md:px-6 md:py-4 mx-auto">
+      <div className="flex justify-between items-center px-6 py-4 mx-auto">
         
         {/* LOGO */}
         <Link href="/" className="text-2xl font-bold tracking-tight z-50">

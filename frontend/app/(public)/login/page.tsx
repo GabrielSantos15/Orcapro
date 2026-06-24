@@ -49,8 +49,8 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8">
+    <main className="items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8 m-auto">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold">
@@ -111,7 +111,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-bold rounded-lg transition duration-200 ease-in-out"
+            className="w-full py-3 px-4 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-bold rounded-lg transition duration-200 ease-in-out cursor-pointer"
           >
             {loading ? "Carregando..." : "Entrar"}
           </button>

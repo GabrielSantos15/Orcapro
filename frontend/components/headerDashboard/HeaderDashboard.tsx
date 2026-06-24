@@ -117,7 +117,7 @@ export default function HeaderDashboard({
           {showWelcome ? (
             <>
               <h1 className="text-2xl font-medium flex align-baseline">
-                Bem-vindo de volta,{" "}
+                Bem-vindo de volta, {" "}
                 <span className="text-[var(--primary-color)]">{isLoading ? <div className="skeleton h-6 w-[90px] rounded-md inline-block" /> : firstName}</span>
                 !
               </h1>
