@@ -12,7 +12,6 @@ interface ContaModalProps {
   id?: number;
 }
 
-// Usando cores com opacidade (/10 e /20) para funcionarem perfeitamente no Dark Mode!
 const TIPOS_CONTA: Record<string, { label: string; cor: string }> = {
   corrente: { label: "Conta Corrente", cor: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
   poupanca: { label: "Poupança", cor: "bg-green-500/10 text-green-500 border-green-500/20" },

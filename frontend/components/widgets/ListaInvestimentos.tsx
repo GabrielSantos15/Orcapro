@@ -156,7 +156,7 @@ export default function ListaInvestimentos() {
               )}
               <button
                 onClick={() => openModal("updateInvestimento", inv)}
-                className="p-1.5 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors"
+                className="p-1.5 text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors cursor-pointer"
               >
                 <Pencil className="w-4 h-4" />
               </button>

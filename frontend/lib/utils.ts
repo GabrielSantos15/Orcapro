@@ -4,6 +4,25 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+export function formatarDiaMes(dataISO: string | null | undefined) {
+  if (!dataISO) return "--/--"; 
+
+  const partes = dataISO.split("T");
+  if (partes.length === 0) return "--/--";
+
+  const [ano, mes, dia] = partes[0].split("-");
+  return `${dia}/${mes}`;
+}
+
+export function formatarDiaMesAno(dataISO: string | null | undefined) {
+  if (!dataISO) return "--/--/----";
+  
+  const partes = dataISO.split("T");
+  if (partes.length === 0) return "--/--/----";
+  
+  const [ano, mes, dia] = partes[0].split("-");
+  return `${dia}/${mes}/${ano}`;
+}
 
 export function obterDatasMesAtual() {
   const hoje = new Date();
@@ -19,8 +38,10 @@ export function obterDatasMesAtual() {
     dataFim: `${ano}-${mes}-${ultimoDia}`,
   };
 }
+
 export function formatarMoeda(valor: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-    valor,
-  );
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(valor);
 }

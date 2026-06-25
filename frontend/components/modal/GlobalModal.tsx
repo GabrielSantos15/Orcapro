@@ -21,6 +21,7 @@ import MetaResgateFormModal from "./meta/MetaResgateFormModal";
 import InvestimentoSaldoFormModal from "./investimento/InvestimentoSaldoFormModal";
 import CategoriaViewModal from "./categoria/CategoriaViewModal";
 import OrcamentoFormModal from "./orcamento/OrcamentoFormModal";
+import ViewMetaModal from "./meta/ViewMetaModal";
 
 export default function GlobalModal() {
   const { isOpen, view, closeModal, data } = useModalStore();
@@ -45,6 +46,7 @@ export default function GlobalModal() {
       {view === "resgateInvestimento" && <InvestimentoResgateFormModal  investimento={data}/>}
       {view === "updateSaldoInvestimento" && <InvestimentoSaldoFormModal  investimento={data}/>}
 
+      {view === "meta" && <ViewMetaModal  meta={data}/>}
       {view === "createMeta" && <MetaFormModal />}
       {view === "updateMeta" && <MetaFormModal meta={data}/>}
       {view === "addProgressoMeta" && <MetaProgressoFormModal meta={data}/>}
