@@ -14,7 +14,7 @@ public class Meta {
     @Column(name = "id_meta")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 

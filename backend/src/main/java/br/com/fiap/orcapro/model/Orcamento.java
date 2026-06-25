@@ -11,7 +11,7 @@ public class Orcamento {
     @Column(name = "id_orcamento")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 

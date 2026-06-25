@@ -14,11 +14,11 @@ public class Investimento {
     @Column(name = "id_investimento")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_conta", nullable = false)
     private Conta conta;
 

@@ -13,7 +13,7 @@ public class Conta {
     @Column(name = "id_conta")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 

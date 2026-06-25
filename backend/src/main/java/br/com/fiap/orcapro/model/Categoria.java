@@ -13,7 +13,7 @@ public class Categoria {
     @Column(name = "id_categoria")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     @JsonIgnoreProperties({"nome", "email", "senha", "dtCadastro"})
     private Usuario usuario;

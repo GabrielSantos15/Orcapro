@@ -8,9 +8,11 @@ import br.com.fiap.orcapro.model.Usuario;
 import br.com.fiap.orcapro.repository.CategoriaRepository;
 import br.com.fiap.orcapro.repository.ContaRepository;
 import br.com.fiap.orcapro.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -48,7 +50,9 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO salvar(Usuario usuario) {
-
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este e-mail já está sendo utilizado.");
+        }
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
@@ -126,8 +130,15 @@ public class UsuarioService {
     public UsuarioResponseDTO atualizarPerfil(Usuario usuario, String token) {
         Long idUsuario = jwtService.extrairId(token);
         Usuario usuarioAtual = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
+        if (usuario.getEmail() != null && !usuario.getEmail().isBlank()) {
+            if (!usuario.getEmail().equals(usuarioAtual.getEmail()) &&
+                    usuarioRepository.existsByEmail(usuario.getEmail())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Este e-mail já está sendo utilizado por outro usuário.");
+            }
+            usuarioAtual.setEmail(usuario.getEmail());
+        }
         if (usuario.getNome() != null && !usuario.getNome().isBlank()) {
             usuarioAtual.setNome(usuario.getNome());
         }
