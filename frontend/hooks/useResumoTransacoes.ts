@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ResumoCategoria } from "@/interfaces/ResumoCategoria";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 import { ResumoAnual } from "@/interfaces/ResumoAnual";
 import { FiltroResumoAnual } from "@/interfaces/FiltroResumoAnual";
+import { useTransacoes } from "./useTransacoes";
 
 export interface ResumoTransacoes {
   receitas: number;

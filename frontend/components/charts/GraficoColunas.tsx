@@ -22,6 +22,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { FiltroResumoAnual } from "@/interfaces/FiltroResumoAnual";
+import { useModalStore } from "@/store/useModalStore";
 
 const chartConfig = {
   receitas: {
@@ -47,8 +48,8 @@ export default function GraficoColunas({ filtro }: GraficoColunasProps) {
   const [anoSelecionado, setAnoSelecionado] = useState(new Date().getUTCFullYear());
   const [editandoAno, setEditandoAno] = useState(false);
   const [inputAno, setInputAno] = useState(anoSelecionado.toString());
-
   const { resumoAnual, carregandoAnual, fetchResumoAnual } = useResumoTransacoes();
+  const { atualizarGatilho } = useModalStore();
 
   const contaId = filtro?.contaId;
   const categoriaId = filtro?.categoriaId;
@@ -62,7 +63,7 @@ export default function GraficoColunas({ filtro }: GraficoColunasProps) {
       tipo 
     });
     setInputAno(anoSelecionado.toString()); 
-  }, [anoSelecionado, contaId, categoriaId, tipo, fetchResumoAnual]);
+  }, [anoSelecionado, contaId, categoriaId, tipo, fetchResumoAnual,atualizarGatilho]);
 
   const confirmarAno = () => {
     const novoAno = parseInt(inputAno, 10);

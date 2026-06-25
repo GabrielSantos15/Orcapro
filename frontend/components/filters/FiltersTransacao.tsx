@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { DatePicker } from "../forms/DatePicker";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
 
 interface FiltersTransacaoProps {
@@ -33,18 +32,16 @@ export default function FiltersTransacao({
   onClear
 }: FiltersTransacaoProps) {
 
-const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
+  const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
     setFiltro((prev) => {
       const novoFiltro = { ...prev };
 
-      // Atualiza o campo que o usuário acabou de mexer
       if (valor === "" || valor === "all") {
         (novoFiltro as any)[campo] = undefined;
       } else {
         (novoFiltro as any)[campo] = (campo === "categoriaId" || campo === "contaId") ? Number(valor) : valor;
       }
 
-      //  Se escolheu uma Categoria, descobre o Tipo e já preenche
       if (campo === "categoriaId" && valor !== "all" && valor !== "") {
         const catSelecionada = categorias.find((c) => c.id === Number(valor));
         if (catSelecionada) {
@@ -52,11 +49,10 @@ const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
         }
       }
 
-      // Se mudou o Tipo, verifica se a Categoria atual ainda faz sentido
       if (campo === "tipo" && valor !== "all" && valor !== "") {
         const catAtual = categorias.find((c) => c.id === prev.categoriaId);
         if (catAtual && catAtual.tipo !== valor) {
-          novoFiltro.categoriaId = undefined; // Limpa a categoria pois é do tipo oposto
+          novoFiltro.categoriaId = undefined;
         }
       }
 
@@ -64,7 +60,25 @@ const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
     });
   };
 
-  // Filtra as categorias para o Dropdown (esconde as que não batem com o Tipo)
+  const handleMesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valor = e.target.value; 
+
+    if (!valor) {
+      setFiltro((prev) => ({ ...prev, dataInicio: "", dataFim: "" }));
+      return;
+    }
+
+    const [ano, mes] = valor.split("-");
+    const ultimoDiaObj = new Date(Number(ano), Number(mes), 0);
+    const ultimoDia = String(ultimoDiaObj.getDate()).padStart(2, "0");
+
+    setFiltro((prev) => ({
+      ...prev,
+      dataInicio: `${ano}-${mes}-01`,
+      dataFim: `${ano}-${mes}-${ultimoDia}`,
+    }));
+  };
+
   const categoriasFiltradas = categorias.filter((c) => {
     if (!filtro.tipo) return true;
     return c.tipo === filtro.tipo;
@@ -141,21 +155,14 @@ const atualizarFiltro = (campo: keyof FiltroTransacao, valor: string) => {
         </Select>
       </div>
 
-      {/* Data Inicial */}
-      <div className="flex flex-col col-span-1">
-        <label className="text-sm text-[var(--text-muted)]">Data Inicial</label>
-        <DatePicker
-          value={filtro.dataInicio}
-          onChange={(value) => atualizarFiltro("dataInicio", value ?? "")}
-        />
-      </div>
-
-      {/* Data Final */}
-      <div className="flex flex-col col-span-1">
-        <label className="text-sm text-[var(--text-muted)]">Data Final</label>
-        <DatePicker
-          value={filtro.dataFim}
-          onChange={(value) => atualizarFiltro("dataFim", value ?? "")}
+      {/* Mês de Referência */}
+      <div className="flex flex-col col-span-2 md:col-span-1">
+        <label className="text-sm text-[var(--text-muted)]">Mês de Referência</label>
+        <input
+          type="month"
+          className="border border-[var(--border-color)] rounded-lg px-2 text-sm text-[var(--text-color)] bg-[var(--bg-surface)]  focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] h-8"
+          onChange={handleMesChange}
+          value={filtro.dataInicio ? filtro.dataInicio.substring(0, 7) : ""}
         />
       </div>
 
