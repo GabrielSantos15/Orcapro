@@ -129,7 +129,7 @@ export default function Movimentacao() {
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
         <div className="lg:col-span-4">
           <WidgetContainer titulo="Últimas Transações">
-            <ListaTransacoes filtro={filtroAplicado} />
+            <ListaTransacoes filtro={filtroAplicado} variant="table"/>
           </WidgetContainer>
         </div>
       </section>
