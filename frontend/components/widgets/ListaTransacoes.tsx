@@ -56,7 +56,7 @@ export default function ListaTransacoes({ filtro, limite, variant = "list" }: Li
   return (
     <div className="w-full">
       {variant === "table" && (
-        <div className="sticky top-0 grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 bg-[var(--bg-primary)] p-4 border-b border-[var(--border-color)] font-medium text-sm opacity-70">
+        <div className="sticky top-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 bg-[var(--bg-primary)] p-4 border-b border-[var(--border-color)] font-medium text-sm opacity-70">
           <span className="col-span-1">Transação</span>
           <span className="hidden md:block">Conta</span>
           <span className="hidden lg:block col-span-2">Descrição</span>

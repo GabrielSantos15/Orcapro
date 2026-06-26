@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./Movimentacao.module.css"; 
 
 import Button from "@/components/button/Button";
 import CardResumo from "@/components/cards/CardResumo";
@@ -17,7 +18,6 @@ import { useTransacoes } from "@/hooks/useTransacoes";
 import { obterDatasMesAtual } from "@/lib/utils";
 import { useModalStore } from "@/store/useModalStore";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
-import { FaFilterCircleXmark } from "react-icons/fa6";
 import { FaFilter } from "react-icons/fa";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
@@ -30,7 +30,6 @@ export default function Movimentacao() {
   const { categorias } = useCategorias();
   const { contas } = useContas();
 
-
   const [filtroRascunho, setFiltroRascunho] = useState<FiltroTransacao>(() => obterDatasMesAtual());
   const [filtroAplicado, setFiltroAplicado] = useState<FiltroTransacao>(() => obterDatasMesAtual());
 
@@ -39,18 +38,15 @@ export default function Movimentacao() {
     carregarResumo(filtroAtual);
   };
 
-
   useEffect(() => {
     carregarTudo(filtroAplicado);
   }, [atualizarGatilho]);
-
 
   const handleApply = () => {
     setFiltroAplicado(filtroRascunho);
     carregarTudo(filtroRascunho);
     setOpenFilters(false)
   };
-
 
   const handleClear = () => {
     const filtroResetado = obterDatasMesAtual();
@@ -63,6 +59,8 @@ export default function Movimentacao() {
   return (
     <>
       <HeaderDashboard title="Minhas Movimentações" />
+      
+      {/* Filtros */}
       <div className="flex flex-col-reverse lg:flex-row lg:items-center justify-between gap-4 mb-4">
         <div className="flex-1 w-full lg:w-auto">
           <button
@@ -102,37 +100,40 @@ export default function Movimentacao() {
         </Button>
       </div>
 
-      <section className="grid grid-cols-1 lg:grid-cols-4 gap-5">
-        <div className="flex flex-col gap-4 lg:col-span-1">
+      {/* 2. Grid  */}
+      <div className={styles.movimentacaoGrid}>
+        
+        {/* Coluna de Resumos */}
+        <div className="flex flex-col gap-4 [grid-area:resumos]">
           <CardResumo value={resumo.saldo} isLoading={carregando} title="Fluxo de Caixa" color={resumo.saldo >= 0 ? "var(--color-receita)" : "var(--color-despesa)"} className="light-effect-subtle" />
           <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="var(--color-receita)" icon={ArrowUp} />
           <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="var(--color-despesa)" icon={ArrowDown} />
         </div>
 
-        <div className="lg:col-span-2">
-          <WidgetContainer
-            titulo="Entradas vs Saídas"
-            subtitulo="Acompanhamento ao longo do tempo"
-            className="light-effect"
-          >
-            <GraficoColunas filtro={filtroAplicado} />
-          </WidgetContainer>
-        </div>
+        {/* Gráfico Principal */}
+        <WidgetContainer
+          titulo="Entradas vs Saídas"
+          subtitulo="Acompanhamento ao longo do tempo"
+          className="light-effect [grid-area:graficoColunas]"
+        >
+          <GraficoColunas filtro={filtroAplicado} />
+        </WidgetContainer>
 
-        <div className="lg:col-span-1">
-          <WidgetContainer titulo="Maiores Gastos" subtitulo="Top 5 categorias" className="light-effect-subtle">
-            <GraficoTopCategorias dataInicio={filtroAplicado.dataInicio} dataFim={filtroAplicado.dataFim} />
-          </WidgetContainer>
-        </div>
-      </section>
+        {/* Gráfico de Categorias */}
+        <WidgetContainer 
+          titulo="Maiores Gastos" 
+          subtitulo="Top 5 categorias" 
+          className="light-effect-subtle [grid-area:graficoCategorias]"
+        >
+          <GraficoTopCategorias dataInicio={filtroAplicado.dataInicio} dataFim={filtroAplicado.dataFim} />
+        </WidgetContainer>
 
-      <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-        <div className="lg:col-span-4">
-          <WidgetContainer titulo="Últimas Transações">
-            <ListaTransacoes filtro={filtroAplicado} variant="table"/>
-          </WidgetContainer>
-        </div>
-      </section>
+        {/* Lista de Transações */}
+        <WidgetContainer titulo="Últimas Transações" className="[grid-area:transacoes]">
+          <ListaTransacoes filtro={filtroAplicado} variant="table"/>
+        </WidgetContainer>
+
+      </div>
     </>
   );
 }

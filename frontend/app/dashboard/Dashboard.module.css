@@ -1,9 +1,33 @@
-.grid{
+.dashboardGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: 
-     "cartoes cartoes contas"
-     "grafico movimentacao contas"
-    ;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "resumo"
+        "contas"
+        "grafico"
+        "transacoes"
+        "metas";
+    gap: 1.5rem;
 }
 
+@media (min-width: 1024px) {
+    .dashboardGrid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+            "resumo resumo resumo "
+            "grafico grafico  contas"
+            "transacoes transacoes transacoes"
+            "metas metas metas";
+    }
+}
+
+@media (min-width: 1400px) {
+    .dashboardGrid{
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-areas:
+            "resumo resumo resumo contas"
+            "grafico grafico transacoes contas"
+            "grafico grafico transacoes contas"
+            "metas metas metas metas";
+    }
+}

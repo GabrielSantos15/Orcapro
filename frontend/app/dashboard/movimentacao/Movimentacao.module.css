@@ -1,0 +1,30 @@
+.movimentacaoGrid {
+  display: grid;
+  gap: 1.25rem; 
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "resumos"
+    "graficoColunas"
+    "graficoCategorias"
+    "transacoes";
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .movimentacaoGrid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "resumos resumos resumos"
+      "graficoColunas graficoColunas graficoCategorias"
+      "transacoes transacoes transacoes";
+  }
+}
+
+@media (min-width: 1500px) {
+  .movimentacaoGrid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-areas:
+      "resumos graficoColunas graficoColunas graficoCategorias"
+      "transacoes transacoes transacoes transacoes";
+  }
+}

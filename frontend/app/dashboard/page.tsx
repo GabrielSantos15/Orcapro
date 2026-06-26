@@ -16,6 +16,7 @@ import { useResumoTransacoes } from "@/hooks/useResumoTransacoes";
 import { useEffect } from "react";
 import { obterDatasMesAtual } from "@/lib/utils";
 import ListaResumoMetas from "@/components/widgets/ListaResumoMetas";
+import styles from "./Dashboard.module.css";
 
 export default function DashBoardPage() {
   const { openModal, atualizarGatilho } = useModalStore();
@@ -40,16 +41,15 @@ export default function DashBoardPage() {
   return (
     <>
       <HeaderDashboard showWelcome={true} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:col-span-3">
+      <div className={styles.dashboardGrid}>
+        <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 [grid-area:resumo]">
           <CardResumo value={totalConta} isLoading={carregandoContas} title="Saldo Total" variant="highlight" />
           <CardResumo value={resumo.receitas} isLoading={carregando} title="Entradas" color="var(--color-receita)" icon={ArrowUp} />
           <CardResumo value={resumo.despesas} isLoading={carregando} title="Saídas" color="var(--color-despesa)" icon={ArrowDown} />
           <CardResumo value={totalInvestido} isLoading={carregandoInvestimentos} title="Investido" color="var(--color-info)" />
         </section>
 
-        <section className="md:hidden flex flex-col gap-4 ">
+        <section className="md:hidden flex flex-col gap-4 [grid-area:resumo]">
           <CardResumo value={totalConta} isLoading={carregandoContas} title="Saldo Total" variant="highlight" />
           <Button
             className="md:hidden"
@@ -74,7 +74,7 @@ export default function DashBoardPage() {
               + Adicionar
             </button>
           }
-          className="lg:col-span-1 lg:row-span-2 light-effect-subtle"
+          className="[grid-area:contas] light-effect-subtle"
         >
           <ListaContas />
         </WidgetContainer>
@@ -82,7 +82,7 @@ export default function DashBoardPage() {
         <WidgetContainer
           titulo="Entradas vs Saídas"
           subtitulo="Acompanhamento ao longo do tempo"
-          className="lg:col-span-2 light-effect"
+          className="[grid-area:grafico] light-effect"
         >
           <GraficoColunas />
         </WidgetContainer>
@@ -112,12 +112,12 @@ export default function DashBoardPage() {
           rodape={
             <Link
               href="/dashboard/movimentacao"
-              className="w-full py-2 font-mediu bg-[var(--bg-secondary)]/50 hover:bg-[var(--bg-secondary)] transition-colors rounded-b-lg flex justify-center items-center"
+              className="w-full py-2 font-medium bg-[var(--bg-secondary)]/50 hover:bg-[var(--bg-secondary)] transition-colors rounded-b-lg flex justify-center items-center"
             >
               Ver Todas
             </Link>
           }
-          className="lg:col-span-1"
+          className="[grid-area:transacoes]"
         >
           <ListaTransacoes limite={5} />
         </WidgetContainer>
@@ -132,9 +132,9 @@ export default function DashBoardPage() {
               Ver Todas
             </Link>
           }
-          className="lg:col-span-4"
+          className="[grid-area:metas]"
         >
-          <ListaResumoMetas ></ListaResumoMetas>
+          <ListaResumoMetas></ListaResumoMetas>
         </WidgetContainer>
       </div>
     </>
