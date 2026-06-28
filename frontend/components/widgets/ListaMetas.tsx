@@ -59,6 +59,9 @@ if (carregando) {
       <div className="flex flex-col items-center justify-center py-12 text-center bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl">
         <Target className="w-12 h-12 text-[var(--text-muted)] mb-4" />
         <h3 className="text-lg font-medium text-[var(--text-primary)]">Nenhuma meta definida</h3>
+           <p className="text-sm text-[var(--text-muted)] mt-1">
+          Você ainda não possui aplicações cadastradas.
+        </p>
       </div>
     );
   }

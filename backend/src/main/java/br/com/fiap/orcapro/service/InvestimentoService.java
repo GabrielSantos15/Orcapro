@@ -145,15 +145,18 @@ public class InvestimentoService {
                         TipoCategoria.SAIDA
                 );
 
+        LocalDate dataTransacao = investimento.getDataAplicacao() != null
+                ? investimento.getDataAplicacao()
+                : LocalDate.now();
+
         Transacao transacao = new Transacao(
                 conta,
                 categoria,
                 "Aplicação: " + investimento.getAtivo(),
                 "Aplicação em investimento",
                 investimento.getValorInvestido(),
-                LocalDate.now()
+                dataTransacao
         );
-
         transacaoService.salvar(transacao, token);
 
         return toDTO(investimentoSalvo);

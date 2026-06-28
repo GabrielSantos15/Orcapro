@@ -49,7 +49,7 @@ export default function Login() {
   };
 
   return (
-    <main className="items-center py-12 px-4 sm:px-6 lg:px-8">
+    <main className="items-center py-12 px-4 sm:px-6 lg:px-8 min-h-[90vh]">
       <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-lg p-8 m-auto">
         {/* Logo */}
         <div className="text-center mb-8">

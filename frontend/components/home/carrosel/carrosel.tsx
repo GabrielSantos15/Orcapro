@@ -35,7 +35,7 @@ export default function CarrosselBancos() {
 
       {/* Container com máscara de degradê para as bordas sumirem suavemente */}
       <div 
-        className="w-full max-w-7xl mx-auto overflow-hidden relative"
+        className="w-full max-w-full mx-auto overflow-hidden relative"
         style={{
           maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
           WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)"
@@ -46,10 +46,10 @@ export default function CarrosselBancos() {
           {listaInfinita.map((banco, index) => (
             <div 
               key={index} 
-              className="flex items-center gap-2 mx-8 text-[var(--text-muted)] opacity-60 hover:opacity-100 transition-opacity duration-300 cursor-default"
+              className="flex items-center gap-2 mx-8 text-[var(--text-muted)] grayscale-100 opacity-50 hover:opacity-100 hover:grayscale-0  duration-300 cursor-default"
             >
-                <img width={25} src={getBancoLogo(banco)} alt="" />
-              <span className="text-xl font-bold tracking-tight whitespace-nowrap">
+                <img width={50} className="rounded-md" src={getBancoLogo(banco)} alt="" />
+              <span className="text-2xl font-semibold tracking-tight whitespace-nowrap">
                 {banco}
               </span>
             </div>

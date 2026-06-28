@@ -54,6 +54,9 @@ export default function Hero() {
             Começar gratuitamente
           </Link>
         </div>
+        <p className="mt-4 text-xs text-[var(--text-muted)] max-w-sm">
+          *Projeto com fins educativos. Não utilize dados reais.
+        </p>
       </article>
 
       <figure className="flex items-center justify-center w-full max-w-5xl relative">
