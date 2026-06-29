@@ -4,6 +4,7 @@ import { FaArrowCircleDown, FaArrowCircleUp } from "react-icons/fa";
 import { useModalStore } from "@/store/useModalStore";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { Transacao } from "@/interfaces/Transacao";
+import { getIconeCategoria } from "@/lib/categoriaUtils";
 
 interface TransacaoViewModalProps {
   transacao: Transacao;
@@ -62,12 +63,13 @@ export default function TransacaoViewModal({ transacao }: TransacaoViewModalProp
             {isEntrada ? "Entrada" : "Saída"}
           </h2>
           <button onClick={handleVerCategoria}
-            className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium border cursor-pointer ${
+            className={`mt-2 rounded-full px-3 py-1 text-sm font-medium border cursor-pointer flex gap-2 ${
               isEntrada 
                 ? "bg-[var(--success-color)]/10 text-[var(--success-color)] border-[var(--success-color)]/20" 
                 : "bg-[var(--danger-color)]/10 text-[var(--danger-color)] border-[var(--danger-color)]/20"
             }`}
           >
+            {getIconeCategoria(categoria.nome)}
             {categoria.nome}
           </button>
         </div>

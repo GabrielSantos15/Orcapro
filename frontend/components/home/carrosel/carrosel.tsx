@@ -2,6 +2,7 @@
 
 import { listaBancosPopulares } from "@/hooks/useContas";
 import { getIconeCategoria } from "@/lib/categoriaUtils";
+import { getLogoBanco } from "@/lib/contaUtils";
 import { Landmark } from "lucide-react";
 
 export default function CarrosselBancos() {
@@ -12,19 +13,13 @@ export default function CarrosselBancos() {
     "Santander",
     "Bradesco",
     "Banco Inter",
-    "C6 Bank",
+    "PicPay",
     "BTG Pactual",
     "Caixa Econômica",
   ];
 
   // Triplicamos a lista para garantir que a tela sempre esteja preenchida durante o scroll
   const listaInfinita = [...bancos, ...bancos, ...bancos];
-  const getBancoLogo = (instituicao: string) => {
-    const banco = listaBancosPopulares.find(
-      (b) => b.nome.toLowerCase() === instituicao.toLowerCase(),
-    );
-    return banco?.logo || "/bancos/default.png";
-  };
   
   return (
     <section className="w-full py-12 bg-transparent overflow-hidden flex flex-col items-center">
@@ -48,7 +43,7 @@ export default function CarrosselBancos() {
               key={index} 
               className="flex items-center gap-2 mx-8 text-[var(--text-muted)] grayscale-100 opacity-50 hover:opacity-100 hover:grayscale-0  duration-300 cursor-default"
             >
-                <img width={50} className="rounded-md" src={getBancoLogo(banco)} alt="" />
+                <img width={50} className="rounded-md" src={getLogoBanco(banco)} alt="" />
               <span className="text-2xl font-semibold tracking-tight whitespace-nowrap">
                 {banco}
               </span>

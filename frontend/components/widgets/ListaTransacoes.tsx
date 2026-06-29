@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { formatarMoeda, obterDatasMesAtual } from "@/lib/utils";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { FiltroTransacao } from "@/interfaces/FiltroTransacao";
+import { getIconeCategoria } from "@/lib/categoriaUtils";
 
 interface ListaTransacoesProps {
   filtro?: FiltroTransacao;
@@ -46,7 +47,18 @@ export default function ListaTransacoes({ filtro, limite, variant = "list" }: Li
       </p>
     );
   }
+  const getIconeCategoriaEmbalado = (nome: string, tipo: string) => {
+    const icone = getIconeCategoria(nome); 
+    const cores = tipo === "ENTRADA"
+      ? "bg-green-500/10 text-green-500 border border-green-500/20"
+      : "bg-red-500/10 text-red-400 border border-red-500/20";
 
+    return (
+      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${cores}`}>
+        {icone}
+      </div>
+    );
+  };
   const transacoesExibidas = limite ? transacoes.slice(0, limite) : transacoes;
 
   const gridClasses = variant === "table"
@@ -71,12 +83,15 @@ export default function ListaTransacoes({ filtro, limite, variant = "list" }: Li
             onClick={() => openModal("transacao", t)}
             className={`${gridClasses} p-4 border-b last:border-0 border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/40 transition-colors cursor-pointer text-sm`}
           >
-            {/* Transação */}
-            <div className="min-w-0 pr-2">
-              <span className="block truncate font-medium">{t.origemDestino}</span>
-              <p className="block truncate text-gray-500 text-xs mt-0.5">
-                {formatarDiaMes(t.dataTransacao)} • {t.categoria.nome}
-              </p>
+            <div className="min-w-0 pr-2 flex items-center gap-3">
+              { variant === "table" && getIconeCategoriaEmbalado(t.categoria.nome, t.categoria.tipo)}
+
+              <div className="min-w-0">
+                <span className="block truncate font-medium">{t.origemDestino}</span>
+                <p className="block truncate text-gray-500 text-xs mt-0.5">
+                  {formatarDiaMes(t.dataTransacao)} • <span className="capitalize">{t.categoria.nome}</span>
+                </p>
+              </div>
             </div>
 
             {/*  Conta */}

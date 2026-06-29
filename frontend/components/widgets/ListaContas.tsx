@@ -1,5 +1,7 @@
 import { listaBancosPopulares, useContas } from "@/hooks/useContas";
 import { Conta } from "@/interfaces/Conta";
+import { getLogoBanco } from "@/lib/contaUtils";
+import { formatarMoeda } from "@/lib/utils";
 import { useModalStore } from "@/store/useModalStore";
 import Image from "next/image";
 
@@ -32,16 +34,9 @@ export default function ListaContas() {
 
   if (contas.length === 0) {
     return (
-      <p className="p-4 text-center text-gray-500">Nenhuma conta encontrada.</p>
+      <p className="p-4 text-center text-[var(--text-muted)]">Nenhuma conta cadastrada</p>
     );
   }
-
-  const getBancoLogo = (instituicao: string) => {
-    const banco = listaBancosPopulares.find(
-      (b) => b.nome.toLowerCase() === instituicao.toLowerCase(),
-    );
-    return banco?.logo || "/bancos/default.png";
-  };
 
   return (
     <ul className="flex flex-col h-full">
@@ -52,13 +47,13 @@ export default function ListaContas() {
           className="flex justify-between p-3 border-b border-[var(--border-color)] last:border-0 text-sm cursor-pointer hover:bg-[var(--bg-secondary)]/50"
         >
           <div className="flex gap-2">
-            <figure>
+            <figure className="h-full">
               <Image
-                src={getBancoLogo(c.instituicao)}
+                src={getLogoBanco(c.instituicao)}
                 alt={c.instituicao}
                 width={40}
                 height={40}
-                className="rounded"
+                className="rounded object-contain"
               />
             </figure>
             <div className="flex flex-col">
@@ -67,7 +62,7 @@ export default function ListaContas() {
             </div>
           </div>
           <div className="flex items-center">
-            <span className="font-medium">R$ {c.saldo}</span>
+            <span className="font-medium">{formatarMoeda(c.saldo)}</span>
           </div>
         </li>
       ))}

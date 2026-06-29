@@ -1,7 +1,7 @@
 "use client";
 
 import { useMetas } from "@/hooks/useMetas";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 interface ListaResumoMetasProps {
   limite?: number;
@@ -18,7 +18,7 @@ interface MetaCardProps {
 }
 
 function MetaCard({ meta }: MetaCardProps) {
-  const router = useRouter(); 
+  const router = useRouter();
 
   const percentual =
     meta.valorAlvo > 0
@@ -41,11 +41,24 @@ function MetaCard({ meta }: MetaCardProps) {
           viewBox={`0 0 ${size} ${size}`}
           className="w-full h-full overflow-visible"
         >
+          <defs>
+            <linearGradient
+              id={`metaGradient-${meta.id}`}
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="var(--primary-color)" />
+              <stop offset="100%" stopColor="var(--secondary-color)" />
+            </linearGradient>
+          </defs>
+
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="stroke-[var(--border-color)]" 
+            className="stroke-[var(--border-color)]"
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -54,7 +67,8 @@ function MetaCard({ meta }: MetaCardProps) {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="stroke-[var(--primary-color)] origin-center -rotate-90 transition-all duration-1000 ease-out group-hover:drop-shadow-[0_0_5px_var(--secondary-color)]" 
+            stroke={`url(#metaGradient-${meta.id})`}
+            className="origin-center -rotate-90 transition-all duration-1000 ease-out group-hover:drop-shadow-[0_0_8px_var(--primary-color)]"
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}
@@ -78,11 +92,11 @@ function MetaCard({ meta }: MetaCardProps) {
 }
 
 export default function ListaResumoMetas({ limite }: ListaResumoMetasProps) {
-  const { metas, carregando } = useMetas();
+  const { metas, carregando, calcularProgresso } = useMetas();
 
   if (carregando) {
-    const quantidadeSkeletons = limite || 3; 
-    
+    const quantidadeSkeletons = limite || 3;
+
     return (
       <div className="flex gap-6 overflow-x-auto p-4">
         {Array.from({ length: quantidadeSkeletons }).map((_, i) => (
@@ -92,9 +106,21 @@ export default function ListaResumoMetas({ limite }: ListaResumoMetasProps) {
     );
   }
 
-  const metasOrdenadas = metas.sort(
-    (a, b) => new Date(a.dataLimite).getTime() - new Date(b.dataLimite).getTime()
-  );
+  const metasOrdenadas = [...metas].sort((a, b) => {
+    const progressoA = calcularProgresso(a.valorAtual, a.valorAlvo);
+    const progressoB = calcularProgresso(b.valorAtual, b.valorAlvo);
+
+    const isConcluidaA = progressoA >= 100;
+    const isConcluidaB = progressoB >= 100;
+
+    if (isConcluidaA && !isConcluidaB) return 1;
+    if (!isConcluidaA && isConcluidaB) return -1;
+
+    if (!a.dataLimite) return 1; 
+    if (!b.dataLimite) return -1;
+
+    return new Date(a.dataLimite).getTime() - new Date(b.dataLimite).getTime();
+  });
 
   const metasExibidas = limite ? metasOrdenadas.slice(0, limite) : metasOrdenadas;
 

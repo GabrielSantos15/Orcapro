@@ -6,6 +6,7 @@ import { listaBancosPopulares, useContas } from "@/hooks/useContas";
 import { Conta } from "@/interfaces/Conta";
 import { useModalStore } from "@/store/useModalStore";
 import { Building2 } from "lucide-react";
+import { getLogoBanco } from "@/lib/contaUtils";
 
 interface ContaModalProps {
   conta?: Partial<Conta> | Conta;
@@ -61,13 +62,6 @@ export default function ContaViewModal({ conta: contaInicial, id }: ContaModalPr
       }
     })();
   }, [contaInicial, id]);
-
-  const getBancoLogo = (instituicao: string) => {
-    const banco = listaBancosPopulares.find(
-      (b) => b.nome.toLowerCase() === instituicao.toLowerCase()
-    );
-    return banco?.logo; 
-  };
 
   const formatarSaldo = (saldo: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(saldo);
@@ -125,7 +119,7 @@ export default function ContaViewModal({ conta: contaInicial, id }: ContaModalPr
 
   const tipoConta = getTipoConta(conta.tipo);
   const loading = deletandoId === conta.id || atualizandoId === conta.id;
-  const logoBanco = getBancoLogo(conta.instituicao);
+  const logoBanco = getLogoBanco(conta.instituicao);
 
   return (
     <div className="space-y-6">
@@ -138,7 +132,7 @@ export default function ContaViewModal({ conta: contaInicial, id }: ContaModalPr
               src={logoBanco}
               alt={conta.instituicao}
               fill
-              className="object-fill"
+              className="object-contain"
             />
           ) : (
             <Building2 className="text-[var(--text-secondary)] w-8 h-8" />
