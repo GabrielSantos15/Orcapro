@@ -53,7 +53,7 @@ export default function TransacaoFormModal({
         categoriaId: String(transacao.categoria?.id) || "",
         origemDestino: transacao.origemDestino || "",
         descricao: transacao.descricao || "",
-        valor: transacao.valor ? transacao.valor.toFixed(2) : "",
+       valor: transacao.valor ? transacao.valor.toFixed(2).replace(".", ",") : "",
         dataTransacao: dataFormatada,
       });
     }

@@ -5,6 +5,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { Transacao } from "@/interfaces/Transacao";
 import { getIconeCategoria } from "@/lib/categoriaUtils";
+import { toast } from "sonner";
 
 interface TransacaoViewModalProps {
   transacao: Transacao;
@@ -26,6 +27,7 @@ export default function TransacaoViewModal({ transacao }: TransacaoViewModalProp
 
   const handleExcluir = () => {
     deletarTransacao(transacao.id);
+    toast.success("Transação removida com sucesso!");
     closeModal();
   };
 
@@ -46,11 +48,10 @@ export default function TransacaoViewModal({ transacao }: TransacaoViewModalProp
       {/* Header */}
       <div className="flex items-center gap-4">
         <div
-          className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl shadow-sm border ${
-            isEntrada 
-              ? "bg-[var(--success-color)]/10 border-[var(--success-color)]/20" 
+          className={`flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl shadow-sm border ${isEntrada
+              ? "bg-[var(--success-color)]/10 border-[var(--success-color)]/20"
               : "bg-[var(--danger-color)]/10 border-[var(--danger-color)]/20"
-          }`}
+            }`}
         >
           {isEntrada ? (
             <FaArrowCircleUp size={32} className="text-[var(--success-color)]" />
@@ -63,11 +64,10 @@ export default function TransacaoViewModal({ transacao }: TransacaoViewModalProp
             {isEntrada ? "Entrada" : "Saída"}
           </h2>
           <button onClick={handleVerCategoria}
-            className={`mt-2 rounded-full px-3 py-1 text-sm font-medium border cursor-pointer flex gap-2 ${
-              isEntrada 
-                ? "bg-[var(--success-color)]/10 text-[var(--success-color)] border-[var(--success-color)]/20" 
+            className={`mt-2 rounded-full px-3 py-1 text-sm font-medium border cursor-pointer flex gap-2 ${isEntrada
+                ? "bg-[var(--success-color)]/10 text-[var(--success-color)] border-[var(--success-color)]/20"
                 : "bg-[var(--danger-color)]/10 text-[var(--danger-color)] border-[var(--danger-color)]/20"
-            }`}
+              }`}
           >
             {getIconeCategoria(categoria.nome)}
             {categoria.nome}
@@ -77,17 +77,15 @@ export default function TransacaoViewModal({ transacao }: TransacaoViewModalProp
 
       {/* Valor */}
       <div
-        className={`rounded-xl p-6 flex flex-col items-center justify-center text-center border ${
-          isEntrada
+        className={`rounded-xl p-6 flex flex-col items-center justify-center text-center border ${isEntrada
             ? "bg-[var(--success-color)]/5 border-[var(--success-color)]/20"
             : "bg-[var(--danger-color)]/5 border-[var(--danger-color)]/20"
-        }`}
+          }`}
       >
         <p className="text-sm font-medium text-[var(--text-muted)] uppercase tracking-wider">Valor da Transação</p>
         <p
-          className={`mt-2 text-4xl font-bold ${
-            isEntrada ? "text-[var(--success-color)]" : "text-[var(--danger-color)]"
-          }`}
+          className={`mt-2 text-4xl font-bold ${isEntrada ? "text-[var(--success-color)]" : "text-[var(--danger-color)]"
+            }`}
         >
           {isEntrada ? "+ " : "- "}
           {formatarValor(valor)}

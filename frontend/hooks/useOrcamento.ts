@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Orcamento, OrcamentoRequest } from "@/interfaces/Orcamento";
 import { TipoCategoria } from "@/interfaces/Categoria"; 
 import { useModalStore } from "@/store/useModalStore";
@@ -31,6 +31,10 @@ export function useOrcamentos() {
       setCarregando(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchOrcamentos();
+  }, [fetchOrcamentos, triggerUpdate]);
 
   const criarOrcamento = useCallback(async (dados: OrcamentoRequest) => {
     try {

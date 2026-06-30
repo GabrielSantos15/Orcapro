@@ -18,7 +18,7 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
   const { closeModal } = useModalStore();
   const { categorias, carregando: carregandoCategorias } = useCategorias();
 
-  const { criarOrcamento, updateOrcamento } = useOrcamentos();
+  const { orcamentos, criarOrcamento, updateOrcamento } = useOrcamentos();
 
   const [submitting, setSubmitting] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -105,8 +105,21 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
     }
   };
 
-  // Filtra as categorias disponíveis com base no tipo selecionado
-  const categoriasFiltradas = categorias.filter(cat => cat.tipo === tipo);
+const categoriasJaUsadas = orcamentos?.map(o => 
+    String(o.categoria?.id || o.categoria.id)
+  ) || [];
+
+  // 2. Filtra convertendo o ID do "cat" para String também
+  const categoriasFiltradas = categorias.filter(cat => 
+    cat.tipo === tipo && !categoriasJaUsadas.includes(String(cat.id))
+  );
+
+  // --- COLE ISSO AQUI PARA DEPURAR ---
+  console.log("=== DEBUG DO MODAL ===");
+  console.log("1. Variável orcamentos:", orcamentos);
+  console.log("2. IDs mapeados (categoriasJaUsadas):", categoriasJaUsadas);
+  console.log("3. Primeira categoria da lista:", categorias[0]);
+  // ------------------------------------
 
   return (
     <div>
@@ -188,11 +201,15 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
               setFormData({ ...formData, categoriaId: e.target.value });
               if (erro) setErro(null);
             }}
-            disabled={carregandoCategorias}
+            disabled={carregandoCategorias || categoriasFiltradas.length === 0}
             required
           >
             <option value="" disabled>
-              {carregandoCategorias ? "Carregando categorias..." : "Selecione a categoria"}
+              {carregandoCategorias 
+                ? "Carregando categorias..." 
+                : categoriasFiltradas.length === 0
+                  ? `Todas as categorias já possuem ${tipo === "SAIDA" ? "limite" : "meta"}`
+                  : "Selecione a categoria"}
             </option>
             {categoriasFiltradas.map((cat) => (
               <option key={cat.id} value={cat.id}>
@@ -231,7 +248,7 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
 
           <button
             type="submit"
-            disabled={submitting || !formData.categoriaId || !formData.limite}
+            disabled={submitting || (!isEditMode && !formData.categoriaId) || !formData.limite}
             className={`cursor-pointer flex-1 text-white font-semibold py-3 px-4 rounded-[var(--radius-md)] shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${tipo === "SAIDA"
               ? "bg-[var(--primary-color)] hover:bg-[var(--primary-hover)]"
               : "bg-green-600 hover:bg-green-700"

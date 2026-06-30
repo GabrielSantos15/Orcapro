@@ -76,7 +76,7 @@ export function useTransacoes() {
         categoria: { id: formData.categoriaId },
         origemDestino: formData.origemDestino,
         descricao: formData.descricao,
-        valor: formData.valor, // Removido o parseFloat
+        valor: formData.valor, 
         dataTransacao: formData.dataTransacao,
       };
 
