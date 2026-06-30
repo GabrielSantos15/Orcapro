@@ -1,20 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
+import heroImg from "@/app/assets/images/HeroImage.png";
 
 function AvatarGroup() {
   const users = [1, 2, 3, 4, 5];
-
+  
+  
   return (
     <div className="flex items-center gap-4 my-4">
       <div className="flex -space-x-3">
         {users.map((i) => (
           <img
-            key={i}
+          key={i}
             src={`https://api.dicebear.com/9.x/thumbs/svg?backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&seed=OrçaProUser${i}`}
             alt={`Usuário ${i}`}
             className="w-12 h-12 rounded-full border-2 border-slate-50 dark:border-slate-950 object-cover z-10 hover:z-20 hover:scale-110 transition-transform duration-200"
-          />
-        ))}
+            />
+          ))}
       </div>
 
 
@@ -32,8 +34,10 @@ function AvatarGroup() {
 
 
 export default function Hero() {
+  const backgroundStyle = "bg-gradient-to-br bg-gray-300  dark:bg-gray-800  from-gray-300 dark:from-gray-800 via-green-50 to-gray-400 dark:via-gray-600 dark:to-green-100 ";
+
   return (
-    <section className="min-h-[calc(100dvh-100px)] lg:min-h-[750px] bg-gray-300 dark:bg-gradient-to-br dark:bg-gray-800  dark:from-gray-800 dark:via-gray-600 to-green-100  md:rounded-2xl p-4 lg:p-5 lg:px-10 md:mx-5 md:mt-5 flex flex-col lg:flex-row items-center justify-center gap-12">
+    <section className={`min-h-[calc(100dvh-100px)] lg:min-h-[750px] md:rounded-2xl p-4 lg:p-5 lg:px-10 md:mx-5 md:mt-5 flex flex-col lg:flex-row items-center justify-center gap-12 ${backgroundStyle}`}>
       <article className="text-[var(--text-primary)] w-full max-w-3xl flex flex-col items-center lg:items-start text-center lg:text-left gap-1">
         <h1 className="text-4xl md:text-6xl font-medium tracking-tight leading-tight">
           Liberdade financeira começa com organização
@@ -55,19 +59,25 @@ export default function Hero() {
           </Link>
         </div>
         <p className="mt-4 text-xs text-[var(--text-muted)] max-w-sm">
-          *Projeto com fins educativos. Não utilize dados reais.
+          *Projeto com fins educativos. Não utilize dados sensíveis.
         </p>
       </article>
 
-      <figure className="flex items-center justify-center w-full max-w-5xl relative">
-        <Image
-          src="/heroImage.png"
-          alt="Dashboard OrçaPro"
-          width={800}
-          height={400}
-          className="rounded-lg w-full h-auto object-contain"
-        />
-      </figure>
+<figure className="flex items-center justify-center w-full max-w-5xl relative">
+  <div className="absolute inset-0 flex items-center justify-center -z-0">
+    <div className="w-[70%] h-[70%] bg-[var(--primary-color)] blur-[120px] rounded-full opacity-40"></div>
+    <div className="w-[70%] h-[70%] bg-white blur-[120px] rounded-full opacity-60"></div>
+  </div>
+  <Image
+    src={heroImg}
+    alt="Dashboard OrçaPro"
+    width={800}
+    height={400}
+    className="w-full h-auto object-contain relative z-10"
+  />
+</figure>
+
+
     </section>
   );
 }
