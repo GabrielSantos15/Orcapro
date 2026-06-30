@@ -34,7 +34,7 @@ function CardFeature({ titulo, texto, icone, destaque = false }: CardFeatureProp
 
 export default function Beneficits() {
   return (
-    <section className="py-20 px-6 md:px-12">
+    <section className="py-20 px-6 md:px-12" id="beneficits">
       <div className="grid lg:grid-cols-2 gap-16 items-center">
         <article className="flex flex-col items-start text-left">
           <span className="text-[var(--primary-color)] font-bold uppercase tracking-wider text-sm mb-4">

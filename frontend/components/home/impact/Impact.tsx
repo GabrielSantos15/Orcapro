@@ -8,10 +8,10 @@ function ImpactCard({ children }: ImpactCardProps) {
   return (
     <li
       className="flex items-start gap-4 p-5 rounded-2xl 
-      bg-[var(--bg-surface)]/40 
+      bg-[var(--bg-surface)]/30 
       border border-black/5 dark:border-white/10 
       shadow-lg 
-      backdrop-blur-md 
+      backdrop-blur-lg 
       transition-all hover:-translate-y-1 hover:shadow-xl"
     >
       <div

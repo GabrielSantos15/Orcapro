@@ -30,7 +30,7 @@ function FeatureCard({ title, description, icon }: FeatureCardProps) {
 export default function Features() {
   return (
     <div className=" bg-[var(--bg-secondary)]">
-      <section className="flex flex-col items-center justify-center w-full max-w-5xl mx-auto py-20 px-6 gap-14">
+      <section className="flex flex-col items-center justify-center w-full max-w-5xl mx-auto py-20 px-6 gap-14" id="features">
       
         {/* Cabeçalho da Seção */}
         <div className="text-center flex flex-col gap-3">

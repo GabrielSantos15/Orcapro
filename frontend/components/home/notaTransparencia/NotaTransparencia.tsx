@@ -21,7 +21,7 @@ const items = [
 
 export default function NotaTransparencia() {
   return (
-    <section className="px-4 sm:px-6 lg:px-8">
+    <section className="px-4 sm:px-6 lg:px-8 py-4 md:py-10 lg:py-15 " id="transparencia">
       <div className="mx-auto flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-center">
         <div className="max-w-3xl">
           <h2 className="text-4xl font-medium leading-tight tracking-tight md:text-3xl lg:text-5xl">

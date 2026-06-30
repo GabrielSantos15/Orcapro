@@ -19,10 +19,10 @@ export default function Footer() {
         <div>
           <h3 className="text-base font-semibold uppercase tracking-wider">Navegação</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li><a href="#" className="hover:text-[var(--primary-color)] transition-colors">Sobre o Projeto</a></li>
-            <li><a href="#" className="hover:text-[var(--primary-color)] transition-colors">Funcionalidades</a></li>
-            <li><a href="#" className="hover:text-[var(--primary-color)] transition-colors">Tecnologias</a></li>
-            <li><a href="#" className="hover:text-[var(--primary-color)] transition-colors">Repositório GitHub</a></li>
+            <li><a href="#beneficits" className="hover:text-[var(--primary-color)] transition-colors">Sobre o Projeto</a></li>
+            <li><a href="#features" className="hover:text-[var(--primary-color)] transition-colors">Funcionalidades</a></li>
+            <li><a href="#transparencia" className="hover:text-[var(--primary-color)] transition-colors">Transparência</a></li>
+            <li><a href="https://github.com/GabrielSantos15/Orcapro" className="hover:text-[var(--primary-color)] transition-colors">Repositório GitHub</a></li>
           </ul>
         </div>
 

@@ -29,13 +29,18 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="#sobre" className="hover:text-[var(--primary-color)] transition-colors">
+              <Link href="#beneficits" className="hover:text-[var(--primary-color)] transition-colors">
+                Recursos
+              </Link>
+            </li>
+            <li>
+              <Link href="#features" className="hover:text-[var(--primary-color)] transition-colors">
                 Sobre
               </Link>
             </li>
             <li>
-              <Link href="#contato" className="hover:text-[var(--primary-color)] transition-colors">
-                Contato
+              <Link href="#transparencia" className="hover:text-[var(--primary-color)] transition-colors">
+                Transparência
               </Link>
             </li>
           </ul>
