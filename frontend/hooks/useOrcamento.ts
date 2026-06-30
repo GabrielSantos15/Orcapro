@@ -32,10 +32,6 @@ export function useOrcamentos() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchOrcamentos();
-  }, [fetchOrcamentos, triggerUpdate]);
-
   const criarOrcamento = useCallback(async (dados: OrcamentoRequest) => {
     try {
       const res = await fetch("/api/orcamento", {

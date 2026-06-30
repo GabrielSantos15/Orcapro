@@ -18,7 +18,7 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
   const { closeModal } = useModalStore();
   const { categorias, carregando: carregandoCategorias } = useCategorias();
 
-  const { orcamentos, criarOrcamento, updateOrcamento } = useOrcamentos();
+  const { orcamentos, criarOrcamento, updateOrcamento, fetchOrcamentos } = useOrcamentos();
 
   const [submitting, setSubmitting] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -57,6 +57,10 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
       setFormData(prev => ({ ...prev, categoriaId: "" }));
     }
   }, [tipo, isEditMode]);
+
+  useEffect(() => {
+    fetchOrcamentos()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,12 +109,12 @@ export default function OrcamentoFormModal({ orcamento }: OrcamentoFormModalProp
     }
   };
 
-const categoriasJaUsadas = orcamentos?.map(o => 
+  const categoriasJaUsadas = orcamentos?.map(o =>
     String(o.categoria?.id || o.categoria.id)
   ) || [];
 
   // 2. Filtra convertendo o ID do "cat" para String também
-  const categoriasFiltradas = categorias.filter(cat => 
+  const categoriasFiltradas = categorias.filter(cat =>
     cat.tipo === tipo && !categoriasJaUsadas.includes(String(cat.id))
   );
 
@@ -205,8 +209,8 @@ const categoriasJaUsadas = orcamentos?.map(o =>
             required
           >
             <option value="" disabled>
-              {carregandoCategorias 
-                ? "Carregando categorias..." 
+              {carregandoCategorias
+                ? "Carregando categorias..."
                 : categoriasFiltradas.length === 0
                   ? `Todas as categorias já possuem ${tipo === "SAIDA" ? "limite" : "meta"}`
                   : "Selecione a categoria"}
