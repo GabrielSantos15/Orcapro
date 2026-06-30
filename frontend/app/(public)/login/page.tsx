@@ -99,12 +99,13 @@ export default function Login() {
 
           {/* Forgot Password Link */}
           <div className="text-right">
-            <Link
-              href="/recuperar"
+            <button
+              type="button"
+              onClick={() => toast.info("A recuperação de senha estará disponível em breve!")}
               className="text-sm text-[var(--primary-color)] hover:text-[var(--primary-hover)] font-medium transition-colors"
             >
-              Esqueceu a senha? <span className="font-semibold">Recuperar</span>
-            </Link>
+              Esqueceu a senha?
+            </button>
           </div>
 
           {/* Submit Button */}
